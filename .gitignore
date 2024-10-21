@@ -1,0 +1,20 @@
+# Ignore build artifacts
+/build/
+
+# Ignore NetBeans private settings
+/nbproject/private/
+
+# Ignore test folder (if needed)
+/test/
+
+# Optional: Ignore IDE-specific files
+/.nb-gradle/
+*.iml
+
+# Ignore compiled Java classes
+*.class
+
+# Ignore temporary and log files
+*.log
+*.tmp
+*.swp
