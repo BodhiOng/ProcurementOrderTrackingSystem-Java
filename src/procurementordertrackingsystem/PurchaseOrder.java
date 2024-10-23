@@ -1,5 +1,6 @@
 package procurementordertrackingsystem;
 
+import procurementordertrackingsystem.utilities.CRUDOntoFile;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -21,17 +22,7 @@ public class PurchaseOrder {
         this.status = status;
         this.dateGenerated = dateGenerated;
     }
-    
-    // Instance methods
-    // Approve the PO
-    public void approve() { status = "Approved"; }
-    // Reject the PO
-    public void reject() { status = "Rejected"; }
-    // Check if the PO is approved
-    public boolean isApproved() { return "Approved".equals(status); }
-    // Update the status of 
-    public void updateStatus(String status) { this.status = status; }
-    
+        
     // CRUDOntoFile object instantiation
     CRUDOntoFile crudOntoFile = new CRUDOntoFile();
     
