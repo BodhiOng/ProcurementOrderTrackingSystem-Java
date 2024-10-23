@@ -14,6 +14,15 @@ public class PurchaseOrder {
     private String status; // Status: Pending, Approved, Rejected
     private String dateGenerated; // Date when the PO was generated
 
+    // Default constructor (no parameters)
+    public PurchaseOrder() {
+        this.poID = "";
+        this.prID = "";
+        this.purchaseManagerID = "";
+        this.status = "";
+        this.dateGenerated = "";
+    }
+    
     // Constructor
     public PurchaseOrder(String poID, String prID, String purchaseManagerID, String status, String dateGenerated) {
         this.poID = poID;
@@ -63,6 +72,23 @@ public class PurchaseOrder {
         
         // Write the updated lines back to the file
         crudOntoFile.writeUpdatedLinesToFile(filename, updatedLines);
+    }
+    
+    // Get PR IDs that are linked to a PO to be stored in an array
+    public String[] getPurchaseRequisitionIdsFromPOFile(String filename) {
+        List<String> lines = crudOntoFile.readFromAFile(filename);
+        List<String> requisitionIds = new ArrayList<>();
+
+        for (String line : lines) {
+            String[] parts = line.split(",");
+            if (parts.length == 5) {
+                // Add the Purchase Requisition ID (parts[1]) to the list
+                requisitionIds.add(parts[1]);
+            }
+        }
+
+        // Convert the List to an array and return it
+        return requisitionIds.toArray(new String[0]);
     }
     
     // Getters and setters
