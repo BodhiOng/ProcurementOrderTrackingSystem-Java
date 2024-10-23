@@ -14,7 +14,7 @@ public class PurchaseOrder {
     private String status; // Status: Pending, Approved, Rejected
     private String dateGenerated; // Date when the PO was generated
 
-    // Default constructor (no parameters)
+    // Default constructor
     public PurchaseOrder() {
         this.poID = "";
         this.prID = "";
@@ -32,15 +32,18 @@ public class PurchaseOrder {
         this.dateGenerated = dateGenerated;
     }
         
-    // CRUDOntoFile object instantiation
+    // Instance of CRUDOntoFile for purchase order related operations
     CRUDOntoFile crudOntoFile = new CRUDOntoFile();
     
     // Method to read all POs
     public void readPurchaseOrdersFromFile(String filename) {
-        List<String> lines = crudOntoFile.readFromAFile(filename);
-
+        List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
+        
+        // Go through each line for PO details to be printed
         for (String line : lines) {
+            // Separate line by commas
             String[] parts = line.split(",");
+            // Ensure there are that muc parts in the line & print output to terminal
             if (parts.length == 5) {
                 String output = String.format(
                     "Purchase Order ID: %s, Purchase Requisition ID: %s, Purchase Manager ID: %s, Status: %s, Date Generated: %s",
@@ -53,11 +56,13 @@ public class PurchaseOrder {
 
     // Method to update PO status from a file (approve/reject)
     public void updatePurchaseOrderStatusFromFile(String filename, boolean approve, String poID) {
-        List<String> lines = crudOntoFile.readFromAFile(filename);
-        List<String> updatedLines = new ArrayList<>();
-
+        List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
+        List<String> updatedLines = new ArrayList<>(); // To hold the updated lines for the PO file
+        
+        // Go through each line for PO details to be modified
         for (String line : lines) {
-            String[] parts = line.split(",");
+            // Separate line by commas
+            String[] parts = line.split(","); 
             if (parts.length == 5) {
                 // Check if the current PO ID matches the provided poID
                 if (parts[0].equals(poID)) {
@@ -76,13 +81,15 @@ public class PurchaseOrder {
     
     // Get PR IDs that are linked to a PO to be stored in an array
     public String[] getPurchaseRequisitionIdsFromPOFile(String filename) {
-        List<String> lines = crudOntoFile.readFromAFile(filename);
-        List<String> requisitionIds = new ArrayList<>();
+        List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
+        List<String> requisitionIds = new ArrayList<>(); // To hold the PR IDs
 
+        // Go through each line
         for (String line : lines) {
+            // Separate line by commas
             String[] parts = line.split(",");
             if (parts.length == 5) {
-                // Add the Purchase Requisition ID (parts[1]) to the list
+                // Add the PR ID to the list
                 requisitionIds.add(parts[1]);
             }
         }

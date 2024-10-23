@@ -10,6 +10,15 @@ public class Item {
     private double price; // Price of the item
     private String supplierID; // ID of the supplier
 
+    // Default constructor
+    public Item() {
+        this.itemID = "";
+        this.itemName = "";
+        this.stockLevel = 0;
+        this.price = 0.0;
+        this.supplierID = "";
+    }
+    
     // Constructor
     public Item(String itemID, String itemName, int stockLevel, double price, String supplierID) {
         this.itemID = itemID;
@@ -22,16 +31,19 @@ public class Item {
     // Check the stock status of the item (instance method)
     public String checkStockStatus() { return stockLevel > 0 ? "In Stock" : "Out of Stock"; }
     
-    // CRUDOntoFile object instantiation
+    // Instance of CRUDOntoFile for operations related to items
     CRUDOntoFile crudOntoFile = new CRUDOntoFile();
     
     // Method to read all items
     public void readItemsFromFile(String filename) {
-        List<String> lines = crudOntoFile.readFromAFile(filename);
-
+        List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
+        
+        // Go through each line for item details to be printed
         for (String line : lines) {
+            // Separate line by commas
             String[] parts = line.split(",");
-            if (parts.length == 5) {
+            // Ensure there are that muc parts in the line & print output to terminal
+            if (parts.length == 5) { 
                 String output = String.format(
                         "Item ID: %s, Item Name: %s, Stock Level: %s, Price: %s, Supplier ID: %s",
                         parts[0], parts[1], parts[2], parts[3], parts[4]
@@ -44,12 +56,16 @@ public class Item {
     // Getters and Setters
     public String getItemID() { return itemID; }
     public void setItemID(String itemID) { this.itemID = itemID; }
+    
     public String getItemName() { return itemName; }
     public void setItemName(String itemName) { this.itemName = itemName; }
+    
     public int getStockLevel() { return stockLevel; }
     public void setStockLevel(int stockLevel) { this.stockLevel = stockLevel; }
+    
     public double getPrice() { return price; }
     public void setPrice(double price) { this.price = price; }
+    
     public String getSupplierID() { return supplierID; }
     public void setSupplierID(String supplierID) { this.supplierID = supplierID; }
 }

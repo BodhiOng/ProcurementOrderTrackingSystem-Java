@@ -37,10 +37,13 @@ public class PurchaseRequisition {
 
     // Method to read all PRs
     public void readPurchaseRequisitionFromFile(String filename) {
-        List<String> lines = crudOntoFile.readFromAFile(filename);
-
+        List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
+        
+        // Go through each line for PO details to be printed
         for (String line : lines) {
+            // Separate line by commas
             String[] parts = line.split(",");
+            // Ensure there are that muc parts in the line & print output to terminal
             if (parts.length == 6) {
                 String output = String.format(
                         "Purchase Requisition ID: %s, Item ID: %s, Quantity: %s, Date Required: %s, Supplier ID: %s, User ID: %s",
@@ -53,30 +56,34 @@ public class PurchaseRequisition {
     
     // Get item IDs that are linked to a PR to be stored in an array
     public String[] getPRIDsFromPRFile(String filename) {
-        List<String> lines = crudOntoFile.readFromAFile(filename);
-        List<String> requisitionIdS = new ArrayList<>();
-
+        List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
+        List<String> requisitionIds = new ArrayList<>(); // To hold the PR IDs
+        
+        // Go through each line
         for (String line : lines) {
+            // Separate line by commas
             String[] parts = line.split(",");
             if (parts.length == 6) {
-                // Add the Purchase Requisition ID (parts[1]) to the list
-                requisitionIdS.add(parts[0]);
+                // Add the PR ID to the list
+                requisitionIds.add(parts[0]);
             }
         }
 
         // Convert the List to an array and return it
-        return requisitionIdS.toArray(new String[0]);
+        return requisitionIds.toArray(new String[0]);
     }
     
     // Get item IDs that are linked to a PR to be stored in an array
     public String[] getItemIdsFromPRFile(String filename) {
-        List<String> lines = crudOntoFile.readFromAFile(filename);
-        List<String> itemIds = new ArrayList<>();
+        List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
+        List<String> itemIds = new ArrayList<>(); // To hold the item IDs
 
+        // Go through each line
         for (String line : lines) {
+            // Separate line by commas
             String[] parts = line.split(",");
             if (parts.length == 6) {
-                // Add the Purchase Requisition ID (parts[1]) to the list
+                // Add the item ID to list
                 itemIds.add(parts[1]);
             }
         }
