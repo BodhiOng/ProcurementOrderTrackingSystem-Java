@@ -9,6 +9,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CRUDOntoFile {
+    // Create data to a file (CREATE)
+    public void createToFile(String filename, String data) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename, true))) { // True means it opens file in append mode
+            bw.write(data);
+            bw.newLine();
+        } catch (IOException e) {
+            System.out.println("An error occurred while writing to the file: " + e.getMessage());
+        }
+    }
+        
     // Read data from a file (READ)
     public List<String> readFromAFile(String filename) {
         List<String> lines = new ArrayList<>();
@@ -25,7 +35,7 @@ public class CRUDOntoFile {
     
     // Write updated data to a file (UPDATE)
     public void writeUpdatedLinesToFile(String filename, List<String> updatedLines) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) { // This opens the file in overwrite mode
             for (String line : updatedLines) {
                 bw.write(line);
                 bw.newLine();

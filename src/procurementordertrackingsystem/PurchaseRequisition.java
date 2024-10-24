@@ -94,19 +94,23 @@ public class PurchaseRequisition {
     
     // Getters & setters
     public String getPrID() { return prID; }
-    public String getItemID() { return itemID; }
-    public int getQuantity() { return quantity; }
-    public String getDateRequired() { return dateRequired; }
-    public String getSupplierID() { return supplierID; }
-    public String getUserID() { return userID; }
-    
     public void setPrID(String prID) { this.prID = prID; }
+
+    public String getItemID() { return itemID; }
     public void setItemID(String itemID) { this.itemID = itemID; }
+
+    public int getQuantity() { return quantity; }
     public void setQuantity(int quantity) { 
         if (quantity >= 1) this.quantity = quantity; 
         else throw new IllegalArgumentException("Quantity must be >= 1"); 
     }
+
+    public String getDateRequired() { return dateRequired; }
     public void setDateRequired(String dateRequired) { this.dateRequired = dateRequired; }
+
+    public String getSupplierID() { return supplierID; }
     public void setSupplierID(String supplierID) { this.supplierID = supplierID; }
+
+    public String getUserID() { return userID; }
     public void setUserID(String userID) { this.userID = userID; }
 }

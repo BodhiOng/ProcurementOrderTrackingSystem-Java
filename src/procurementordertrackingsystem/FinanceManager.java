@@ -1,8 +1,10 @@
 package procurementordertrackingsystem;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import javax.sound.midi.SysexMessage;
 import procurementordertrackingsystem.utilities.CRUDOntoFile;
 import procurementordertrackingsystem.utilities.DataTXTDirectories;
 import procurementordertrackingsystem.utilities.ReferentialIntegrity;
@@ -93,6 +95,53 @@ public class FinanceManager {
         }
     }
 
+    // Class of PO features that are only exclusive to the FM
+    private class FMExclusivePOHandler extends PurchaseOrder {
+        // Default constructor
+        public FMExclusivePOHandler() {
+            super("", "", "", "", "", ""); 
+        }
+
+        // Parameterized constructor
+        public FMExclusivePOHandler(String poID, String prID, String purchaseManagerID, String status, String dateGenerated, String paidStatus) {
+            super(poID, prID, purchaseManagerID, status, dateGenerated, paidStatus);
+        }
+        
+        // Method to check if the provided poID exists in the existingPOIDs array
+        public boolean isPOIDExists(String poID, String[] existingPOIDs) {
+            for (String existingPOID : existingPOIDs) {
+                if (existingPOID.equals(poID)) {
+                    return true; // PO ID found
+                }
+            }
+            return false; // PO ID not found
+        }
+        
+        public void changePaymentStatusInPOFile(String filename, String poID){
+            List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
+            List<String> updatedLines = new ArrayList<>(); // To hold the updated lines for the PO file
+
+            // Go through each line for PO details to be modified
+            for (String line : lines) {
+                // Separate line by commas
+                String[] parts = line.split(","); 
+                if (parts.length == 6) {
+                    // Check if the current PO ID matches the provided poID
+                    if (parts[0].equals(poID)) {
+                        // Set the status based on the approve parameter
+                        parts[5] = "Paid";
+                    }
+                    // Create updated line
+                    String updatedLine = String.join(",", parts);
+                    updatedLines.add(updatedLine); // Store the updated line
+                }
+            }
+
+            // Write the updated lines back to the file
+            crudOntoFile.writeUpdatedLinesToFile(filename, updatedLines);
+        }
+    }
+    
     // Class of finance manager's functionalities
     public class FMFunctionalities {
         // FM 1st functionality: Verify Purchase Orders for Payment (View POs) – Approve / Reject
@@ -142,7 +191,7 @@ public class FinanceManager {
             PurchaseOrder po = new PurchaseOrder();
             PurchaseRequisition pr = new PurchaseRequisition();
             ReferentialIntegrity ri = new ReferentialIntegrity();
-            FMExclusivePRHandler feph = new FMExclusivePRHandler();
+            FMExclusivePRHandler feprh = new FMExclusivePRHandler();
             FMExclusiveItemHandler feih = new FMExclusiveItemHandler();
 
             // Get the txt file paths
@@ -156,10 +205,47 @@ public class FinanceManager {
             String[] filteredPRIDs = ri.match2Arrays(poRequisitionIds, prRequisitionIds);
 
             // Step 2: Get the item IDs linked to the set of PR IDs
-            String[] filtereditemIDs = feph.getItemIdsFromPRFile(purchaseRequisitionTXT, filteredPRIDs);
+            String[] filtereditemIDs = feprh.getItemIdsFromPRFile(purchaseRequisitionTXT, filteredPRIDs);
 
             // Step 3: Print all the filtered item IDs to the terminal
             feih.readItemsFromFile(itemTXT, filtereditemIDs);
+        }
+    
+        // FM 3rd functionality: Make Payment - Update the PO status
+        public void makePayment(){
+            Scanner scanner = new Scanner(System.in);
+            PurchaseOrder po = new PurchaseOrder();
+            FMExclusivePOHandler fepoh = new FMExclusivePOHandler();
+            Payment payment = new Payment();
+            
+            // Get the txt file path
+            String purchaseOrderTXT = directories.purchaseOrderTXTDirectory;
+            String paymentTXT = directories.paymentTXTDirectory;
+            
+            // Step 1: Read and display all purchase orders
+            System.out.println("----- Purchase Orders -----");
+            po.readPurchaseOrdersFromFile(purchaseOrderTXT);
+            
+            // Step 2: Prompt for the PO ID for payment creation
+            System.out.print("\nEnter the Purchase Order ID (PO ID) you wish to modify: ");
+            String poID = scanner.nextLine();
+            
+            // Step 3: Check whether the inputted PO ID exists or not in the PO file
+            String[] existingPOIDs = po.getPOIDsFromPOFile(purchaseOrderTXT);
+            boolean doesPOIDexist = fepoh.isPOIDExists(poID, existingPOIDs);
+            if (!doesPOIDexist) {
+                System.out.println("PO ID doesn't exist in the purchase order database.");
+                return; // Exit the method if the PO ID does not exist
+            }
+            
+            // Step 4: Prompt for the amount to pay (in Ringgits)
+            System.out.print("\nEnter the amount to pay (in RM): ");
+            double amount = scanner.nextDouble();
+            
+            // Step 5: Create payment data into the Payment file & update payment status in PO file
+            payment.createPaymentToFile(paymentTXT, poID, amount);
+            fepoh.changePaymentStatusInPOFile(purchaseOrderTXT, poID);
+            System.out.println("Payment of RM" + Double.toString(amount) + " for " + poID + " had been successfully made");
         }
     }
 }

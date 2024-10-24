@@ -10,6 +10,6 @@ public class ProcurementOrderTrackingSystem {
         FinanceManager.FMFunctionalities FMFunctionality = financeManager.new FMFunctionalities();
 
         // Call the method to verify purchase orders for payment
-        FMFunctionality.verifyPurchaseOrdersForPayment();
+        FMFunctionality.makePayment();
     }
 }
