@@ -2,11 +2,8 @@ package procurementordertrackingsystem;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 import procurementordertrackingsystem.utilities.CRUDOntoFile;
 import procurementordertrackingsystem.utilities.DataTXTDirectories;
 import procurementordertrackingsystem.utilities.ReferentialIntegrity;
@@ -19,16 +16,6 @@ public class FinanceManager {
 
     // Class of PR features that are only exclusive to the FM
     private class FMExclusivePRHandler extends PurchaseRequisition {
-        // Default constructor
-        public FMExclusivePRHandler() {
-            super("", "", 0, "", "", "");
-        }
-
-        // Paramaterized contructor
-        public FMExclusivePRHandler(String prID, String itemID, int quantity, String dateRequired, String supplierID, String userID) {
-            super(prID, itemID, quantity, dateRequired, supplierID, userID);
-        }
-
         // Method overloading to get item IDs that match the PR IDs in the matched array
         private String[] getItemIdsFromPRFile(String filename, String[] matchedPRs) {
             List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
@@ -85,16 +72,6 @@ public class FinanceManager {
 
     // Class of Item features that are only exclusive to the FM
     private class FMExclusiveItemHandler extends Item {
-        // Default constructor
-        public FMExclusiveItemHandler() {
-            super("", "", 0, 0.0, ""); 
-        }
-
-        // Parameterized constructor
-        public FMExclusiveItemHandler(String itemID, String itemName, int stockLevel, double price, String supplierID) {
-            super(itemID, itemName, stockLevel, price, supplierID);
-        }
-
         // Method overloading to read and print only the items with IDs in the matched array
         private void readItemsFromFile(String filename, String[] matchedItemIds) {
             List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
@@ -123,17 +100,7 @@ public class FinanceManager {
     }
 
     // Class of PO features that are only exclusive to the FM
-    private class FMExclusivePOHandler extends PurchaseOrder {
-        // Default constructor
-        public FMExclusivePOHandler() {
-            super("", "", "", "", "", ""); 
-        }
-
-        // Parameterized constructor
-        public FMExclusivePOHandler(String poID, String prID, String purchaseManagerID, String status, String dateGenerated, String paidStatus) {
-            super(poID, prID, purchaseManagerID, status, dateGenerated, paidStatus);
-        }
-                
+    private class FMExclusivePOHandler extends PurchaseOrder {     
         // Method to approve or reject purchase order status
         public void updatePurchaseOrderStatusFromFile(String filename, boolean approve, String poID) {
             List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
@@ -233,16 +200,6 @@ public class FinanceManager {
     
     // Class of Payment features that are only exclusive to the FM
     private class FMExclusivePaymentHandler extends Payment {
-        // Default constructor
-        public FMExclusivePaymentHandler() {
-            super("", "", 0.0, "", LocalDate.now()); 
-        }
-
-        // Parameterized constructor
-        public FMExclusivePaymentHandler(String paymentID, String poID, double amount, String paymentStatus, LocalDate paymentDate) {
-            super(paymentID, poID, amount, paymentStatus, paymentDate);
-        }
-        
         // Get PO IDs that are linked to PR IDs
         public String[] getPaymentIDsUsingPOID(String filename, String[] providedPOIDs) {
             List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
@@ -299,16 +256,6 @@ public class FinanceManager {
     }
     
     private class FMExclusiveSupplierHandler extends Supplier {
-        // Default constructor
-        public FMExclusiveSupplierHandler() {
-            super("", "", "", "", "");
-        }
-
-        // Parameterized constructor
-        public FMExclusiveSupplierHandler(String supplierID, String supplierName, String itemID, String phoneNumber, String address) {
-            super(supplierID, supplierName, itemID, phoneNumber, address);
-        }
-        
         public String getSupplierNameUsingSupplierID(String filename, String providedSupplierID) {
             List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
 
