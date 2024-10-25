@@ -1,5 +1,6 @@
 package procurementordertrackingsystem;
 
+import java.io.IOException;
 import procurementordertrackingsystem.utilities.CRUDOntoFile;
 import java.util.List;
 
@@ -33,20 +34,24 @@ public class Item {
     
     // Method to read all items
     public void readItemsFromFile(String filename) {
-        List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
-        
-        // Go through each line for item details to be printed
-        for (String line : lines) {
-            // Separate line by commas
-            String[] parts = line.split(",");
-            // Ensure there are that muc parts in the line & print output to terminal
-            if (parts.length == 5) { 
-                String output = String.format(
-                        "Item ID: %s, Item Name: %s, Stock Level: %s, Price: %s, Supplier ID: %s",
-                        parts[0], parts[1], parts[2], parts[3], parts[4]
-                );
-                System.out.println(output);
+        try {
+            List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
+
+            // Go through each line for item details to be printed
+            for (String line : lines) {
+                // Separate line by commas
+                String[] parts = line.split(",");
+                // Ensure there are that muc parts in the line & print output to terminal
+                if (parts.length == 5) {
+                    String output = String.format(
+                            "Item ID: %s, Item Name: %s, Stock Level: %s, Price: %s, Supplier ID: %s",
+                            parts[0], parts[1], parts[2], parts[3], parts[4]
+                    );
+                    System.out.println(output);
+                }
             }
+        } catch (IOException e) {
+            System.out.println("Error reading items from file: " + e.getMessage());
         }
     }
 

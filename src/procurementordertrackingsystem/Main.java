@@ -9,6 +9,6 @@ public class Main {
         FinanceManager financeManager = new FinanceManager();
 
         // Call the method to verify purchase orders for payment
-        financeManager.verifyPurchaseOrdersForPayment();
+        financeManager.viewSupplierPaymentStatus();
     }
 }

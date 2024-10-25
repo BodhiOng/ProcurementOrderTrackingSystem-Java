@@ -1,5 +1,6 @@
 package procurementordertrackingsystem;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import procurementordertrackingsystem.utilities.CRUDOntoFile;
 import java.util.List;
@@ -36,7 +37,7 @@ public class PurchaseRequisition {
     CRUDOntoFile crudOntoFile = new CRUDOntoFile();
 
     // Method to read all PRs
-    public void readPurchaseRequisitionFromFile(String filename) {
+    public void readPurchaseRequisitionFromFile(String filename) throws IOException {
         List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
         
         // Go through each line for PO details to be printed
@@ -55,7 +56,7 @@ public class PurchaseRequisition {
     }
     
     // Get item IDs that are linked to a PR to be stored in an array
-    public String[] getPurchaseRequestIDsFromPurchaseRequestFile(String filename) {
+    public String[] getPurchaseRequestIDsFromPurchaseRequestFile(String filename) throws IOException {
         List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
         List<String> requisitionIds = new ArrayList<>(); // To hold the PR IDs
         

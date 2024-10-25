@@ -39,7 +39,7 @@ public class PurchaseOrder {
     CRUDOntoFile crudOntoFile = new CRUDOntoFile();
     
     // Method to read all POs
-    public void readPurchaseOrdersFromFile(String filename) {
+    public void readPurchaseOrdersFromFile(String filename) throws IOException {
         List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
         
         // Go through each line for PO details to be printed
@@ -59,7 +59,7 @@ public class PurchaseOrder {
   
     
     // Get PO IDs from PO file to be stored in an array
-    public String[] getPurchaseOrderIDsFromPurchaseOrderFile(String filename) {
+    public String[] getPurchaseOrderIDsFromPurchaseOrderFile(String filename) throws IOException {
         List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
         List<String> poIDs = new ArrayList<>(); // To hold the PO IDs
 
