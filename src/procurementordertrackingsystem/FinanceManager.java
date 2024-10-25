@@ -271,27 +271,27 @@ public class FinanceManager {
             return paymentIDs.toArray(new String[0]);
         }
         
+        // Method overloading that allows reading specific selected set of Payments
         public void readPaymentFromFile(String filename, String[] requestedPayments) {
-            List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
+            List<String> lines = crudOntoFile.readFromAFile(filename);
 
-            // Convert the requestedPayments array to a Set for efficient lookup
-            Set<String> requestedPaymentSet = new HashSet<>(List.of(requestedPayments));
-
-            // Go through each line for PO details to be printed
+            // Go through each line
             for (String line : lines) {
-                // Separate line by commas
+                // Separate by commas
                 String[] parts = line.split(",");
-
-                // Ensure there are that many parts in the line & print output to terminal if payment ID matches
                 if (parts.length == 5) {
-                    String paymentID = parts[0].trim();  // Assuming the payment ID is the first element
+                    // Store an attribute into string variable
+                    String paymentID = parts[0];
 
-                    if (requestedPaymentSet.contains(paymentID)) {
-                        String output = String.format(
-                                "Payment ID: %s, Purchase Order ID: %s, Amount: RM %s, Payment Status: %s, Payment date: %s",
-                                parts[0], parts[1], parts[2], parts[3], parts[4]
-                        );
-                        System.out.println(output);
+                    // Check if paymentID is in the requestedPayments array
+                    for (String requestedPayment : requestedPayments) {
+                        if (paymentID.equals(requestedPayment.trim())) {
+                            System.out.printf(
+                                    "Payment ID: %s, Purchase Order ID: %s, Amount: RM %s, Payment Status: %s, Payment date: %s%n",
+                                    parts[0], parts[1], parts[2], parts[3], parts[4]
+                            );
+                            break; // Exit the loop once a match is found
+                        }
                     }
                 }
             }
