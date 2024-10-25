@@ -2,7 +2,7 @@ package procurementordertrackingsystem;
 
 import java.util.Arrays;
 
-public class ProcurementOrderTrackingSystem {
+public class Main {
 
     public static void main(String[] args) {
         // Create an instance of FinanceManager
@@ -10,6 +10,6 @@ public class ProcurementOrderTrackingSystem {
         FinanceManager.FMFunctionalities FMFunctionality = financeManager.new FMFunctionalities();
 
         // Call the method to verify purchase orders for payment
-        FMFunctionality.makePayment();
+        FMFunctionality.viewSupplierPaymentStatus();
     }
 }

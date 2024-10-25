@@ -21,4 +21,14 @@ public class ReferentialIntegrity {
         // Convert the List to an array and return it
         return matchedElements.toArray(new String[0]);
     }
+    
+    // Method to check if the provided attribute exists in the array or not
+    public boolean checkAttributeInArray(String attributeToCheck, String[] arrayOfAttributes) {
+        for (String singularAttributes : arrayOfAttributes) {
+            if (singularAttributes.equals(attributeToCheck)) {
+                return true; // Attribute found in array
+            }
+        }
+        return false; // Attribute not found
+    }
 }

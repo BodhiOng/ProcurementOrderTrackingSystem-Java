@@ -1,6 +1,7 @@
 package procurementordertrackingsystem;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import procurementordertrackingsystem.utilities.CRUDOntoFile;
@@ -79,6 +80,26 @@ public class Payment {
             }
         }
     }
+    
+    // Get PO IDs from Payment file to be stored in an array
+    public String[] getPOIDsFromPaymentFile(String filename) {
+        List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
+        List<String> poIDs = new ArrayList<>(); // To hold the PO IDs
+
+        // Go through each line
+        for (String line : lines) {
+            // Separate line by commas
+            String[] parts = line.split(",");
+            if (parts.length == 5) {
+                // Add the PO ID to the list
+                poIDs.add(parts[1]);
+            }
+        }
+
+        // Convert the List to an array and return it
+        return poIDs.toArray(new String[0]);
+    }
+
 
     // Getters & setters
     public String getPaymentID() { return paymentID; }

@@ -2,9 +2,11 @@ package procurementordertrackingsystem;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
-import javax.sound.midi.SysexMessage;
+import java.util.Set;
 import procurementordertrackingsystem.utilities.CRUDOntoFile;
 import procurementordertrackingsystem.utilities.DataTXTDirectories;
 import procurementordertrackingsystem.utilities.ReferentialIntegrity;
@@ -53,6 +55,31 @@ public class FinanceManager {
 
             // Convert the List to an array and return it
             return itemIds.toArray(new String[0]);
+        }
+        
+        // Get PR IDs that are linked to a specific supplier ID
+        public String[] getPRIDsUsingSupplierID(String filename, String providedSupplierID) {
+            List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
+            List<String> prIDs = new ArrayList<>(); // To hold the PR IDs
+
+            // Go through each line
+            for (String line : lines) {
+                // Separate line by commas
+                String[] parts = line.split(",");
+                if (parts.length == 6) {
+                    // Store some attributes into string variable
+                    String prID = parts[0]; 
+                    String supplierId = parts[4]; 
+                    
+                    // If there's a match, add the corresponding PR ID
+                    if (supplierId.equals(providedSupplierID)) {
+                        prIDs.add(prID); 
+                    }
+                }
+            }
+
+            // Convert the List to an array and return it
+            return prIDs.toArray(new String[0]);
         }
     }
 
@@ -106,15 +133,49 @@ public class FinanceManager {
         public FMExclusivePOHandler(String poID, String prID, String purchaseManagerID, String status, String dateGenerated, String paidStatus) {
             super(poID, prID, purchaseManagerID, status, dateGenerated, paidStatus);
         }
-        
-        // Method to check if the provided poID exists in the existingPOIDs array
-        public boolean isPOIDExists(String poID, String[] existingPOIDs) {
-            for (String existingPOID : existingPOIDs) {
-                if (existingPOID.equals(poID)) {
-                    return true; // PO ID found
+                
+        // Method to approve or reject purchase order status
+        public void updatePurchaseOrderStatusFromFile(String filename, boolean approve, String poID) {
+            List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
+            List<String> updatedLines = new ArrayList<>(); // To hold the updated lines for the PO file
+
+            // Go through each line for PO details to be modified
+            for (String line : lines) {
+                // Separate line by commas
+                String[] parts = line.split(",");
+                if (parts.length == 6) {
+                    // Check if the current PO ID matches the provided poID
+                    if (parts[0].equals(poID)) {
+                        // Set the status based on the approve parameter
+                        parts[3] = approve ? "Approved" : "Rejected";
+                    }
+                    // Create updated line
+                    String updatedLine = String.join(",", parts);
+                    updatedLines.add(updatedLine); // Store the updated line
                 }
             }
-            return false; // PO ID not found
+
+            // Write the updated lines back to the file
+            crudOntoFile.writeUpdatedLinesToFile(filename, updatedLines);
+        }
+
+        // Get PR IDs that are linked to a PO to be stored in an array
+        public String[] getPRIDsFromPOFile(String filename) {
+            List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
+            List<String> requisitionIds = new ArrayList<>(); // To hold the PR IDs
+
+            // Go through each line
+            for (String line : lines) {
+                // Separate line by commas
+                String[] parts = line.split(",");
+                if (parts.length == 6) {
+                    // Add the PR ID to the list
+                    requisitionIds.add(parts[1]);
+                }
+            }
+
+            // Convert the List to an array and return it
+            return requisitionIds.toArray(new String[0]);
         }
         
         public void changePaymentStatusInPOFile(String filename, String poID){
@@ -140,14 +201,145 @@ public class FinanceManager {
             // Write the updated lines back to the file
             crudOntoFile.writeUpdatedLinesToFile(filename, updatedLines);
         }
+        
+        // Get PO IDs that are linked to PR IDs
+        public String[] getPOIDsUsingPRID(String filename, String[] providedPRIDs) {
+            List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
+            List<String> poIDs = new ArrayList<>(); // To hold the PR IDs
+
+            // Go through each line
+            for (String line : lines) {
+                // Separate line by commas
+                String[] parts = line.split(",");
+                if (parts.length == 6) {
+                    // Store some attributes into string variable
+                    String poID = parts[0]; 
+                    String prID = parts[1];
+                    
+                    // Check if the prID matches any of the providedPRIDs
+                    for (String providedPRID : providedPRIDs) {
+                        if (prID.equals(providedPRID)) {
+                            poIDs.add(poID); // If there's a match, add the corresponding PO ID
+                            break; // Stop checking further for this line if a match is found
+                        }
+                    }
+                }
+            }
+
+            // Convert the List to an array and return it
+            return poIDs.toArray(new String[0]);
+        }
+    }
+    
+    // Class of Payment features that are only exclusive to the FM
+    private class FMExclusivePaymentHandler extends Payment {
+        // Default constructor
+        public FMExclusivePaymentHandler() {
+            super("", "", 0.0, "", LocalDate.now()); 
+        }
+
+        // Parameterized constructor
+        public FMExclusivePaymentHandler(String paymentID, String poID, double amount, String paymentStatus, LocalDate paymentDate) {
+            super(paymentID, poID, amount, paymentStatus, paymentDate);
+        }
+        
+        // Get PO IDs that are linked to PR IDs
+        public String[] getPaymentIDsUsingPOID(String filename, String[] providedPOIDs) {
+            List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
+            List<String> paymentIDs = new ArrayList<>(); // To hold the PO IDs
+
+            // Go through each line
+            for (String line : lines) {
+                // Separate line by commas
+                String[] parts = line.split(",");
+                if (parts.length == 5) {
+                    // Store some attributes into string variable                    
+                    String paymentID = parts[0];
+                    String poID = parts[1];
+
+                    // Check if the prID matches any of the providedPRIDs
+                    for (String providedPOID : providedPOIDs) {
+                        if (poID.equals(providedPOID)) {
+                            paymentIDs.add(paymentID); // If there's a match, add the corresponding Payment ID
+                            break; // Stop checking further for this line if a match is found
+                        }
+                    }
+                }
+            }
+
+            // Convert the List to an array and return it
+            return paymentIDs.toArray(new String[0]);
+        }
+        
+        public void readPaymentFromFile(String filename, String[] requestedPayments) {
+            List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
+
+            // Convert the requestedPayments array to a Set for efficient lookup
+            Set<String> requestedPaymentSet = new HashSet<>(List.of(requestedPayments));
+
+            // Go through each line for PO details to be printed
+            for (String line : lines) {
+                // Separate line by commas
+                String[] parts = line.split(",");
+
+                // Ensure there are that many parts in the line & print output to terminal if payment ID matches
+                if (parts.length == 5) {
+                    String paymentID = parts[0].trim();  // Assuming the payment ID is the first element
+
+                    if (requestedPaymentSet.contains(paymentID)) {
+                        String output = String.format(
+                                "Payment ID: %s, Purchase Order ID: %s, Amount: RM %s, Payment Status: %s, Payment date: %s",
+                                parts[0], parts[1], parts[2], parts[3], parts[4]
+                        );
+                        System.out.println(output);
+                    }
+                }
+            }
+        }
+    }
+    
+    private class FMExclusiveSupplierHandler extends Supplier {
+        // Default constructor
+        public FMExclusiveSupplierHandler() {
+            super("", "", "", "", "");
+        }
+
+        // Parameterized constructor
+        public FMExclusiveSupplierHandler(String supplierID, String supplierName, String itemID, String phoneNumber, String address) {
+            super(supplierID, supplierName, itemID, phoneNumber, address);
+        }
+        
+        public String getSupplierNameUsingSupplierID(String filename, String providedSupplierID) {
+            List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
+
+            // Go through each line
+            for (String line : lines) {
+                // Separate line by commas
+                String[] parts = line.split(",");
+                if (parts.length == 5) {
+                    // Store some attributes into string variable                    
+                    String supplierID = parts[0];
+                    String supplierName = parts[1];
+                    
+                    if (supplierID.equals(providedSupplierID)) {
+                        return supplierName;
+                    }
+                }
+            }    
+            return null;
+        }
     }
     
     // Class of finance manager's functionalities
     public class FMFunctionalities {
+        // Instance of ReferentialIntegrity for usage in FM's functionalities
+        ReferentialIntegrity ri = new ReferentialIntegrity();
+        
         // FM 1st functionality: Verify Purchase Orders for Payment (View POs) – Approve / Reject
         public void verifyPurchaseOrdersForPayment() {
             Scanner scanner = new Scanner(System.in);
             PurchaseOrder po = new PurchaseOrder();
+            FMExclusivePOHandler fepoh = new FMExclusivePOHandler();
 
             // Get .txt file path
             String purchaseOrderTXT = directories.purchaseOrderTXTDirectory;
@@ -176,7 +368,7 @@ public class FinanceManager {
             }
 
             // Step 5: Update the status of the purchase order
-            po.updatePurchaseOrderStatusFromFile(purchaseOrderTXT, approve, poID);
+            fepoh.updatePurchaseOrderStatusFromFile(purchaseOrderTXT, approve, poID);
 
             // Step 6: Confirm that the update has been performed successfully
             String status = approve ? "approved" : "rejected";
@@ -190,9 +382,9 @@ public class FinanceManager {
             // Object instantiation neccessary for usage in this method
             PurchaseOrder po = new PurchaseOrder();
             PurchaseRequisition pr = new PurchaseRequisition();
-            ReferentialIntegrity ri = new ReferentialIntegrity();
             FMExclusivePRHandler feprh = new FMExclusivePRHandler();
             FMExclusiveItemHandler feih = new FMExclusiveItemHandler();
+            FMExclusivePOHandler fepoh = new FMExclusivePOHandler();
 
             // Get the txt file paths
             String purchaseOrderTXT = directories.purchaseOrderTXTDirectory;
@@ -200,7 +392,7 @@ public class FinanceManager {
             String itemTXT = directories.itemTXTDirectory;
 
             // Step 1: Map the PR IDs in purchase_order to the one in purchase_requisition
-            String[] poRequisitionIds = po.getPurchaseRequisitionIdsFromPOFile(purchaseOrderTXT);
+            String[] poRequisitionIds = fepoh.getPRIDsFromPOFile(purchaseOrderTXT);
             String[] prRequisitionIds = pr.getPRIDsFromPRFile(purchaseRequisitionTXT);
             String[] filteredPRIDs = ri.match2Arrays(poRequisitionIds, prRequisitionIds);
 
@@ -217,6 +409,7 @@ public class FinanceManager {
             PurchaseOrder po = new PurchaseOrder();
             FMExclusivePOHandler fepoh = new FMExclusivePOHandler();
             Payment payment = new Payment();
+            ReferentialIntegrity ri = new ReferentialIntegrity();
             
             // Get the txt file path
             String purchaseOrderTXT = directories.purchaseOrderTXTDirectory;
@@ -232,7 +425,7 @@ public class FinanceManager {
             
             // Step 3: Check whether the inputted PO ID exists or not in the PO file
             String[] existingPOIDs = po.getPOIDsFromPOFile(purchaseOrderTXT);
-            boolean doesPOIDexist = fepoh.isPOIDExists(poID, existingPOIDs);
+            boolean doesPOIDexist = ri.checkAttributeInArray(poID, existingPOIDs);
             if (!doesPOIDexist) {
                 System.out.println("PO ID doesn't exist in the purchase order database.");
                 return; // Exit the method if the PO ID does not exist
@@ -246,6 +439,53 @@ public class FinanceManager {
             payment.createPaymentToFile(paymentTXT, poID, amount);
             fepoh.changePaymentStatusInPOFile(purchaseOrderTXT, poID);
             System.out.println("Payment of RM" + Double.toString(amount) + " for " + poID + " had been successfully made");
+        }
+        
+        // FM 4th functionality: View Supplier Payment Status - Track and view the payment history and status of suppliers.
+        public void viewSupplierPaymentStatus() {
+            Scanner scanner = new Scanner(System.in);
+            Supplier supplier = new Supplier();
+            FMExclusivePRHandler feprh = new FMExclusivePRHandler();
+            FMExclusivePOHandler fepoh = new FMExclusivePOHandler();
+            FMExclusivePaymentHandler feph = new FMExclusivePaymentHandler();
+            FMExclusiveSupplierHandler fesh = new FMExclusiveSupplierHandler();
+            
+            // Get the txt file path
+            String supplierTXT = directories.supplierTXTDirectory;
+            String purchaseRequisitionTXT = directories.purchaseRequisitionTXTDirectory;
+            String purchaseOrderTXT = directories.purchaseOrderTXTDirectory;
+            String paymentTXT = directories.paymentTXTDirectory;
+                        
+            // Step 1: Read and display all suppliers
+            System.out.println("----- Suppliers list -----");
+            supplier.readSuppliersFromFile(supplierTXT);
+            
+            // Step 2: Prompt for the Supplier ID for payment status listings
+            System.out.print("\nEnter the Supplier ID whose payment status you want to check: ");
+            String supplierID = scanner.nextLine();
+            
+            // Step 3: Check whether supplier ID exists in PR file or not
+            String[] existingSupplierIDs = supplier.getsupplierIDsFromPOFile(supplierTXT);
+            boolean doesSupplierIDexist = ri.checkAttributeInArray(supplierID, existingSupplierIDs);
+            if (!doesSupplierIDexist) {
+                System.out.println("Supplier ID doesn't exist in the Supplier database.");
+                return; // Exit the method if Supplier ID does not exist
+            }
+            
+            // Step 4: Mapping attributes
+            // Mapping Supplier ID to get all PR IDs associated
+            String[] requestedPRIDs = feprh.getPRIDsUsingSupplierID(purchaseRequisitionTXT, supplierID);
+            // Mapping PR IDs to get all PO IDs associated
+            String[] requestedPOIDs = fepoh.getPOIDsUsingPRID(purchaseOrderTXT, requestedPRIDs);
+            // Mapping PO IDs to get all Payments associated
+            String[] requestedPayments = feph.getPaymentIDsUsingPOID(paymentTXT, requestedPOIDs);
+            
+            // Step 5: Get Supplier name
+            String supplierName = fesh.getSupplierNameUsingSupplierID(supplierTXT, supplierID);
+            
+            // Step 6: Display the supplier's payment history (including status)
+            System.out.println("\n" + supplierName + " payment history");
+            feph.readPaymentFromFile(paymentTXT, requestedPayments);
         }
     }
 }
