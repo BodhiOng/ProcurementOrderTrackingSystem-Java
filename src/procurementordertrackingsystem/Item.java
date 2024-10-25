@@ -27,9 +27,6 @@ public class Item {
         this.price = price;
         this.supplierID = supplierID;
     }
-
-    // Check the stock status of the item (instance method)
-    public String checkStockStatus() { return stockLevel > 0 ? "In Stock" : "Out of Stock"; }
     
     // Instance of CRUDOntoFile for operations related to items
     CRUDOntoFile crudOntoFile = new CRUDOntoFile();

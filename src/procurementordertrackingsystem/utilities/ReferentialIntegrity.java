@@ -5,7 +5,7 @@ import java.util.List;
 
 public class ReferentialIntegrity {
     // Method to filter 2 arrays to only return an array of matching elements
-    public static String[] match2Arrays(String[] Array1, String[] Array2) {
+    public String[] match2Arrays(String[] Array1, String[] Array2) {
         List<String> matchedElements = new ArrayList<>(); 
 
         // Iterate through the elements of 1st array and check if they exist in the 2nd array

@@ -59,7 +59,7 @@ public class PurchaseOrder {
   
     
     // Get PO IDs from PO file to be stored in an array
-    public String[] getPOIDsFromPOFile(String filename) {
+    public String[] getPurchaseOrderIDsFromPurchaseOrderFile(String filename) {
         List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
         List<String> poIDs = new ArrayList<>(); // To hold the PO IDs
 

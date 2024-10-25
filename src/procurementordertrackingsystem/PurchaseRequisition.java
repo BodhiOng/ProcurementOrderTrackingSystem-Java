@@ -55,7 +55,7 @@ public class PurchaseRequisition {
     }
     
     // Get item IDs that are linked to a PR to be stored in an array
-    public String[] getPRIDsFromPRFile(String filename) {
+    public String[] getPurchaseRequestIDsFromPurchaseRequestFile(String filename) {
         List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
         List<String> requisitionIds = new ArrayList<>(); // To hold the PR IDs
         
@@ -72,26 +72,7 @@ public class PurchaseRequisition {
         // Convert the List to an array and return it
         return requisitionIds.toArray(new String[0]);
     }
-    
-    // Get item IDs that are linked to a PR to be stored in an array
-    public String[] getItemIdsFromPRFile(String filename) {
-        List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
-        List<String> itemIds = new ArrayList<>(); // To hold the item IDs
-
-        // Go through each line
-        for (String line : lines) {
-            // Separate line by commas
-            String[] parts = line.split(",");
-            if (parts.length == 6) {
-                // Add the item ID to list
-                itemIds.add(parts[1]);
-            }
-        }
-
-        // Convert the List to an array and return it
-        return itemIds.toArray(new String[0]);
-    }
-    
+        
     // Getters & setters
     public String getPrID() { return prID; }
     public void setPrID(String prID) { this.prID = prID; }

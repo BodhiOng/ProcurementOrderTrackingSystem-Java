@@ -1,6 +1,5 @@
 package procurementordertrackingsystem;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -11,13 +10,12 @@ import procurementordertrackingsystem.utilities.ReferentialIntegrity;
 public class FinanceManager {
 
     // Instances to use for Finance Manager related operations
-    CRUDOntoFile crudOntoFile = new CRUDOntoFile();
     DataTXTDirectories directories = new DataTXTDirectories();
 
     // Class of PR features that are only exclusive to the FM
-    private class FMExclusivePRHandler extends PurchaseRequisition {
+    private class FMExclusivePurchaseRequisitionHandler extends PurchaseRequisition {
         // Method overloading to get item IDs that match the PR IDs in the matched array
-        private String[] getItemIdsFromPRFile(String filename, String[] matchedPRs) {
+        private String[] getItemIdsFromPurchaseRequistionFile(String filename, String[] matchedPRs) {
             List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
             List<String> itemIds = new ArrayList<>(); // To hold the matched item IDs
 
@@ -45,7 +43,7 @@ public class FinanceManager {
         }
         
         // Get PR IDs that are linked to a specific supplier ID
-        public String[] getPRIDsUsingSupplierID(String filename, String providedSupplierID) {
+        private String[] getPurchaseRequisitionIDsUsingSupplierID(String filename, String providedSupplierID) {
             List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
             List<String> prIDs = new ArrayList<>(); // To hold the PR IDs
 
@@ -100,9 +98,9 @@ public class FinanceManager {
     }
 
     // Class of PO features that are only exclusive to the FM
-    private class FMExclusivePOHandler extends PurchaseOrder {     
+    private class FMExclusivePurchaseOrderHandler extends PurchaseOrder {     
         // Method to approve or reject purchase order status
-        public void updatePurchaseOrderStatusFromFile(String filename, boolean approve, String poID) {
+        private void updatePurchaseOrderStatusFromFile(String filename, boolean approve, String poID) {
             List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
             List<String> updatedLines = new ArrayList<>(); // To hold the updated lines for the PO file
 
@@ -125,9 +123,9 @@ public class FinanceManager {
             // Write the updated lines back to the file
             crudOntoFile.writeUpdatedLinesToFile(filename, updatedLines);
         }
-
+        
         // Get PR IDs that are linked to a PO to be stored in an array
-        public String[] getPRIDsFromPOFile(String filename) {
+        private String[] getPurchaseRequisitionIDsFromPurchaseOrderFile(String filename) {
             List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
             List<String> requisitionIds = new ArrayList<>(); // To hold the PR IDs
 
@@ -145,7 +143,8 @@ public class FinanceManager {
             return requisitionIds.toArray(new String[0]);
         }
         
-        public void changePaymentStatusInPOFile(String filename, String poID){
+        // Change payment status to paid in the PO file
+        private void changePaymentStatusInPurchaseOrderFile(String filename, String poID){
             List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
             List<String> updatedLines = new ArrayList<>(); // To hold the updated lines for the PO file
 
@@ -170,7 +169,7 @@ public class FinanceManager {
         }
         
         // Get PO IDs that are linked to PR IDs
-        public String[] getPOIDsUsingPRID(String filename, String[] providedPRIDs) {
+        private String[] getPurchaseOrderIDsUsingPurchaseRequisitionID(String filename, String[] providedPRIDs) {
             List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
             List<String> poIDs = new ArrayList<>(); // To hold the PR IDs
 
@@ -201,7 +200,7 @@ public class FinanceManager {
     // Class of Payment features that are only exclusive to the FM
     private class FMExclusivePaymentHandler extends Payment {
         // Get PO IDs that are linked to PR IDs
-        public String[] getPaymentIDsUsingPOID(String filename, String[] providedPOIDs) {
+        private String[] getPaymentIDsUsingPurchaseOrderID(String filename, String[] providedPOIDs) {
             List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
             List<String> paymentIDs = new ArrayList<>(); // To hold the PO IDs
 
@@ -229,7 +228,7 @@ public class FinanceManager {
         }
         
         // Method overloading that allows reading specific selected set of Payments
-        public void readPaymentFromFile(String filename, String[] requestedPayments) {
+        private void readPaymentFromFile(String filename, String[] requestedPayments) {
             List<String> lines = crudOntoFile.readFromAFile(filename);
 
             // Go through each line
@@ -255,8 +254,9 @@ public class FinanceManager {
         }
     }
     
+    // Class of Supplier features that are only exclusive to the FM
     private class FMExclusiveSupplierHandler extends Supplier {
-        public String getSupplierNameUsingSupplierID(String filename, String providedSupplierID) {
+        private String getSupplierNameUsingSupplierID(String filename, String providedSupplierID) {
             List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
 
             // Go through each line
@@ -277,162 +277,159 @@ public class FinanceManager {
         }
     }
     
-    // Class of finance manager's functionalities
-    public class FMFunctionalities {
-        // Instance of ReferentialIntegrity for usage in FM's functionalities
+    // Instance of ReferentialIntegrity for usage in FM's functionalities
+    ReferentialIntegrity ri = new ReferentialIntegrity();
+
+    // FM 1st functionality: Verify Purchase Orders for Payment (View POs) – Approve / Reject
+    public void verifyPurchaseOrdersForPayment() {
+        Scanner scanner = new Scanner(System.in);
+        PurchaseOrder po = new PurchaseOrder();
+        FMExclusivePurchaseOrderHandler fepoh = new FMExclusivePurchaseOrderHandler();
+
+        // Get .txt file path
+        String purchaseOrderTXT = directories.purchaseOrderTXTDirectory;
+
+        // Step 1: Read and display all purchase orders
+        System.out.println("----- Purchase Orders -----");
+        po.readPurchaseOrdersFromFile(purchaseOrderTXT);
+
+        // Step 2: Prompt for the PO ID to modify
+        System.out.print("\nEnter the Purchase Order ID (PO ID) you wish to modify: ");
+        String poID = scanner.nextLine();
+
+        // Step 3: Ask whether to approve or reject the purchase order
+        System.out.print("Do you want to approve this Purchase Order? (yes/no): ");
+        String userInput = scanner.nextLine();
+
+        // Step 4: Determine the approval status based on user input
+        boolean approve;
+        if (userInput.equalsIgnoreCase("yes")) {
+            approve = true;
+        } else if (userInput.equalsIgnoreCase("no")) {
+            approve = false;
+        } else {
+            System.out.println("Invalid input. Please enter 'yes' or 'no'.");
+            return;
+        }
+
+        // Step 5: Update the status of the purchase order
+        fepoh.updatePurchaseOrderStatusFromFile(purchaseOrderTXT, approve, poID);
+
+        // Step 6: Confirm that the update has been performed successfully
+        String status = approve ? "approved" : "rejected";
+        System.out.println("\nPurchase Order " + poID + " has been " + status + " successfully.");
+    }
+
+    // FM 2nd functionality: Check Stock Status – updated by IM for the item which POs issued
+    public void checkStockStatus() {
+        Scanner scanner = new Scanner(System.in);
+
+        // Object instantiation neccessary for usage in this method
+        PurchaseOrder po = new PurchaseOrder();
+        PurchaseRequisition pr = new PurchaseRequisition();
+        FMExclusivePurchaseRequisitionHandler feprh = new FMExclusivePurchaseRequisitionHandler();
+        FMExclusiveItemHandler feih = new FMExclusiveItemHandler();
+        FMExclusivePurchaseOrderHandler fepoh = new FMExclusivePurchaseOrderHandler();
+
+        // Get the txt file paths
+        String purchaseOrderTXT = directories.purchaseOrderTXTDirectory;
+        String purchaseRequisitionTXT = directories.purchaseRequisitionTXTDirectory;
+        String itemTXT = directories.itemTXTDirectory;
+
+        // Step 1: Map the PR IDs in purchase_order to the one in purchase_requisition
+        String[] poRequisitionIds = fepoh.getPurchaseRequisitionIDsFromPurchaseOrderFile(purchaseOrderTXT);
+        String[] prRequisitionIds = pr.getPurchaseRequestIDsFromPurchaseRequestFile(purchaseRequisitionTXT);
+        String[] filteredPRIDs = ri.match2Arrays(poRequisitionIds, prRequisitionIds);
+
+        // Step 2: Get the item IDs linked to the set of PR IDs
+        String[] filtereditemIDs = feprh.getItemIdsFromPurchaseRequistionFile(purchaseRequisitionTXT, filteredPRIDs);
+
+        // Step 3: Print all the filtered item IDs to the terminal
+        feih.readItemsFromFile(itemTXT, filtereditemIDs);
+    }
+
+    // FM 3rd functionality: Make Payment - Update the PO status
+    public void makePayment() {
+        Scanner scanner = new Scanner(System.in);
+        PurchaseOrder po = new PurchaseOrder();
+        FMExclusivePurchaseOrderHandler fepoh = new FMExclusivePurchaseOrderHandler();
+        Payment payment = new Payment();
         ReferentialIntegrity ri = new ReferentialIntegrity();
-        
-        // FM 1st functionality: Verify Purchase Orders for Payment (View POs) – Approve / Reject
-        public void verifyPurchaseOrdersForPayment() {
-            Scanner scanner = new Scanner(System.in);
-            PurchaseOrder po = new PurchaseOrder();
-            FMExclusivePOHandler fepoh = new FMExclusivePOHandler();
 
-            // Get .txt file path
-            String purchaseOrderTXT = directories.purchaseOrderTXTDirectory;
+        // Get the txt file path
+        String purchaseOrderTXT = directories.purchaseOrderTXTDirectory;
+        String paymentTXT = directories.paymentTXTDirectory;
 
-            // Step 1: Read and display all purchase orders
-            System.out.println("----- Purchase Orders -----");
-            po.readPurchaseOrdersFromFile(purchaseOrderTXT);
+        // Step 1: Read and display all purchase orders
+        System.out.println("----- Purchase Orders -----");
+        po.readPurchaseOrdersFromFile(purchaseOrderTXT);
 
-            // Step 2: Prompt for the PO ID to modify
-            System.out.print("\nEnter the Purchase Order ID (PO ID) you wish to modify: ");
-            String poID = scanner.nextLine();
+        // Step 2: Prompt for the PO ID for payment creation
+        System.out.print("\nEnter the Purchase Order ID (PO ID) you wish to modify: ");
+        String poID = scanner.nextLine();
 
-            // Step 3: Ask whether to approve or reject the purchase order
-            System.out.print("Do you want to approve this Purchase Order? (yes/no): ");
-            String userInput = scanner.nextLine();
-
-            // Step 4: Determine the approval status based on user input
-            boolean approve;
-            if (userInput.equalsIgnoreCase("yes")) {
-                approve = true;
-            } else if (userInput.equalsIgnoreCase("no")) {
-                approve = false;
-            } else {
-                System.out.println("Invalid input. Please enter 'yes' or 'no'.");
-                return;
-            }
-
-            // Step 5: Update the status of the purchase order
-            fepoh.updatePurchaseOrderStatusFromFile(purchaseOrderTXT, approve, poID);
-
-            // Step 6: Confirm that the update has been performed successfully
-            String status = approve ? "approved" : "rejected";
-            System.out.println("\nPurchase Order " + poID + " has been " + status + " successfully.");
+        // Step 3: Check whether the inputted PO ID exists or not in the PO file
+        String[] existingPOIDs = po.getPurchaseOrderIDsFromPurchaseOrderFile(purchaseOrderTXT);
+        boolean doesPOIDexist = ri.checkAttributeInArray(poID, existingPOIDs);
+        if (!doesPOIDexist) {
+            System.out.println("PO ID doesn't exist in the purchase order database.");
+            return; // Exit the method if the PO ID does not exist
         }
 
-        // FM 2nd functionality: Check Stock Status – updated by IM for the item which POs issued
-        public void checkStockStatus() {
-            Scanner scanner = new Scanner(System.in);
+        // Step 4: Prompt for the amount to pay (in Ringgits)
+        System.out.print("\nEnter the amount to pay (in RM): ");
+        double amount = scanner.nextDouble();
 
-            // Object instantiation neccessary for usage in this method
-            PurchaseOrder po = new PurchaseOrder();
-            PurchaseRequisition pr = new PurchaseRequisition();
-            FMExclusivePRHandler feprh = new FMExclusivePRHandler();
-            FMExclusiveItemHandler feih = new FMExclusiveItemHandler();
-            FMExclusivePOHandler fepoh = new FMExclusivePOHandler();
+        // Step 5: Create payment data into the Payment file & update payment status in PO file
+        payment.createPaymentToFile(paymentTXT, poID, amount);
+        fepoh.changePaymentStatusInPurchaseOrderFile(purchaseOrderTXT, poID);
+        System.out.println("Payment of RM" + Double.toString(amount) + " for " + poID + " had been successfully made");
+    }
 
-            // Get the txt file paths
-            String purchaseOrderTXT = directories.purchaseOrderTXTDirectory;
-            String purchaseRequisitionTXT = directories.purchaseRequisitionTXTDirectory;
-            String itemTXT = directories.itemTXTDirectory;
+    // FM 4th functionality: View Supplier Payment Status - Track and view the payment history and status of suppliers.
+    public void viewSupplierPaymentStatus() {
+        Scanner scanner = new Scanner(System.in);
+        Supplier supplier = new Supplier();
+        FMExclusivePurchaseRequisitionHandler feprh = new FMExclusivePurchaseRequisitionHandler();
+        FMExclusivePurchaseOrderHandler fepoh = new FMExclusivePurchaseOrderHandler();
+        FMExclusivePaymentHandler feph = new FMExclusivePaymentHandler();
+        FMExclusiveSupplierHandler fesh = new FMExclusiveSupplierHandler();
 
-            // Step 1: Map the PR IDs in purchase_order to the one in purchase_requisition
-            String[] poRequisitionIds = fepoh.getPRIDsFromPOFile(purchaseOrderTXT);
-            String[] prRequisitionIds = pr.getPRIDsFromPRFile(purchaseRequisitionTXT);
-            String[] filteredPRIDs = ri.match2Arrays(poRequisitionIds, prRequisitionIds);
+        // Get the txt file path
+        String supplierTXT = directories.supplierTXTDirectory;
+        String purchaseRequisitionTXT = directories.purchaseRequisitionTXTDirectory;
+        String purchaseOrderTXT = directories.purchaseOrderTXTDirectory;
+        String paymentTXT = directories.paymentTXTDirectory;
 
-            // Step 2: Get the item IDs linked to the set of PR IDs
-            String[] filtereditemIDs = feprh.getItemIdsFromPRFile(purchaseRequisitionTXT, filteredPRIDs);
+        // Step 1: Read and display all suppliers
+        System.out.println("----- Suppliers list -----");
+        supplier.readSuppliersFromFile(supplierTXT);
 
-            // Step 3: Print all the filtered item IDs to the terminal
-            feih.readItemsFromFile(itemTXT, filtereditemIDs);
+        // Step 2: Prompt for the Supplier ID for payment status listings
+        System.out.print("\nEnter the Supplier ID whose payment status you want to check: ");
+        String supplierID = scanner.nextLine();
+
+        // Step 3: Check whether supplier ID exists in PR file or not
+        String[] existingSupplierIDs = supplier.getsupplierIDsFromSupplierFile(supplierTXT);
+        boolean doesSupplierIDexist = ri.checkAttributeInArray(supplierID, existingSupplierIDs);
+        if (!doesSupplierIDexist) {
+            System.out.println("Supplier ID doesn't exist in the Supplier database.");
+            return; // Exit the method if Supplier ID does not exist
         }
-    
-        // FM 3rd functionality: Make Payment - Update the PO status
-        public void makePayment(){
-            Scanner scanner = new Scanner(System.in);
-            PurchaseOrder po = new PurchaseOrder();
-            FMExclusivePOHandler fepoh = new FMExclusivePOHandler();
-            Payment payment = new Payment();
-            ReferentialIntegrity ri = new ReferentialIntegrity();
-            
-            // Get the txt file path
-            String purchaseOrderTXT = directories.purchaseOrderTXTDirectory;
-            String paymentTXT = directories.paymentTXTDirectory;
-            
-            // Step 1: Read and display all purchase orders
-            System.out.println("----- Purchase Orders -----");
-            po.readPurchaseOrdersFromFile(purchaseOrderTXT);
-            
-            // Step 2: Prompt for the PO ID for payment creation
-            System.out.print("\nEnter the Purchase Order ID (PO ID) you wish to modify: ");
-            String poID = scanner.nextLine();
-            
-            // Step 3: Check whether the inputted PO ID exists or not in the PO file
-            String[] existingPOIDs = po.getPOIDsFromPOFile(purchaseOrderTXT);
-            boolean doesPOIDexist = ri.checkAttributeInArray(poID, existingPOIDs);
-            if (!doesPOIDexist) {
-                System.out.println("PO ID doesn't exist in the purchase order database.");
-                return; // Exit the method if the PO ID does not exist
-            }
-            
-            // Step 4: Prompt for the amount to pay (in Ringgits)
-            System.out.print("\nEnter the amount to pay (in RM): ");
-            double amount = scanner.nextDouble();
-            
-            // Step 5: Create payment data into the Payment file & update payment status in PO file
-            payment.createPaymentToFile(paymentTXT, poID, amount);
-            fepoh.changePaymentStatusInPOFile(purchaseOrderTXT, poID);
-            System.out.println("Payment of RM" + Double.toString(amount) + " for " + poID + " had been successfully made");
-        }
-        
-        // FM 4th functionality: View Supplier Payment Status - Track and view the payment history and status of suppliers.
-        public void viewSupplierPaymentStatus() {
-            Scanner scanner = new Scanner(System.in);
-            Supplier supplier = new Supplier();
-            FMExclusivePRHandler feprh = new FMExclusivePRHandler();
-            FMExclusivePOHandler fepoh = new FMExclusivePOHandler();
-            FMExclusivePaymentHandler feph = new FMExclusivePaymentHandler();
-            FMExclusiveSupplierHandler fesh = new FMExclusiveSupplierHandler();
-            
-            // Get the txt file path
-            String supplierTXT = directories.supplierTXTDirectory;
-            String purchaseRequisitionTXT = directories.purchaseRequisitionTXTDirectory;
-            String purchaseOrderTXT = directories.purchaseOrderTXTDirectory;
-            String paymentTXT = directories.paymentTXTDirectory;
-                        
-            // Step 1: Read and display all suppliers
-            System.out.println("----- Suppliers list -----");
-            supplier.readSuppliersFromFile(supplierTXT);
-            
-            // Step 2: Prompt for the Supplier ID for payment status listings
-            System.out.print("\nEnter the Supplier ID whose payment status you want to check: ");
-            String supplierID = scanner.nextLine();
-            
-            // Step 3: Check whether supplier ID exists in PR file or not
-            String[] existingSupplierIDs = supplier.getsupplierIDsFromPOFile(supplierTXT);
-            boolean doesSupplierIDexist = ri.checkAttributeInArray(supplierID, existingSupplierIDs);
-            if (!doesSupplierIDexist) {
-                System.out.println("Supplier ID doesn't exist in the Supplier database.");
-                return; // Exit the method if Supplier ID does not exist
-            }
-            
-            // Step 4: Mapping attributes
-            // Mapping Supplier ID to get all PR IDs associated
-            String[] requestedPRIDs = feprh.getPRIDsUsingSupplierID(purchaseRequisitionTXT, supplierID);
-            // Mapping PR IDs to get all PO IDs associated
-            String[] requestedPOIDs = fepoh.getPOIDsUsingPRID(purchaseOrderTXT, requestedPRIDs);
-            // Mapping PO IDs to get all Payments associated
-            String[] requestedPayments = feph.getPaymentIDsUsingPOID(paymentTXT, requestedPOIDs);
-            
-            // Step 5: Get Supplier name
-            String supplierName = fesh.getSupplierNameUsingSupplierID(supplierTXT, supplierID);
-            
-            // Step 6: Display the supplier's payment history (including status)
-            System.out.println("\n" + supplierName + " payment history");
-            feph.readPaymentFromFile(paymentTXT, requestedPayments);
-        }
+
+        // Step 4: Mapping attributes
+        // Mapping Supplier ID to get all PR IDs associated
+        String[] requestedPRIDs = feprh.getPurchaseRequisitionIDsUsingSupplierID(purchaseRequisitionTXT, supplierID);
+        // Mapping PR IDs to get all PO IDs associated
+        String[] requestedPOIDs = fepoh.getPurchaseOrderIDsUsingPurchaseRequisitionID(purchaseOrderTXT, requestedPRIDs);
+        // Mapping PO IDs to get all Payments associated
+        String[] requestedPayments = feph.getPaymentIDsUsingPurchaseOrderID(paymentTXT, requestedPOIDs);
+
+        // Step 5: Get Supplier name
+        String supplierName = fesh.getSupplierNameUsingSupplierID(supplierTXT, supplierID);
+
+        // Step 6: Display the supplier's payment history (including status)
+        System.out.println("\n" + supplierName + " payment history");
+        feph.readPaymentFromFile(paymentTXT, requestedPayments);
     }
 }

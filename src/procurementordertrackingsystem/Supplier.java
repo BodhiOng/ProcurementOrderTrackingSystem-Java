@@ -52,7 +52,7 @@ public class Supplier {
     }
     
     // Get Supplier IDs from Supplier file to be stored in an array
-    public String[] getsupplierIDsFromPOFile(String filename) {
+    public String[] getsupplierIDsFromSupplierFile(String filename) {
         List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
         List<String> supplierIDs = new ArrayList<>(); // To hold the Supplier IDs
 

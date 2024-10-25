@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import procurementordertrackingsystem.utilities.CRUDOntoFile;
+import procurementordertrackingsystem.utilities.IDGenerator;
 
-public class Payment {
+public class Payment implements IDGenerator {
     private String paymentID; // Payment ID
     private String poID; // Purchase Order ID
     private double amount; // Amount of money paid
@@ -37,7 +38,7 @@ public class Payment {
     // Method to create a new payment
     public void createPaymentToFile(String filename, String poID, double amount) {
         // Generate random payment ID for usage
-        String paymentID = generateRandomPaymentID();
+        String paymentID = generateID();
         
         // Create a string representation of the payment
         String paymentData = String.format("%s,%s,%.2f,Paid,%s",
@@ -55,8 +56,9 @@ public class Payment {
         crudOntoFile.createToFile(filename, paymentData);
     }
     
+    @Override
     // Method to generate random paymentID
-    public static String generateRandomPaymentID() {
+    public String generateID() {
         Random random = new Random();
         int randomNumber = 1000 + random.nextInt(9000); // Generate a random number between 1000 and 9999
         return "P" + randomNumber; // Prefix 'P' to the random number
@@ -81,26 +83,6 @@ public class Payment {
         }
     }
     
-    // Get PO IDs from Payment file to be stored in an array
-    public String[] getPOIDsFromPaymentFile(String filename) {
-        List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
-        List<String> poIDs = new ArrayList<>(); // To hold the PO IDs
-
-        // Go through each line
-        for (String line : lines) {
-            // Separate line by commas
-            String[] parts = line.split(",");
-            if (parts.length == 5) {
-                // Add the PO ID to the list
-                poIDs.add(parts[1]);
-            }
-        }
-
-        // Convert the List to an array and return it
-        return poIDs.toArray(new String[0]);
-    }
-
-
     // Getters & setters
     public String getPaymentID() { return paymentID; }
     public void setPaymentID(String paymentID) { this.paymentID = paymentID; }
