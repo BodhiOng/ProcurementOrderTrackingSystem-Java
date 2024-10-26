@@ -2,6 +2,7 @@ package procurementordertrackingsystem;
 
 import procurementordertrackingsystem.utilities.CRUDOntoFile;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public class PurchaseOrder {
     CRUDOntoFile crudOntoFile = new CRUDOntoFile();
     
     // Method to read all POs
-    public void readPurchaseOrdersFromFile(String filename) throws IOException {
+    public void readPurchaseOrdersFromFile(File filename) throws IOException {
         List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
         
         // Go through each line for PO details to be printed
@@ -59,7 +60,7 @@ public class PurchaseOrder {
   
     
     // Get PO IDs from PO file to be stored in an array
-    public String[] getPurchaseOrderIDsFromPurchaseOrderFile(String filename) throws IOException {
+    public String[] getPurchaseOrderIDsFromPurchaseOrderFile(File filename) throws IOException {
         List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
         List<String> poIDs = new ArrayList<>(); // To hold the PO IDs
 

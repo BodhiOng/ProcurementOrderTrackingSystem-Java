@@ -1,24 +1,24 @@
 package procurementordertrackingsystem;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import procurementordertrackingsystem.utilities.CRUDOntoFile;
-import procurementordertrackingsystem.utilities.DataTXTDirectories;
+import procurementordertrackingsystem.utilities.DataFilePaths;
 import procurementordertrackingsystem.utilities.ReferentialIntegrity;
 
 public class FinanceManager {
 
     // Instances to use for Finance Manager related operations
-    DataTXTDirectories directories = new DataTXTDirectories();
+    DataFilePaths filePaths = new DataFilePaths("src/procurementordertrackingsystem/data");
     ReferentialIntegrity referentialIntegrity = new ReferentialIntegrity();
 
     // Class of PR features that are only exclusive to the FM
     private class FMExclusivePurchaseRequisitionHandler extends PurchaseRequisition {
 
         // Method overloading to get item IDs that match the PR IDs in the matched array
-        private String[] getItemIdsFromPurchaseRequistionFile(String filename, String[] matchedPRs) throws IOException {
+        private String[] getItemIdsFromPurchaseRequistionFile(File filename, String[] matchedPRs) throws IOException {
             List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
             List<String> itemIds = new ArrayList<>(); // To hold the matched item IDs
 
@@ -46,7 +46,7 @@ public class FinanceManager {
         }
 
         // Get PR IDs that are linked to a specific supplier ID
-        private String[] getPurchaseRequisitionIDsUsingSupplierID(String filename, String providedSupplierID) throws IOException {
+        private String[] getPurchaseRequisitionIDsUsingSupplierID(File filename, String providedSupplierID) throws IOException {
             List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
             List<String> prIDs = new ArrayList<>(); // To hold the PR IDs
 
@@ -75,7 +75,7 @@ public class FinanceManager {
     private class FMExclusiveItemHandler extends Item {
 
         // Method overloading to read and print only the items with IDs in the matched array
-        private void readItemsFromFile(String filename, String[] matchedItemIds) throws IOException {
+        private void readItemsFromFile(File filename, String[] matchedItemIds) throws IOException {
             List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
 
             for (String line : lines) {
@@ -105,7 +105,7 @@ public class FinanceManager {
     private class FMExclusivePurchaseOrderHandler extends PurchaseOrder {
 
         // Method to approve or reject purchase order status
-        private void updatePurchaseOrderStatusFromFile(String filename, boolean approve, String poID) throws IOException {
+        private void updatePurchaseOrderStatusFromFile(File filename, boolean approve, String poID) throws IOException {
             List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
             List<String> updatedLines = new ArrayList<>(); // To hold the updated lines for the PO file
 
@@ -130,7 +130,7 @@ public class FinanceManager {
         }
 
         // Get PR IDs that are linked to a PO to be stored in an array
-        private String[] getPurchaseRequisitionIDsFromPurchaseOrderFile(String filename) throws IOException {
+        private String[] getPurchaseRequisitionIDsFromPurchaseOrderFile(File filename) throws IOException {
             List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
             List<String> requisitionIds = new ArrayList<>(); // To hold the PR IDs
 
@@ -149,7 +149,7 @@ public class FinanceManager {
         }
 
         // Change payment status to paid in the PO file
-        private void changePaymentStatusInPurchaseOrderFile(String filename, String poID) throws IOException {
+        private void changePaymentStatusInPurchaseOrderFile(File filename, String poID) throws IOException {
             List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
             List<String> updatedLines = new ArrayList<>(); // To hold the updated lines for the PO file
 
@@ -174,7 +174,7 @@ public class FinanceManager {
         }
 
         // Get PO IDs that are linked to PR IDs
-        private String[] getPurchaseOrderIDsUsingPurchaseRequisitionID(String filename, String[] providedPRIDs) throws IOException {
+        private String[] getPurchaseOrderIDsUsingPurchaseRequisitionID(File filename, String[] providedPRIDs) throws IOException {
             List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
             List<String> poIDs = new ArrayList<>(); // To hold the PR IDs
 
@@ -206,7 +206,7 @@ public class FinanceManager {
     private class FMExclusivePaymentHandler extends Payment {
 
         // Get PO IDs that are linked to PR IDs
-        private String[] getPaymentIDsUsingPurchaseOrderID(String filename, String[] providedPOIDs) throws IOException {
+        private String[] getPaymentIDsUsingPurchaseOrderID(File filename, String[] providedPOIDs) throws IOException {
             List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
             List<String> paymentIDs = new ArrayList<>(); // To hold the PO IDs
 
@@ -234,7 +234,7 @@ public class FinanceManager {
         }
 
         // Method overloading that allows reading specific selected set of Payments
-        private void readPaymentFromFile(String filename, String[] requestedPayments) throws IOException {
+        private void readPaymentFromFile(File filename, String[] requestedPayments) throws IOException {
             List<String> lines = crudOntoFile.readFromAFile(filename);
 
             // Go through each line
@@ -262,8 +262,8 @@ public class FinanceManager {
 
     // Class of Supplier features that are only exclusive to the FM
     private class FMExclusiveSupplierHandler extends Supplier {
-
-        private String getSupplierNameUsingSupplierID(String filename, String providedSupplierID) throws IOException {
+        // Method to get supplier name using supplier ID
+        private String getSupplierNameUsingSupplierID(File filename, String providedSupplierID) throws IOException {
             List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
 
             // Go through each line
@@ -293,11 +293,11 @@ public class FinanceManager {
         
         try {
             // Get .txt file path
-            String purchaseOrderTXT = directories.purchaseOrderTXTDirectory;
+            File purchaseOrderFile = filePaths.getPurchaseOrderFile();
 
             // Step 1: Read and display all purchase orders
             System.out.println("----- Purchase Orders -----");
-            po.readPurchaseOrdersFromFile(purchaseOrderTXT);
+            po.readPurchaseOrdersFromFile(purchaseOrderFile);
 
             // Step 2: Prompt for the PO ID to modify
             System.out.print("\nEnter the Purchase Order ID (PO ID) you wish to modify: ");
@@ -319,7 +319,7 @@ public class FinanceManager {
             }
 
             // Step 5: Update the status of the purchase order
-            fepoh.updatePurchaseOrderStatusFromFile(purchaseOrderTXT, approve, poID);
+            fepoh.updatePurchaseOrderStatusFromFile(purchaseOrderFile, approve, poID);
 
             // Step 6: Confirm that the update has been performed successfully
             String status = approve ? "approved" : "rejected";
@@ -339,30 +339,30 @@ public class FinanceManager {
         FMExclusivePurchaseOrderHandler fepoh = new FMExclusivePurchaseOrderHandler();
 
         // Get the txt file paths
-        String purchaseOrderTXT = directories.purchaseOrderTXTDirectory;
-        String purchaseRequisitionTXT = directories.purchaseRequisitionTXTDirectory;
-        String itemTXT = directories.itemTXTDirectory;
+        File purchaseOrderFile = filePaths.getPurchaseOrderFile();
+        File purchaseRequisitionFile = filePaths.getPurchaseRequisitionFile();
+        File itemFile = filePaths.getItemFile();
         
         // Step 1: Map the PR IDs in purchase_order to the one in purchase_requisition
         try {
-            String[] poRequisitionIds = fepoh.getPurchaseRequisitionIDsFromPurchaseOrderFile(purchaseOrderTXT);
-            String[] prRequisitionIds = pr.getPurchaseRequestIDsFromPurchaseRequestFile(purchaseRequisitionTXT);
+            String[] poRequisitionIds = fepoh.getPurchaseRequisitionIDsFromPurchaseOrderFile(purchaseOrderFile);
+            String[] prRequisitionIds = pr.getPurchaseRequestIDsFromPurchaseRequestFile(purchaseRequisitionFile);
             String[] filteredPRIDs = referentialIntegrity.match2Arrays(poRequisitionIds, prRequisitionIds);
 
             // Step 2: Get the item IDs linked to the set of PR IDs
             try {
-                String[] filtereditemIDs = feprh.getItemIdsFromPurchaseRequistionFile(purchaseRequisitionTXT, filteredPRIDs);
+                String[] filtereditemIDs = feprh.getItemIdsFromPurchaseRequistionFile(purchaseRequisitionFile, filteredPRIDs);
 
                 // Step 3: Print all the filtered item IDs to the terminal
                 try {
-                    feih.readItemsFromFile(itemTXT, filtereditemIDs);
+                    feih.readItemsFromFile(itemFile, filtereditemIDs);
                 } catch (IOException e) {
                     System.err.println("Error reading item file: " + e.getMessage());
                 }
             } catch (IOException e) {
                 System.err.println("Error reading purchase requisition file: " + e.getMessage());
             }
-        } catch (IOException e) {
+        } catch (IOException | IllegalArgumentException e) {
             System.err.println("Error reading purchase order file: " + e.getMessage());
         }
     }
@@ -376,13 +376,13 @@ public class FinanceManager {
         Payment payment = new Payment();
 
         // Get the txt file paths
-        String purchaseOrderTXT = directories.purchaseOrderTXTDirectory;
-        String paymentTXT = directories.paymentTXTDirectory;
+        File purchaseOrderFile = filePaths.getPurchaseOrderFile();
+        File paymentFile = filePaths.getPaymentFile();
 
         // Step 1: Read and display all purchase orders
         try {
             System.out.println("----- Purchase Orders -----");
-            po.readPurchaseOrdersFromFile(purchaseOrderTXT);
+            po.readPurchaseOrdersFromFile(purchaseOrderFile);
         } catch (IOException e) {
             System.err.println("Error reading purchase order file: " + e.getMessage());
         }
@@ -393,13 +393,13 @@ public class FinanceManager {
 
         // Step 3: Check whether the inputted PO ID exists or not in the PO file
         try {
-            String[] existingPOIDs = po.getPurchaseOrderIDsFromPurchaseOrderFile(purchaseOrderTXT);
+            String[] existingPOIDs = po.getPurchaseOrderIDsFromPurchaseOrderFile(purchaseOrderFile);
             boolean doesPOIDexist = referentialIntegrity.checkAttributeInArray(poID, existingPOIDs);
             if (!doesPOIDexist) {
                 System.out.println("PO ID doesn't exist in the purchase order database.");
                 return; // Exit the method if the PO ID does not exist
             }
-        } catch (IOException e) {
+        } catch (IOException | IllegalArgumentException e) {
             System.err.println("Error reading purchase order file: " + e.getMessage());
             return; // Exit the method on error
         }
@@ -410,8 +410,8 @@ public class FinanceManager {
 
         // Step 5: Create payment data into the Payment file & update payment status in PO file
         try {
-            payment.createPaymentToFile(paymentTXT, poID, amount);
-            fepoh.changePaymentStatusInPurchaseOrderFile(purchaseOrderTXT, poID);
+            payment.createPaymentToFile(paymentFile, poID, amount);
+            fepoh.changePaymentStatusInPurchaseOrderFile(purchaseOrderFile, poID);
             System.out.println("Payment of RM" + Double.toString(amount) + " for " + poID + " had been successfully made");
         } catch (IOException e) {
             System.err.println("Error writing to payment or purchase order file: " + e.getMessage());
@@ -429,15 +429,15 @@ public class FinanceManager {
         FMExclusiveSupplierHandler fesh = new FMExclusiveSupplierHandler();
 
         // Get the txt file paths
-        String supplierTXT = directories.supplierTXTDirectory;
-        String purchaseRequisitionTXT = directories.purchaseRequisitionTXTDirectory;
-        String purchaseOrderTXT = directories.purchaseOrderTXTDirectory;
-        String paymentTXT = directories.paymentTXTDirectory;
+        File supplierFile = filePaths.getSupplierFile();
+        File purchaseRequisitionFile = filePaths.getPurchaseRequisitionFile();
+        File purchaseOrderFile = filePaths.getPurchaseOrderFile();
+        File paymentFile = filePaths.getPaymentFile();
 
         // Step 1: Read and display all suppliers
         try {
             System.out.println("----- Suppliers list -----");
-            supplier.readSuppliersFromFile(supplierTXT);
+            supplier.readSuppliersFromFile(supplierFile);
         } catch (IOException e) {
             System.err.println("Error reading supplier file: " + e.getMessage());
             return; // Exit the method on error
@@ -449,29 +449,29 @@ public class FinanceManager {
 
         // Step 3: Check whether supplier ID exists in PR file or not
         try {
-            String[] existingSupplierIDs = supplier.getsupplierIDsFromSupplierFile(supplierTXT);
+            String[] existingSupplierIDs = supplier.getsupplierIDsFromSupplierFile(supplierFile);
             boolean doesSupplierIDexist = referentialIntegrity.checkAttributeInArray(supplierID, existingSupplierIDs);
             if (!doesSupplierIDexist) {
                 System.out.println("Supplier ID doesn't exist in the Supplier database.");
                 return; // Exit the method if Supplier ID does not exist
             }
-        } catch (IOException e) {
+        } catch (IOException | IllegalArgumentException e) {
             System.err.println("Error reading supplier file: " + e.getMessage());
             return; // Exit the method on error
         }
 
         // Step 4: Mapping attributes
         try {
-            String[] requestedPRIDs = feprh.getPurchaseRequisitionIDsUsingSupplierID(purchaseRequisitionTXT, supplierID);
-            String[] requestedPOIDs = fepoh.getPurchaseOrderIDsUsingPurchaseRequisitionID(purchaseOrderTXT, requestedPRIDs);
-            String[] requestedPayments = feph.getPaymentIDsUsingPurchaseOrderID(paymentTXT, requestedPOIDs);
+            String[] requestedPRIDs = feprh.getPurchaseRequisitionIDsUsingSupplierID(purchaseRequisitionFile, supplierID);
+            String[] requestedPOIDs = fepoh.getPurchaseOrderIDsUsingPurchaseRequisitionID(purchaseOrderFile, requestedPRIDs);
+            String[] requestedPayments = feph.getPaymentIDsUsingPurchaseOrderID(paymentFile, requestedPOIDs);
 
             // Step 5: Get Supplier name
-            String supplierName = fesh.getSupplierNameUsingSupplierID(supplierTXT, supplierID);
+            String supplierName = fesh.getSupplierNameUsingSupplierID(supplierFile, supplierID);
 
             // Step 6: Display the supplier's payment history (including status)
             System.out.println("\n" + supplierName + " payment history");
-            feph.readPaymentFromFile(paymentTXT, requestedPayments);
+            feph.readPaymentFromFile(paymentFile, requestedPayments);
         } catch (IOException e) {
             System.err.println("Error reading supplier, purchase requisition, purchase order, or payment files: " + e.getMessage());
         }

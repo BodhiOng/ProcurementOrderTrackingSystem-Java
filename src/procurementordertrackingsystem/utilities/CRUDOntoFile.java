@@ -2,6 +2,7 @@ package procurementordertrackingsystem.utilities;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -10,7 +11,7 @@ import java.util.List;
 
 public class CRUDOntoFile {
     // Create data to a file (CREATE)
-    public void createToFile(String filename, String newLine) throws IOException {
+    public void createToFile(File filename, String newLine) throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename, true))) { // True means it opens file in append mode
             bw.write(newLine);
             bw.newLine();
@@ -18,7 +19,7 @@ public class CRUDOntoFile {
     }
 
     // Read data from a file (READ)
-    public List<String> readFromAFile(String filename) throws IOException {
+    public List<String> readFromAFile(File filename) throws IOException {
         List<String> lines = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String line;
@@ -30,7 +31,7 @@ public class CRUDOntoFile {
     }
 
     // Write updated data to a file (UPDATE)
-    public void writeUpdatedLinesToFile(String filename, List<String> updatedLines) throws IOException {
+    public void writeUpdatedLinesToFile(File filename, List<String> updatedLines) throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) { // This opens the file in overwrite mode
             for (String line : updatedLines) {
                 bw.write(line);

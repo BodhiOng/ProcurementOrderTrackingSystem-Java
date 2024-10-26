@@ -1,5 +1,6 @@
 package procurementordertrackingsystem;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class Supplier {
     CRUDOntoFile crudOntoFile = new CRUDOntoFile();
     
     // Method to read all POs
-    public void readSuppliersFromFile(String filename) throws IOException {
+    public void readSuppliersFromFile(File filename) throws IOException {
         List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
         
         // Go through each line for PO details to be printed
@@ -53,7 +54,7 @@ public class Supplier {
     }
     
     // Get Supplier IDs from Supplier file to be stored in an array
-    public String[] getsupplierIDsFromSupplierFile(String filename) throws IOException {
+    public String[] getsupplierIDsFromSupplierFile(File filename) throws IOException {
         List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
         List<String> supplierIDs = new ArrayList<>(); // To hold the Supplier IDs
 

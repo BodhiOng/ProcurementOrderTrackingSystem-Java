@@ -1,5 +1,6 @@
 package procurementordertrackingsystem;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class Payment implements IDGenerator {
     CRUDOntoFile crudOntoFile = new CRUDOntoFile();
     
     // Method to create a new payment
-    public void createPaymentToFile(String filename, String poID, double amount) throws IOException {
+    public void createPaymentToFile(File filename, String poID, double amount) throws IOException {
         // Generate random payment ID for usage
         String paymentID = generateID();
         
@@ -66,7 +67,7 @@ public class Payment implements IDGenerator {
     }
     
     // Method to read all payments
-    public void readPaymentFromFile(String filename) throws IOException{
+    public void readPaymentFromFile(File filename) throws IOException{
         List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
         
         // Go through each line for PO details to be printed

@@ -1,5 +1,6 @@
 package procurementordertrackingsystem;
 
+import java.io.File;
 import java.io.IOException;
 import procurementordertrackingsystem.utilities.CRUDOntoFile;
 import java.util.List;
@@ -33,7 +34,7 @@ public class Item {
     CRUDOntoFile crudOntoFile = new CRUDOntoFile();
     
     // Method to read all items
-    public void readItemsFromFile(String filename) {
+    public void readItemsFromFile(File filename) {
         try {
             List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
 
