@@ -1,4 +1,4 @@
-package procurementordertrackingsystem;
+package procurementordertrackingsystem.entities;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +31,7 @@ public class Item {
     }
     
     // Instance of CRUDOntoFile for operations related to items
-    CRUDOntoFile crudOntoFile = new CRUDOntoFile();
+    public CRUDOntoFile crudOntoFile = new CRUDOntoFile();
     
     // Method to read all items
     public void readItemsFromFile(File filename) {

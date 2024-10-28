@@ -1,4 +1,4 @@
-package procurementordertrackingsystem;
+package procurementordertrackingsystem.entities;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class Supplier {
     }
     
     // Instance of CRUDOntoFile for purchase order related operations
-    CRUDOntoFile crudOntoFile = new CRUDOntoFile();
+    public CRUDOntoFile crudOntoFile = new CRUDOntoFile();
     
     // Method to read all POs
     public void readSuppliersFromFile(File filename) throws IOException {

@@ -1,5 +1,10 @@
-package procurementordertrackingsystem;
+package procurementordertrackingsystem.roles;
 
+import procurementordertrackingsystem.entities.Supplier;
+import procurementordertrackingsystem.entities.Payment;
+import procurementordertrackingsystem.entities.Item;
+import procurementordertrackingsystem.entities.PurchaseOrder;
+import procurementordertrackingsystem.entities.PurchaseRequisition;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;

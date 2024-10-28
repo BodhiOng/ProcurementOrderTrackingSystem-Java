@@ -1,4 +1,4 @@
-package procurementordertrackingsystem;
+package procurementordertrackingsystem.entities;
 
 import procurementordertrackingsystem.utilities.CRUDOntoFile;
 import java.io.BufferedReader;
@@ -37,7 +37,7 @@ public class PurchaseOrder {
     }
         
     // Instance of CRUDOntoFile for purchase order related operations
-    CRUDOntoFile crudOntoFile = new CRUDOntoFile();
+    public CRUDOntoFile crudOntoFile = new CRUDOntoFile();
     
     // Method to read all POs
     public void readPurchaseOrdersFromFile(File filename) throws IOException {

@@ -1,4 +1,4 @@
-package procurementordertrackingsystem;
+package procurementordertrackingsystem.entities;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class Payment implements IDGenerator {
     }
     
     // Instance of CRUDOntoFile for purchase order related operations
-    CRUDOntoFile crudOntoFile = new CRUDOntoFile();
+    public CRUDOntoFile crudOntoFile = new CRUDOntoFile();
     
     // Method to create a new payment
     public void createPaymentToFile(File filename, String poID, double amount) throws IOException {

@@ -1,9 +1,8 @@
 package procurementordertrackingsystem;
 
-import java.util.Arrays;
+import procurementordertrackingsystem.roles.FinanceManager;
 
 public class Main {
-
     public static void main(String[] args) {
         // Create an instance of FinanceManager
         FinanceManager financeManager = new FinanceManager();

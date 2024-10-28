@@ -1,4 +1,4 @@
-package procurementordertrackingsystem;
+package procurementordertrackingsystem.entities;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class PurchaseRequisition {
     }
     
     // CRUDOntoFile object instantiation
-    CRUDOntoFile crudOntoFile = new CRUDOntoFile();
+    public CRUDOntoFile crudOntoFile = new CRUDOntoFile();
 
     // Method to read all PRs
     public void readPurchaseRequisitionFromFile(File filename) throws IOException {
