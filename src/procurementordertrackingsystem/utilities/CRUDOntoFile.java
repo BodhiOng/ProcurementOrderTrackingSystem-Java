@@ -29,7 +29,17 @@ public class CRUDOntoFile {
         }
         return lines;
     }
-
+    
+        // Method to write a new line to a specified file
+    public void writeToAFile(File file, String line) throws IOException {
+        try (FileWriter fw = new FileWriter(file, true); BufferedWriter bw = new BufferedWriter(fw)) {
+            bw.write(line);
+            bw.newLine();
+        }
+    }
+    
+    
+    
     // Write updated data to a file (UPDATE)
     public void writeUpdatedLinesToFile(File filename, List<String> updatedLines) throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) { // This opens the file in overwrite mode
