@@ -62,7 +62,16 @@ public class SalesManager {
                 }
             }
             
+            //Append all the items object into a string list
+            List<String> updatedItems = null;
+            for (Item item : itemlist){
+                updatedItems.add(item.toString());
+            }
             
+            //Write all the updated values into the text file
+            if (updatedItems != null) {
+                crudOntoFile.writeUpdatedLinesToFile(dfp.getItemFile(), updatedItems);
+            }
         }
     }
 }
