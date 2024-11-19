@@ -55,6 +55,12 @@ public class Item {
             System.out.println("Error reading items from file: " + e.getMessage());
         }
     }
+    
+    //Override toString method to return all attributes of the class
+    @Override
+    public String toString(){
+        return String.format("%s,%s,%s,%s,%s", getItemID(), getItemName(), getStockLevel(), getPrice(), getSupplierID());
+    }
 
     // Getters and Setters
     public String getItemID() { return itemID; }
