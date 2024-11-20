@@ -4,6 +4,7 @@
  */
 package procurementordertrackingsystem.entities;
 
+import com.sun.source.tree.BreakTree;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -22,8 +23,8 @@ public class SalesEntry implements IDGenerator {
     private int quantity;
     private Date salesdate;
     
-    CRUDOntoFile cof = new CRUDOntoFile();
-    DataFilePaths dfp = new DataFilePaths("src/procurementordertrackingsystem/data");
+    public CRUDOntoFile cof = new CRUDOntoFile();
+    public DataFilePaths dfp = new DataFilePaths("src/procurementordertrackingsystem/data");
     
     @Override
     public String generateID() {
