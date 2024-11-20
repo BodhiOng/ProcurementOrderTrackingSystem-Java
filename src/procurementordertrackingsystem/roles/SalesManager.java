@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import procurementordertrackingsystem.entities.Item;
+import procurementordertrackingsystem.entities.SalesEntry;
 import procurementordertrackingsystem.utilities.DataFilePaths;
 
 /**
@@ -18,7 +19,7 @@ import procurementordertrackingsystem.utilities.DataFilePaths;
 public class SalesManager {
     DataFilePaths dfp = new DataFilePaths("src/procurementordertrackingsystem/data");
     
-    //Create a class for Item that is used exclusively by SM
+    //Create a class for Item functions that is used exclusively by SM
     private class SMitemfunctions extends Item {
         
         //Create a method to find an item record with a specific ID
@@ -72,6 +73,16 @@ public class SalesManager {
             if (updatedItems != null) {
                 crudOntoFile.writeUpdatedLinesToFile(dfp.getItemFile(), updatedItems);
             }
+        }
+    }
+    
+    //Create a class for SalesEntry functions that is used exclusively by SM
+    private class SMsalesfunctions extends SalesEntry {
+        //Method to add new sales entry into file
+        private void EnterSales(String item, int quantity) throws IOException {
+            String id = generateID();
+            String newline = String.format("%s,%s,%s,%s", id, item, quantity, java.time.LocalDate.now());
+            cof.writeToAFile(dfp.getSalesEntryFile(), newline);
         }
     }
 }
