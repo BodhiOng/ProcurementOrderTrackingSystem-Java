@@ -27,6 +27,7 @@ public class SalesEntry implements IDGenerator {
     public DataFilePaths dfp = new DataFilePaths("src/procurementordertrackingsystem/data");
     
     @Override
+    //Override the generateID method from IDGenerator to generate ID based on number of records
     public String generateID() {
         List<String> lines = null;
         try {
@@ -35,6 +36,19 @@ public class SalesEntry implements IDGenerator {
             System.err.println("Error reading sales entry file");
         }
         return String.format("%04d", lines.size());
+    }
+    
+    public String[] readSalesbyid(String id) throws IOException{
+        List<String> rawdata = cof.readFromAFile(dfp.getSalesEntryFile());
+        String[] line = null;
+        String[] SalesLine = new String[4];
+        for (String lines : rawdata){
+            line = lines.split(",");
+            if (line[0].equals(id)){
+                SalesLine = line;
+            }
+        }
+        return line;
     }
     
     public String getSalesid() {
