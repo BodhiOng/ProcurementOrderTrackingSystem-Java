@@ -2,7 +2,7 @@ package procurementordertrackingsystem;
 
 
 import procurementordertrackingsystem.entities.LoginPage;
-
+import procurementordertrackingsystem.roles.FinanceManager;
 
 public class Main {
     public static void main(String[] args) {
