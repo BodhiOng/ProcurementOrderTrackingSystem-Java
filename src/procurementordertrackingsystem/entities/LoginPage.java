@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
+import procurementordertrackingsystem.roles.Administrators;
 import procurementordertrackingsystem.roles.InventoryManager;
 import procurementordertrackingsystem.roles.FinanceManager;
 import procurementordertrackingsystem.utilities.CRUDOntoFile;
@@ -15,9 +16,11 @@ public class LoginPage {
         CRUDOntoFile crud = new CRUDOntoFile(); // Directly initializing CRUDOntoFile
         DataFilePaths dataFilePaths = new DataFilePaths("src/procurementordertrackingsystem/data"); // Directly initializing DataFilePaths
         File userFile = dataFilePaths.getUserFile(); // Get the user file path
+        int attemptCount = 0;
+        final int maxAttempts = 3;
         
         Scanner scanner = new Scanner(System.in);
-
+        while(attemptCount<maxAttempts){
         // Prompt the user for username and password
         System.out.print("Enter username: ");
         String username = scanner.nextLine();
@@ -26,21 +29,29 @@ public class LoginPage {
         String password = scanner.nextLine();
 
         // Attempt to authenticate the user
-        User loggedInUser = authenticateUser(username, password, crud, userFile);
+        user loggedInUser = authenticateUser(username, password, crud, userFile);
 
         if (loggedInUser != null) {
             System.out.println("Login successful!");
             System.out.println("Welcome, " + loggedInUser.getName() + " (" + loggedInUser.getRole() + ")");
             handleUserRole(loggedInUser);
+            return;
         } else {
-            System.out.println("Login failed. Please check your username and password.");
+            attemptCount++;
+            if (attemptCount < maxAttempts) {
+            System.out.println("Login failed. Please check your username and password. Attempts left: " 
+                               + (maxAttempts - attemptCount));
+           }else {
+            System.out.println("Login failed. Maximum attempts reached. Exiting the system.");
         }
 
+        
+            }
+        }
         scanner.close();
     }
-
     // Method to authenticate the user by comparing username and password with the file
-    private User authenticateUser(String username, String password, CRUDOntoFile crud, File userFile) {
+    private user authenticateUser(String username, String password, CRUDOntoFile crud, File userFile) {
         try {
             // Read all user data from the file
             List<String> lines = crud.readFromAFile(userFile);
@@ -55,7 +66,7 @@ public class LoginPage {
                     // Check if credentials match
                     if (storedUsername.equals(username) && storedPassword.equals(password)) {
                         // Create and return a User object if credentials match
-                        User user = new User();
+                        user user = new user();
                         user.SetUserID(userDetails[0]);
                         user.setName(userDetails[1]);
                         user.SetRole(userDetails[2]);
@@ -74,14 +85,15 @@ public class LoginPage {
             return null;
         }
     }
-    private void handleUserRole(User loggedInUser) {
+    private void handleUserRole(user loggedInUser) {
         String role = loggedInUser.getRole();
         
         // Check the user's role and perform corresponding actions
         switch (role) {
-            case "admin":
+            case "Administrators":
                 System.out.println("You have administrative access.");
-                // Add admin-related tasks here
+                Administrators admin = new Administrators ();
+                admin.displayMenu();
                 break;
             case "Finance Manager":
                 System.out.println("You have finance access.");
