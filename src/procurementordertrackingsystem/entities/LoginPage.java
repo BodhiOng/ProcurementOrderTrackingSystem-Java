@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 import procurementordertrackingsystem.roles.InventoryManager;
+import procurementordertrackingsystem.roles.FinanceManager;
 import procurementordertrackingsystem.utilities.CRUDOntoFile;
 import procurementordertrackingsystem.utilities.DataFilePaths;
 
@@ -84,7 +85,8 @@ public class LoginPage {
                 break;
             case "Finance Manager":
                 System.out.println("You have finance access.");
-                // Add finance-related tasks here
+                FinanceManager fm = new FinanceManager();
+                fm.displayMenu();
                 break;
             case "Inventory Manager":
                 System.out.println("You have inventory management access.");

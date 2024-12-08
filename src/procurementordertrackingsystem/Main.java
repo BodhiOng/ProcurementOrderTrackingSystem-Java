@@ -12,11 +12,5 @@ public class Main {
         
         // Call the login method to perform login
         loginPage.login();
-
-//        // Create an instance of FinanceManager
-//         FinanceManager financeManager = new FinanceManager();
-//
-//        // Call the method to verify purchase orders for payment
-//        financeManager.viewSupplierPaymentStatus();
     }
 }

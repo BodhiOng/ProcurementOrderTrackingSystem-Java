@@ -1,5 +1,4 @@
 package procurementordertrackingsystem.roles;
-
 import procurementordertrackingsystem.entities.Supplier;
 import procurementordertrackingsystem.entities.Payment;
 import procurementordertrackingsystem.entities.Item;
@@ -18,6 +17,52 @@ public class FinanceManager {
     // Instances to use for Finance Manager related operations
     DataFilePaths filePaths = new DataFilePaths("src/procurementordertrackingsystem/data");
     ReferentialIntegrity referentialIntegrity = new ReferentialIntegrity();
+
+    public void displayMenu() {
+        Scanner scanner = new Scanner(System.in);
+
+        // Menu display
+        String menu = """
+        1. Verify Purchase Orders for Payment
+        2. Check Stock Status
+        3. Make Payment
+        4. View Supplier Payment Status
+        5. Exit
+    """;
+
+        while (true) {
+            System.out.println(menu);
+            System.out.print("Please select an option (1-5): ");
+
+            int choice;
+            try {
+                choice = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number between 1 and 5.");
+                continue;
+            }
+
+            switch (choice) {
+                case 1:
+                    verifyPurchaseOrdersForPayment();
+                    break;
+                case 2:
+                    checkStockStatus();
+                    break;
+                case 3:
+                    makePayment();
+                    break;
+                case 4:
+                    viewSupplierPaymentStatus();
+                    break;
+                case 5:
+                    System.out.println("Exiting the system.");
+                    return; // Exit the method
+                default:
+                    System.out.println("Invalid option. Please select between 1 and 5.");
+            }
+        }
+    }
 
     // Class of PR features that are only exclusive to the FM
     private class FMExclusivePurchaseRequisitionHandler extends PurchaseRequisition {
@@ -267,6 +312,7 @@ public class FinanceManager {
 
     // Class of Supplier features that are only exclusive to the FM
     private class FMExclusiveSupplierHandler extends Supplier {
+
         // Method to get supplier name using supplier ID
         private String getSupplierNameUsingSupplierID(File filename, String providedSupplierID) throws IOException {
             List<String> lines = crudOntoFile.readFromAFile(filename); // Read file contents
@@ -295,7 +341,7 @@ public class FinanceManager {
         Scanner scanner = new Scanner(System.in);
         PurchaseOrder po = new PurchaseOrder();
         FMExclusivePurchaseOrderHandler fepoh = new FMExclusivePurchaseOrderHandler();
-        
+
         try {
             // Get .txt file path
             File purchaseOrderFile = filePaths.getPurchaseOrderFile();
@@ -347,7 +393,7 @@ public class FinanceManager {
         File purchaseOrderFile = filePaths.getPurchaseOrderFile();
         File purchaseRequisitionFile = filePaths.getPurchaseRequisitionFile();
         File itemFile = filePaths.getItemFile();
-        
+
         // Step 1: Map the PR IDs in purchase_order to the one in purchase_requisition
         try {
             String[] poRequisitionIds = fepoh.getPurchaseRequisitionIDsFromPurchaseOrderFile(purchaseOrderFile);
@@ -480,4 +526,5 @@ public class FinanceManager {
         } catch (IOException e) {
             System.err.println("Error reading supplier, purchase requisition, purchase order, or payment files: " + e.getMessage());
         }
-}}
+    }
+}

@@ -1,20 +1,11 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package procurementordertrackingsystem.entities;
 import procurementordertrackingsystem.utilities.CRUDOntoFile;
 import procurementordertrackingsystem.utilities.DataFilePaths;
-/**
- *
- * @author user
- */
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 public class DisplayData extends Item {  
-    
     // Method to display items with headers and formatting  
     public void displayItems(File file) {  
         try {  
