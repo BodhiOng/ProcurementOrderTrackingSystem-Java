@@ -1,19 +1,29 @@
 package procurementordertrackingsystem.entities;
 
-public class user {
-    private String userID, name, role, username, email, password;
+import java.util.List;
 
-    //default constructor
-    public user() {
+public class User {
+    private String userID, name, role, username, email, password;
+    private final List<String> usersdata;
+
+    // Default constructor
+    public User() {
         this.userID = "";
         this.name = "";
         this.role = "";
         this.username = "";
         this.email = "";
         this.password = "";
+        this.usersdata = null; // Initialize to null or empty list if needed
     }
 
-    public void SetUserID(String userID) {
+    // Constructor to accept a list of users
+    public User(List<String> users) {
+        this.usersdata = users;
+    }
+
+    // Getters and setters
+    public void setUserID(String userID) {
         this.userID = userID;
     }
 
@@ -21,7 +31,7 @@ public class user {
         this.name = name;
     }
 
-    public void SetRole(String role) {
+    public void setRole(String role) {
         this.role = role;
     }
 
@@ -59,5 +69,23 @@ public class user {
 
     public String getPassword() {
         return password;
+    }
+
+    // Method to display users
+    public void displayUsers() {
+        if (usersdata == null || usersdata.isEmpty()) {
+            System.out.println("No users to display.");
+            return;
+        }
+
+        System.out.println("ID    | Name                | Role               | Username         | Email");
+        System.out.println("--------------------------------------------------------------------------");
+        for (String user : usersdata) {
+            String[] userDetails = user.split(",");
+            if (userDetails.length >= 6) {
+                System.out.printf("%-6s| %-20s| %-18s| %-18s| %s%n",
+                    userDetails[0], userDetails[1], userDetails[2], userDetails[3], userDetails[4]);
+            }
+        }
     }
 }

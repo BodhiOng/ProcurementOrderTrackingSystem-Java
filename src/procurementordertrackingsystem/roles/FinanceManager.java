@@ -19,7 +19,7 @@ public class FinanceManager {
     DataFilePaths filePaths = new DataFilePaths("src/procurementordertrackingsystem/data");
     ReferentialIntegrity referentialIntegrity = new ReferentialIntegrity();
 
-    public void displayMenu() {
+    public void displayMenu() throws IOException {
         Scanner scanner = new Scanner(System.in);
 
         // Menu display

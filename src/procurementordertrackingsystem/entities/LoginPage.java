@@ -12,7 +12,7 @@ import procurementordertrackingsystem.utilities.DataFilePaths;
 
 public class LoginPage {
     // Method to get the username and password from the user and perform the login check
-    public void login() {
+    public void login() throws IOException {
         CRUDOntoFile crud = new CRUDOntoFile(); // Directly initializing CRUDOntoFile
         DataFilePaths dataFilePaths = new DataFilePaths("src/procurementordertrackingsystem/data"); // Directly initializing DataFilePaths
         File userFile = dataFilePaths.getUserFile(); // Get the user file path
@@ -29,7 +29,7 @@ public class LoginPage {
         String password = scanner.nextLine();
 
         // Attempt to authenticate the user
-        user loggedInUser = authenticateUser(username, password, crud, userFile);
+        User loggedInUser = authenticateUser(username, password, crud, userFile);
 
         if (loggedInUser != null) {
             System.out.println("Login successful!");
@@ -51,7 +51,7 @@ public class LoginPage {
         scanner.close();
     }
     // Method to authenticate the user by comparing username and password with the file
-    private user authenticateUser(String username, String password, CRUDOntoFile crud, File userFile) {
+    private User authenticateUser(String username, String password, CRUDOntoFile crud, File userFile) {
         try {
             // Read all user data from the file
             List<String> lines = crud.readFromAFile(userFile);
@@ -66,10 +66,10 @@ public class LoginPage {
                     // Check if credentials match
                     if (storedUsername.equals(username) && storedPassword.equals(password)) {
                         // Create and return a User object if credentials match
-                        user user = new user();
-                        user.SetUserID(userDetails[0]);
+                        User user = new User();
+                        user.setUserID(userDetails[0]);
                         user.setName(userDetails[1]);
-                        user.SetRole(userDetails[2]);
+                        user.setRole(userDetails[2]);
                         user.setUsername(storedUsername);
                         user.setEmail(userDetails[4]);
                         user.setPassword(storedPassword);
@@ -85,7 +85,7 @@ public class LoginPage {
             return null;
         }
     }
-    private void handleUserRole(user loggedInUser) {
+    private void handleUserRole(User loggedInUser) throws IOException {
         String role = loggedInUser.getRole();
         
         // Check the user's role and perform corresponding actions
