@@ -2,6 +2,7 @@ package procurementordertrackingsystem;
 
 
 import procurementordertrackingsystem.entities.LoginPage;
+import procurementordertrackingsystem.roles.InventoryManager;
 
 public class Main {
     public static void main(String[] args) {
@@ -13,7 +14,7 @@ public class Main {
         loginPage.login();
 
 //        // Create an instance of FinanceManager
-//        FinanceManager financeManager = new FinanceManager();
+//         FinanceManager financeManager = new FinanceManager();
 //
 //        // Call the method to verify purchase orders for payment
 //        financeManager.viewSupplierPaymentStatus();
