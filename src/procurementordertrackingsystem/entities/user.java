@@ -1,10 +1,10 @@
+package procurementordertrackingsystem.entities;
 
-
-public class user {
+public class User {
     private String userID,name,role,username,email,password;
     
     //default constructor
-    public  user(){
+    public  User(){
     this.userID="";
     this.name="";
     this.role="";
