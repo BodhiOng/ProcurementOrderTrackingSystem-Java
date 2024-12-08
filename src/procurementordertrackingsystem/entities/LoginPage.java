@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
+import procurementordertrackingsystem.roles.InventoryManager;
 import procurementordertrackingsystem.utilities.CRUDOntoFile;
 import procurementordertrackingsystem.utilities.DataFilePaths;
 
@@ -29,6 +30,7 @@ public class LoginPage {
         if (loggedInUser != null) {
             System.out.println("Login successful!");
             System.out.println("Welcome, " + loggedInUser.getName() + " (" + loggedInUser.getRole() + ")");
+            handleUserRole(loggedInUser);
         } else {
             System.out.println("Login failed. Please check your username and password.");
         }
@@ -69,6 +71,36 @@ public class LoginPage {
         } catch (IOException e) {
             System.err.println("Error reading user file: " + e.getMessage());
             return null;
+        }
+    }
+    private void handleUserRole(User loggedInUser) {
+        String role = loggedInUser.getRole();
+        
+        // Check the user's role and perform corresponding actions
+        switch (role) {
+            case "admin":
+                System.out.println("You have administrative access.");
+                // Add admin-related tasks here
+                break;
+            case "Finance Manager":
+                System.out.println("You have finance access.");
+                // Add finance-related tasks here
+                break;
+            case "Inventory Manager":
+                System.out.println("You have inventory management access.");
+                InventoryManager.menu();
+                break;
+            case "Sales Manager":
+                System.out.println("You have sales manager access.");
+                // Add sales manager-related tasks here
+                break;
+            case "Purchase Manager":
+                System.out.println("You have purchase manager access.");
+                // Add purchase manager-related tasks here
+                break;
+            default:
+                System.out.println("Unknown role: " + role);
+                break;
         }
     }
 }

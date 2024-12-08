@@ -2,14 +2,10 @@ package procurementordertrackingsystem;
 
 
 import procurementordertrackingsystem.entities.LoginPage;
-import procurementordertrackingsystem.roles.FinanceManager;
 import procurementordertrackingsystem.roles.InventoryManager;
 
 public class Main {
     public static void main(String[] args) {
-        
-        //InventoryManager.menu();
-        
         
         // Create an instance of LoginPage
         LoginPage loginPage = new LoginPage();
