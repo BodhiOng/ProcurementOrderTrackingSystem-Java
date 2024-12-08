@@ -2,7 +2,6 @@ package procurementordertrackingsystem;
 
 
 import procurementordertrackingsystem.entities.LoginPage;
-import procurementordertrackingsystem.roles.InventoryManager;
 
 public class Main {
     public static void main(String[] args) {
