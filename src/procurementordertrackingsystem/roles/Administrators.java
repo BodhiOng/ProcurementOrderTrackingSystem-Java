@@ -1,13 +1,22 @@
 package procurementordertrackingsystem.roles;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Random;
 import java.util.Scanner;
 import procurementordertrackingsystem.entities.LoginPage;
+import procurementordertrackingsystem.utilities.CRUDOntoFile;
 import procurementordertrackingsystem.utilities.DataFilePaths;
+import procurementordertrackingsystem.utilities.IDGenerator;
 
-public class Administrators {
+public class Administrators implements IDGenerator {
+
     DataFilePaths filePaths = new DataFilePaths("src/procurementordertrackingsystem/data");
+    CRUDOntoFile crudOntoFile = new CRUDOntoFile();
 
-    public void displayMenu() {
+    public void displayMenu() throws IOException {
         Scanner scanner = new Scanner(System.in);
         String menu = """
                 1. Manage Users
@@ -73,7 +82,44 @@ public class Administrators {
         }
     }
 
-    private void manageUserMenu(Scanner scanner) {
+@Override
+public String generateID() {
+    int maxID = 0;  // Initialize maxID to 0
+
+    // Get the path of the user file
+    DataFilePaths userFilePaths = new DataFilePaths("src/procurementordertrackingsystem/data");
+    File userFile = userFilePaths.getUserFile();
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(userFile))) {
+        String line;
+        // Read through each line of the file
+        while ((line = reader.readLine()) != null) {
+            String[] userDetails = line.split(",");  // Assuming the ID is the first column (index 0)
+            String userID = userDetails[0];  // Get the ID from the first column
+            if (userID.startsWith("U")) {  // Check if it starts with 'U'
+                try {
+                    int currentID = Integer.parseInt(userID.substring(1));  // Get the numeric part of the ID
+                    if (currentID > maxID) {
+                        maxID = currentID;  // Update maxID if current ID is greater
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid ID format: " + userID);  // Handle parsing errors
+                }
+            }
+        }
+    } catch (IOException e) {
+        System.out.println("Error reading user file: " + e.getMessage());
+    }
+
+    // Increment the maxID by 1 to get the next ID
+    int newID = maxID + 1;
+
+    // Return the new ID formatted with leading zeros (e.g., U0001, U0002, etc.)
+    return String.format("U%04d", newID);  // Format with leading zeros to ensure 4 digits
+}
+
+
+    private void manageUserMenu(Scanner scanner) throws IOException {
         String manageUsersMenu = """
                 Manage Users
                 1. Add New User
@@ -102,7 +148,7 @@ public class Administrators {
             // Handle submenu options
             switch (subChoice) {
                 case 1:
-                    addNewUser();
+                    addNewUser(scanner);
                     break;
                 case 2:
                     editUser();
@@ -118,8 +164,34 @@ public class Administrators {
         }
     }
 
-    private void addNewUser() {
-        System.out.println("Add New User functionality here.");
+    private void addNewUser(Scanner scanner) throws IOException {
+        System.out.println("Enter name: ");
+        String name = scanner.nextLine();
+
+        System.out.print("Enter role: ");
+        String role = scanner.nextLine();
+
+        System.out.print("Enter username: ");
+        String username = scanner.nextLine();
+
+        System.out.print("Enter email: ");
+        String email = scanner.nextLine();
+
+        System.out.print("Enter password: ");
+        String password = scanner.nextLine();
+
+        String userID = generateID();
+
+        String newUserLine = String.format("%s,%s,%s,%s,%s,%s", userID, name, role, username, email, password);
+        File userfile = filePaths.getUserFile();
+        
+        try {
+            crudOntoFile.createToFile(userfile, newUserLine);  // Use CRUDOntoFile class to append the new user
+            System.out.println("New user added successfully.");
+        } catch (IOException e) {
+            System.out.println("Error adding new user: " + e.getMessage());
+        }
+
     }
 
     private void editUser() {
