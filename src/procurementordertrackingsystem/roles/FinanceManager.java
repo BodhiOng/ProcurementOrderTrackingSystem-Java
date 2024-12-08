@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import procurementordertrackingsystem.entities.LoginPage;
 import procurementordertrackingsystem.utilities.DataFilePaths;
 import procurementordertrackingsystem.utilities.ReferentialIntegrity;
 
@@ -27,7 +28,8 @@ public class FinanceManager {
         2. Check Stock Status
         3. Make Payment
         4. View Supplier Payment Status
-        5. Exit
+        5. Logout              
+        6. Exit
     """;
 
         while (true) {
@@ -56,8 +58,14 @@ public class FinanceManager {
                     viewSupplierPaymentStatus();
                     break;
                 case 5:
+                    System.out.println("Logging out...");
+                    LoginPage loginPage = new LoginPage();
+                    loginPage.login();
+                    break;
+                case 6:
                     System.out.println("Exiting the system.");
-                    return; // Exit the method
+                    System.exit(0);
+                    break; // Exit the method
                 default:
                     System.out.println("Invalid option. Please select between 1 and 5.");
             }

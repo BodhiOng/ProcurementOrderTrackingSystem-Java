@@ -24,12 +24,14 @@ public class Administrators {
         while (true) {
             System.out.println(menu);
             System.out.print("Please select an option (1-8): ");
-            int choice;
+            int choice = -1;
 
-            // Validate user input
+            // Debugging: Show the prompt and validate input
             try {
-                choice = Integer.parseInt(scanner.nextLine());
-                System.out.println("You selected option: " + choice);
+                String input = scanner.nextLine();  // Capture input as a string for debugging
+                System.out.println("Debug: User input: " + input);  // Debugging the input
+                choice = Integer.parseInt(input);  // Try parsing the integer
+                System.out.println("You selected option: " + choice);  // Debugging output
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input. Please enter a number between 1 and 8.");
                 continue; // Retry the loop
@@ -38,8 +40,8 @@ public class Administrators {
             // Handle menu options
             switch (choice) {
                 case 1:
-                    System.out.println("Bro whaat ");
-                    manageUserMenu();  // Go to "Manage Users" submenu
+                    System.out.println("Bro whaat "); // Debugging output
+                    manageUserMenu(scanner);  // Pass the scanner to the next method
                     break;
                 case 2:
                     viewAllUsers();
@@ -71,49 +73,49 @@ public class Administrators {
         }
     }
 
-    private void manageUserMenu() {  
-    Scanner scanner = new Scanner(System.in);  
-    String manageUsersMenu = """  
-            Manage Users  
-            1. Add New User  
-            2. Edit User  
-            3. Delete User  
-            4. Back to Main Menu  
-        """;  
+    private void manageUserMenu(Scanner scanner) {
+        String manageUsersMenu = """
+                Manage Users
+                1. Add New User
+                2. Edit User
+                3. Delete User
+                4. Back to Main Menu
+            """;
 
-    // Submenu loop for managing users  
-    while (true) {  
-        System.out.println(manageUsersMenu);  
-        System.out.print("Please select an option (1-4): ");  
-        int subChoice;  
+        // Submenu loop for managing users
+        while (true) {
+            System.out.println(manageUsersMenu);
+            System.out.print("Please select an option (1-4): ");
+            int subChoice = -1;
 
-        // Validate submenu input  
-        try {  
-            subChoice = Integer.parseInt(scanner.nextLine());  
-        } catch (NumberFormatException e) {  
-            System.out.println("Invalid input. Please enter a number between 1 and 4.");  
-            continue; // Retry the loop  
-        }  
+            // Validate submenu input
+            try {
+                String input = scanner.nextLine();  // Capture input as a string for debugging
+                System.out.println("Debug: Submenu input: " + input);  // Debugging the input
+                subChoice = Integer.parseInt(input);  // Try parsing the integer
+                System.out.println("You selected submenu option: " + subChoice);  // Debugging output
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number between 1 and 4.");
+                continue; // Retry the loop
+            }
 
-        // Handle submenu options  
-        switch (subChoice) {  
-            case 1:  
-                addNewUser();  
-                break;  
-            case 2:  
-                editUser();  
-                break;  
-            case 3:  
-                deleteUser();  
-                break;  
-            case 4:  
-                System.out.println("Returning to Main Menu...");  
-                return;  // Exit to the main menu  
-            default:  
-                System.out.println("Invalid option. Please select between 1 and 4.");  
-            }  
-        System.out.println("Task completed. You can select another operation or return to the main menu."); // Feedback after each operation  
-        }  
+            // Handle submenu options
+            switch (subChoice) {
+                case 1:
+                    addNewUser();
+                    break;
+                case 2:
+                    editUser();
+                    break;
+                case 3:
+                    deleteUser();
+                    break;
+                case 4:
+                    return;  // Exit to the main menu
+                default:
+                    System.out.println("Invalid option. Please select between 1 and 4.");
+            }
+        }
     }
 
     private void addNewUser() {
