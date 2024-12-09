@@ -38,6 +38,15 @@ public class CRUDOntoFile {
         }
     }
     
+    // new method added by inventory manager that has different parametters 
+    public void writeToFile(File filename, List<String> lines) throws IOException {
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
+        for (String line : lines) {
+            bw.write(line);
+            bw.newLine();
+        }
+    }
+}
     
     
     // Write updated data to a file (UPDATE)
