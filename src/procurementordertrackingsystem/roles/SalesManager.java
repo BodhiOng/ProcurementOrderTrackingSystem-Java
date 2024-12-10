@@ -12,6 +12,7 @@ import java.util.Scanner;
 import procurementordertrackingsystem.entities.Item;
 import procurementordertrackingsystem.entities.SalesEntry;
 import procurementordertrackingsystem.utilities.DataFilePaths;
+import procurementordertrackingsystem.utilities.LoginPage;
 
 /**
  *
@@ -102,13 +103,33 @@ public class SalesManager {
         
         while (true) {
             System.out.println(menu);
-            System.out.println("Please Select a menu (1-8)");
+            System.out.print("Please Select a menu (1-8): ");
             int choice;
             try {
                 choice = sc.nextInt();
             } catch (NumberFormatException e) {
                 System.out.println("Invalid menu. Please input a number from 1-8");
+                continue;
+            }
+            switch(choice){
+                case 1:
+                    ViewItems();
+                    break;
+                case 7:
+                    System.out.println("Logging out...");
+                    LoginPage loginPage = new LoginPage();
+                    loginPage.login();
+                    break;
+                case 8:
+                    System.exit(0);
+                default:
+                    System.out.println("Invalid menu. Please input a number from 1-8");
             }
         }
+    }
+    
+    public void ViewItems(){
+        SMitemfunctions smif = new SMitemfunctions();
+        smif.readItemsFromFile(dfp.getItemFile());
     }
 }
