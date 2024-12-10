@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import procurementordertrackingsystem.entities.Item;
 import procurementordertrackingsystem.entities.SalesEntry;
 import procurementordertrackingsystem.utilities.DataFilePaths;
@@ -83,6 +84,31 @@ public class SalesManager {
             String id = generateID();
             String newline = String.format("%s,%s,%s,%s", id, item, quantity, java.time.LocalDate.now());
             cof.createToFile(dfp.getSalesEntryFile(), newline);
+        }
+    }
+    
+    public void DisplayMenu() throws IOException{
+        Scanner sc = new Scanner(System.in);
+        String menu = """
+                      1. View List of Items
+                      2. Sales Entry
+                      3. Sales Report
+                      4. View Stock Level
+                      5. Create Purchase Requisition
+                      6. List of Purchase Orders
+                      7. Logout
+                      8. Exit
+                      """;
+        
+        while (true) {
+            System.out.println(menu);
+            System.out.println("Please Select a menu (1-8)");
+            int choice;
+            try {
+                choice = sc.nextInt();
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid menu. Please input a number from 1-8");
+            }
         }
     }
 }
