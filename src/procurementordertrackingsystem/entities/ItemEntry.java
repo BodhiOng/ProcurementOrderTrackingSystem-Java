@@ -76,28 +76,28 @@ public class ItemEntry extends Item {
     }
 
     // Helper method to access item details for getters in Item class
-    @Override
-    public String getItemID() {
-        return super.itemID;
-    }
-    
-    @Override
-    public String getItemName() {
-        return super.itemName;
-    }
-
-    @Override
-    public int getStockLevel() {
-        return super.stockLevel;
-    }
-
-    @Override
-    public double getPrice() {
-        return super.price;
-    }
-
-    @Override
-    public String getSupplierID() {
-        return super.supplierID;
-    }
+//    @Override
+//    public String getItemID() {
+//        return super.itemID;
+//    }
+//    
+//    @Override
+//    public String getItemName() {
+//        return super.itemName;
+//    }
+//
+//    @Override
+//    public int getStockLevel() {
+//        return super.stockLevel;
+//    }
+//
+//    @Override
+//    public double getPrice() {
+//        return super.price;
+//    }
+//
+//    @Override
+//    public String getSupplierID() {
+//        return super.supplierID;
+//    }
 }
