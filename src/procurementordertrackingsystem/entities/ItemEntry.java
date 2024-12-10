@@ -3,10 +3,14 @@ import procurementordertrackingsystem.utilities.CRUDOntoFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Scanner;
+import procurementordertrackingsystem.roles.InventoryManager;
+import procurementordertrackingsystem.utilities.DataFilePaths;
 
 public class ItemEntry extends Item {
     private CRUDOntoFile crudUtil;
     private File itemFile;
+    private DataFilePaths filePaths;
 
     // Constructor that calls the parent Item constructor
     public ItemEntry(String itemID, String itemName, int stockLevel, double price, String supplierID) {
@@ -14,15 +18,108 @@ public class ItemEntry extends Item {
         crudUtil = new CRUDOntoFile();
         itemFile = new File("items.txt"); // File to store item data (you may change this path)
     }
+    
+        public ItemEntry() {
+        crudUtil = new CRUDOntoFile();
+        itemFile = new File("items.txt"); // File to store item data (you may change this path)
+        this.filePaths = new DataFilePaths("src/procurementordertrackingsystem/data");
 
-    // Add a new item (Create)
-    public void addNewItem() throws IOException {
-        // Prepare the item data in a string format that matches your file storage format
-        String itemData = getItemID() + "," + getItemName() + "," + getStockLevel() + "," + getPrice() + "," + getSupplierID();
+    }
+    
+    static int menuOption1 = 0;  
+    static String deMenu = "Hello Inventory Manager, how would you like to manage the inventory?\n" +  
+            "Select an option from the below choices:\n" +  
+            "1. Item Entry\n" +  
+            "2. Supplier Registration\n" +  
+            "3. View Stock Level\n" +  
+            "4. Update Stock\n" +  
+            "5. Manage Stock Details\n" +  
+            "********************************"; 
+        public static void menu() {  
+        Scanner userOption2 = new Scanner(System.in); // Initialize Scanner with System.in  
+        boolean running = true;  
+
+        while (running) {  
+            System.out.println(deMenu); // Display the menu  
+            System.out.print("You are now in the Item Entry Page, Select the Functionality that you would like to use: ");  
+            // Validate input  
+            if (userOption2.hasNextInt()) {  
+                menuOption1 = userOption2.nextInt();  
+                userOption2.nextLine(); // Consume newline character  
+                DisplayData viewDeData = new DisplayData();
+                switch (menuOption1) { 
+                    case 1:  
+                        System.out.println("You selected Item Entry.");  
+                        ItemEntry us = new ItemEntry();
+                        us.addNewItem();
+                        break;  
+                    case 2:  
+                        System.out.println("You selected Supplier Registration.");  
+                        
+                        break;  
+                    case 3:  
+                        System.out.println("You selected View Stock Level.");  
+                        break;  
+                    case 4:  
+                        System.out.println("You selected Exit Page");  //
+                        // Call your stock updating method here  
+                        break;  
+
+                    case 0: // Option to exit  
+                        running = false;  
+                        break;  
+                    default:  
+                        System.out.println("Invalid option. Please try again.");  
+                }  
+            } else {  
+                System.out.println("Please enter a valid number.");  
+                userOption2.next(); // Consume invalid input  
+            }  
+        }  
+
+        userOption2.close(); // Close the scanner when done  
+        System.out.println("Exiting the Inventory Manager. Goodbye!");  
+    }  
+
+
+     
+    public void addNewItem() {
+        Scanner scanner = new Scanner(System.in);
         
-        // Call CRUD utility to write data to the file
-        crudUtil.createToFile(itemFile, itemData);
-        System.out.println("Item added successfully: " + itemData);
+        System.out.print("Enter Item ID: ");
+        String itemID = scanner.nextLine();
+        
+        System.out.print("Enter Item Name: ");
+        String itemName = scanner.nextLine();
+        
+        System.out.print("Enter Stock Level: ");
+        int stockLevel = Integer.parseInt(scanner.nextLine());
+        
+        System.out.print("Enter Price: ");
+        double price = Double.parseDouble(scanner.nextLine());
+        
+        System.out.print("Enter Supplier ID: ");
+        String supplierID = scanner.nextLine();
+        
+        // Create new item
+        Item newItem = new Item(itemID, itemName, stockLevel, price, supplierID);
+        
+        // Save to file
+        File itemFile = filePaths.getItemFile();
+        String lineToSave = String.format("%s,%s,%d,%.2f,%s", 
+                                           newItem.getItemID(),
+                                           newItem.getItemName(),
+                                           newItem.getStockLevel(),
+                                           newItem.getPrice(),
+                                           newItem.getSupplierID());
+
+        // Use CRUDOntoFile to write the new item
+        try {
+            crudOntoFile.createToFile(itemFile, lineToSave); // Use the instance of CRUDOntoFile
+            System.out.println("Item added successfully!");
+        } catch (IOException e) {
+            System.err.println("Error writing to item file: " + e.getMessage());
+        }
     }
 
     // Edit an item by itemID or itemName (Update)
@@ -75,29 +172,5 @@ public class ItemEntry extends Item {
         System.out.println("Item deleted successfully.");
     }
 
-    // Helper method to access item details for getters in Item class
-//    @Override
-//    public String getItemID() {
-//        return super.itemID;
-//    }
-//    
-//    @Override
-//    public String getItemName() {
-//        return super.itemName;
-//    }
-//
-//    @Override
-//    public int getStockLevel() {
-//        return super.stockLevel;
-//    }
-//
-//    @Override
-//    public double getPrice() {
-//        return super.price;
-//    }
-//
-//    @Override
-//    public String getSupplierID() {
-//        return super.supplierID;
-//    }
+    
 }
