@@ -34,13 +34,13 @@ public class FinanceManager {
 
         while (true) {
             System.out.println(menu);
-            System.out.print("Please select an option (1-5): ");
+            System.out.print("Please select an option (1-6): ");
 
             int choice;
             try {
                 choice = Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a number between 1 and 5.");
+                System.out.println("Invalid input. Please enter a number between 1 and 6.");
                 continue;
             }
 
@@ -67,7 +67,7 @@ public class FinanceManager {
                     System.exit(0);
                     break; // Exit the method
                 default:
-                    System.out.println("Invalid option. Please select between 1 and 5.");
+                    System.out.println("Invalid option. Please select between 1 and 6.");
             }
         }
     }
