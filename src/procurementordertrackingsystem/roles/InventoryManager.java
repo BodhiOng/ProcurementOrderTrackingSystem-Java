@@ -120,7 +120,7 @@ public class InventoryManager {
 
         // Use CRUDOntoFile to write the new item
         try {
-            crudOntoFile.writeToAFile(itemFile, lineToSave); // Use the instance of CRUDOntoFile
+            crudOntoFile.createToFile(itemFile, lineToSave); // Use the instance of CRUDOntoFile
             System.out.println("Item added successfully!");
         } catch (IOException e) {
             System.err.println("Error writing to item file: " + e.getMessage());

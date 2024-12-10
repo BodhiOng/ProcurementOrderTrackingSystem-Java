@@ -36,9 +36,7 @@ public class CRUDOntoFile {
             bw.write(line);
             bw.newLine();
         }
-    }
-    
-    
+    }    
     
     // Write updated data to a file (UPDATE)
     public void writeUpdatedLinesToFile(File filename, List<String> updatedLines) throws IOException {

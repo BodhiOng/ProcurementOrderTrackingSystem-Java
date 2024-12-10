@@ -82,7 +82,7 @@ public class SalesManager {
         private void EnterSales(String item, int quantity) throws IOException {
             String id = generateID();
             String newline = String.format("%s,%s,%s,%s", id, item, quantity, java.time.LocalDate.now());
-            cof.writeToAFile(dfp.getSalesEntryFile(), newline);
+            cof.createToFile(dfp.getSalesEntryFile(), newline);
         }
     }
 }
