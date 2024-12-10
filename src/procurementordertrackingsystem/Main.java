@@ -2,7 +2,7 @@ package procurementordertrackingsystem;
 
 
 import java.io.IOException;
-import procurementordertrackingsystem.entities.LoginPage;
+import procurementordertrackingsystem.utilities.LoginPage;
 
 
 public class Main {

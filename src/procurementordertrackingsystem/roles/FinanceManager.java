@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import procurementordertrackingsystem.entities.LoginPage;
+import procurementordertrackingsystem.utilities.LoginPage;
 import procurementordertrackingsystem.utilities.DataFilePaths;
 import procurementordertrackingsystem.utilities.ReferentialIntegrity;
 

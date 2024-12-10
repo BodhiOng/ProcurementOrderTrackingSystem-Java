@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Scanner;
-import procurementordertrackingsystem.entities.LoginPage;
+import procurementordertrackingsystem.utilities.LoginPage;
 import procurementordertrackingsystem.entities.User;
 import procurementordertrackingsystem.utilities.CRUDOntoFile;
 import procurementordertrackingsystem.utilities.DataFilePaths;

@@ -1,9 +1,10 @@
-package procurementordertrackingsystem.entities;
+package procurementordertrackingsystem.utilities;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
+import procurementordertrackingsystem.entities.User;
 import procurementordertrackingsystem.roles.Administrators;
 import procurementordertrackingsystem.roles.InventoryManager;
 import procurementordertrackingsystem.roles.FinanceManager;
