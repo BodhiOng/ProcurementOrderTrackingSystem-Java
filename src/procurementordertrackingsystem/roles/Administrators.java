@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import procurementordertrackingsystem.utilities.LoginPage;
 import procurementordertrackingsystem.entities.User;
 import procurementordertrackingsystem.utilities.CRUDOntoFile;
@@ -39,9 +41,7 @@ public class Administrators implements IDGenerator {
             // Debugging: Show the prompt and validate input
             try {
                 String input = scanner.nextLine();  // Capture input as a string for debugging
-                System.out.println("Debug: User input: " + input);  // Debugging the input
-                choice = Integer.parseInt(input);  // Try parsing the integer
-                System.out.println("You selected option: " + choice);  // Debugging output
+                choice = Integer.parseInt(input);  // Try parsing the integer 
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input. Please enter a number between 1 and 7.");
                 continue; // Retry the loop
@@ -50,7 +50,6 @@ public class Administrators implements IDGenerator {
             // Handle menu options
             switch (choice) {
                 case 1:
-                    System.out.println("Bro whaat "); // Debugging output
                     manageUserMenu(scanner);  // Pass the scanner to the next method
                     break;
                 case 2:
@@ -133,10 +132,9 @@ public class Administrators implements IDGenerator {
 
             // Validate submenu input
             try {
-                String input = scanner.nextLine();  // Capture input as a string for debugging
-                System.out.println("Debug: Submenu input: " + input);  // Debugging the input
-                subChoice = Integer.parseInt(input);  // Try parsing the integer
-                System.out.println("You selected submenu option: " + subChoice);  // Debugging output
+                String input = scanner.nextLine();
+                subChoice = Integer.parseInt(input); 
+
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input. Please enter a number between 1 and 4.");
                 continue; // Retry the loop
@@ -165,14 +163,72 @@ public class Administrators implements IDGenerator {
         System.out.println("Enter name: ");
         String name = scanner.nextLine();
 
-        System.out.print("Enter role: ");
-        String role = scanner.nextLine();
+        System.out.println("Select role:");
+        // Displaying the roles
+        System.out.println("1. Sales Manager");
+        System.out.println("2. Purchase Manager");
+        System.out.println("3. Finance Manager");
+        System.out.println("4. Inventory Manager");
+        System.out.println("5. Administrators");
+
+        // Input to select the role
+        String role = "";
+        boolean validRole = false;
+
+        while (!validRole) {
+            System.out.print("Enter the number corresponding to the role: ");
+            String roleChoice = scanner.nextLine();
+
+            // Validating the role selection
+            switch (roleChoice) {
+                case "1":
+                    role = "Sales Manager";  // Store role1
+                    validRole = true;
+                    break;
+                case "2":
+                    role = "Purchase Manager";  // Store role2
+                    validRole = true;
+                    break;
+                case "3":
+                    role = "Finance Manager";  // Store role3
+                    validRole = true;
+                    break;
+                case "4":
+                    role = "Inventory Manager";  // Store role4
+                    validRole = true;
+                    break;
+                case "5":
+                    role = "Administrators";  // Store role5
+                    validRole = true;
+                    break;
+                default:
+                    System.out.println("Invalid selection. Please choose a valid role.");
+                    break;
+            }
+        }
 
         System.out.print("Enter username: ");
         String username = scanner.nextLine();
 
-        System.out.print("Enter email: ");
-        String email = scanner.nextLine();
+        String email = "";
+        boolean validEmail = false;
+
+        // Validate email format
+        while (!validEmail) {
+            System.out.print("Enter email: ");
+            email = scanner.nextLine();
+
+            // Email pattern to match a simple email structure
+            String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+            Pattern pattern = Pattern.compile(emailRegex);
+            Matcher matcher = pattern.matcher(email);
+
+            if (matcher.matches()) {
+                validEmail = true;
+            } else {
+                System.out.println("Invalid email format. Please try again.");
+            }
+        }
 
         System.out.print("Enter password: ");
         String password = scanner.nextLine();
@@ -188,7 +244,6 @@ public class Administrators implements IDGenerator {
         } catch (IOException e) {
             System.out.println("Error adding new user: " + e.getMessage());
         }
-
     }
 
     private void editUser(Scanner scanner) throws IOException {
@@ -282,10 +337,7 @@ public class Administrators implements IDGenerator {
         }
     }
 
-    private void deleteUser(Scanner scanner)throws IOException{
-        
-        
-
+    private void deleteUser(Scanner scanner) throws IOException {
 
         // Read the user data
         DataFilePaths userFile = new DataFilePaths("src/procurementordertrackingsystem/data");
@@ -293,10 +345,10 @@ public class Administrators implements IDGenerator {
 
         // Read all lines from the file
         List<String> users = Files.readAllLines(file.toPath());
-        
+
         User userinformation = new User(users);
         userinformation.displayUsers();
-        
+
         System.out.print("Enter the User ID of the user to delete: ");
         String userID = scanner.nextLine();
 
@@ -316,7 +368,6 @@ public class Administrators implements IDGenerator {
             System.out.println("User ID not found.");
         }
     }
-
 
     private void loginAsFinanceManager() {
         System.out.println("Login as Finance Manager functionality here.");

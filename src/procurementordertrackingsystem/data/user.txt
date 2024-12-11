@@ -3,3 +3,4 @@ U0002,Krishang ,Purchase Manager,krish123,bob@example.com,000
 U0003,tarekh,Administrators,tarek123,charlie@example.com,000
 U0004,Emad Ebrahim,Inventory Manager,emad123,alice@example.com,000
 U0005,bodhi,Finance Manager,bodhi123,alice@example.com,000
+U0006,tarek22,Purchase Manager,tkss,f@gm.com,kkk
