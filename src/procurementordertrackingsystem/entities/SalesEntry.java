@@ -30,12 +30,13 @@ public class SalesEntry implements IDGenerator{
     public DataFilePaths dfp = new DataFilePaths("src/procurementordertrackingsystem/data");
     
     @Override
-    //Override the generateID method from IDGenerator to generate ID based on number of records
+    //Override the generateID method from IDGenerator to generate a sequential ID
     public String generateID() {
         List<String> rawdata = getAllSales();
         return String.format("%04d", rawdata.size());
     }
     
+    //Method to read one sales record given its ID
     public String[] readSalesbyid(String id){
         List<String> rawdata = getAllSales();
         String[] line = null;
@@ -48,6 +49,7 @@ public class SalesEntry implements IDGenerator{
         return line;
     }
     
+    //Method to read all sales entry
     public void readAllSales(){
         List<String> rawdata = getAllSales();
         String[] line = null;
@@ -59,38 +61,24 @@ public class SalesEntry implements IDGenerator{
         }
     }
     
-    public String getSalesid() {
-        return salesid;
-    }
+    //Getter and Setter methods
+    public String getSalesid() {return salesid;}
 
-    public void setSalesid(String salesid) {
-        this.salesid = salesid;
-    }
+    public void setSalesid(String salesid) {this.salesid = salesid;}
 
-    public String getItemid() {
-        return itemid;
-    }
+    public String getItemid() {return itemid;}
 
-    public void setItemid(String itemid) {
-        this.itemid = itemid;
-    }
+    public void setItemid(String itemid) {this.itemid = itemid;}
 
-    public int getQuantity() {
-        return quantity;
-    }
+    public int getQuantity() {return quantity;}
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
+    public void setQuantity(int quantity) {this.quantity = quantity;}
 
-    public Date getSalesdate() {
-        return salesdate;
-    }
+    public Date getSalesdate() {return salesdate;}
 
-    public void setSalesdate(Date salesdate) {
-        this.salesdate = salesdate;
-    }
+    public void setSalesdate(Date salesdate) {this.salesdate = salesdate;}
     
+    //Private method to fetch all sales entry
     private List<String> getAllSales(){
         List<String> rawdata = new ArrayList<>();
         try {
@@ -101,17 +89,21 @@ public class SalesEntry implements IDGenerator{
         return rawdata;
     }
     
+    //Private method to get the item name
     private String fetchItemNameFromId(String id){
         List<String> rawdata = new ArrayList<>();
         String itemname = null;
+        //read the item file
         try {
             rawdata = cof.readFromAFile(dfp.getItemFile());
         } catch (Exception e) {
             System.out.println("Error fetching item name!");
         }
         String[] line = new String[2];
+        //iterate through the item record
         for (String lines : rawdata){
             line = lines.split(",");
+            //find the one that has matching ID
             if (ri.checkAttributeInArray(itemid, line)){
                 itemname = line[1];
                 break;
@@ -120,6 +112,7 @@ public class SalesEntry implements IDGenerator{
                 itemname = null;
             }
         }
+        //return the item name that has a matching ID
         return itemname;
     }
 }
