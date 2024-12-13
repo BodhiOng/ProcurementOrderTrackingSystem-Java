@@ -6,6 +6,7 @@ import procurementordertrackingsystem.entities.PurchaseRequisition;
 import procurementordertrackingsystem.entities.Supplier;  
 import procurementordertrackingsystem.utilities.CRUDOntoFile;
 import procurementordertrackingsystem.utilities.DataFilePaths;
+import procurementordertrackingsystem.utilities.LoginPage;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,25 +29,85 @@ public class PurchaseManager {
         this.supplier = new Supplier(); 
     }
 
+    // Main method to start the PurchaseManager system
+    public void start() throws IOException {
+        LoginPage loginPage = new LoginPage();
+        loginPage.login(); // Authenticate the user
+        displayMenu(); // Show the menu after login
+    }
+
+    // Method to display the menu and handle user selection
+    private void displayMenu() throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        int choice;
+
+        do {
+            System.out.println("\n--- Purchase Manager Menu ---");
+            System.out.println("1. View Inventory");
+            System.out.println("2. Update Stock Level");
+            System.out.println("3. View Suppliers");
+            System.out.println("4. View Purchase Requisitions");
+            System.out.println("5. Generate Purchase Order");
+            System.out.println("6. View Purchase Orders");
+            System.out.println("7. Edit Purchase Order");
+            System.out.println("8. Delete Purchase Order");
+            System.out.println("9. Exit");
+            System.out.print("Enter your choice: ");
+            
+            choice = scanner.nextInt();
+            scanner.nextLine();  // Consume the newline character left by nextInt()
+
+            switch (choice) {
+                case 1:
+                    viewInventory();
+                    break;
+                case 2:
+                    updateStockLevel();
+                    break;
+                case 3:
+                    viewSuppliers();
+                    break;
+                case 4:
+                    viewPurchaseRequisitions();
+                    break;
+                case 5:
+                    generatePurchaseOrder();
+                    break;
+                case 6:
+                    viewPurchaseOrders();
+                    break;
+                case 7:
+                    editPurchaseOrder();
+                    break;
+                case 8:
+                    deletePurchaseOrder();
+                    break;
+                case 9:
+                    System.out.println("Exiting the system...");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        } while (choice != 9); // Keep showing the menu until the user chooses to exit
+    }
+
     // View inventory
     public void viewInventory() {
-    File itemFile = new File("src/procurementordertrackingsystem/data/item.txt");
-    try {
-        System.out.println("----- Current Inventory -----");
-        List<String> items = crudOntoFile.readFromAFile(itemFile);
-        for (String line : items) {
-            String[] parts = line.split(",");
-            // Create an Item object using the parsed parts of the line
-            Item item = new Item(parts[0], parts[1], Integer.parseInt(parts[2]), Double.parseDouble(parts[3]), parts[4]);
-
-            // Print item details using the toString method or direct access to fields
-            System.out.println(item);
+        File itemFile = new File("src/procurementordertrackingsystem/data/item.txt");
+        try {
+            System.out.println("----- Current Inventory -----");
+            List<String> items = crudOntoFile.readFromAFile(itemFile);
+            for (String line : items) {
+                String[] parts = line.split(",");
+                // Create an Item object using the parsed parts of the line
+                Item item = new Item(parts[0], parts[1], Integer.parseInt(parts[2]), Double.parseDouble(parts[3]), parts[4]);
+                // Print item details using the toString method or direct access to fields
+                System.out.println(item);
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading item file: " + e.getMessage());
         }
-    } catch (IOException e) {
-        System.err.println("Error reading item file: " + e.getMessage());
     }
-}
-
 
     // Update stock level
     public void updateStockLevel() {
@@ -135,7 +196,8 @@ public class PurchaseManager {
         File purchaseOrderFile = new File("src/procurementordertrackingsystem/data/purchase_order.txt");
 
         try {
-            purchaseOrder.crudOntoFile.writeToAFile(purchaseOrderFile, lineToSave);
+            // Use the createToFile method to append the new purchase order to the file
+            crudOntoFile.createToFile(purchaseOrderFile, lineToSave);
             System.out.println("Purchase Order generated successfully!");
         } catch (IOException e) {
             System.err.println("Error writing to purchase order file: " + e.getMessage());
