@@ -116,9 +116,11 @@ public class SalesManager {
             }
             //Evaluate the user input to match the preset menu numbers
             switch(choice){
+                //View List of Items
                 case 1:
                     ViewItems();
                     break;
+                //Sales Entry
                 case 2:
                     String salesEntryMenu = """
                                             1. View Sales
@@ -127,7 +129,7 @@ public class SalesManager {
                                             4. Delete Sales
                                             5. Main Menu
                                             """;
-                    while (true){
+                    Sales_Entry_Menu: while (true){
                         System.out.println(salesEntryMenu);
                         System.out.println("Please Select a Menu (1-5): ");
                         try {
@@ -138,11 +140,15 @@ public class SalesManager {
                         }
                         switch (choice) {
                             case 1:
-                                
+                                ViewSales();
                                 break;
+                            case 5:
+                                DisplayMenu();
+                                break Sales_Entry_Menu;
                             default:
                                 System.out.println("Invalid menu. Please input a number from 1-8");
                         }
+                        System.out.println("------------------------------");
                     }
                 case 7:
                     System.out.println("Logging out...");
@@ -154,6 +160,7 @@ public class SalesManager {
                 default:
                     System.out.println("Invalid menu. Please input a number from 1-8");
             }
+            System.out.println("------------------------------");
         }
     }
     
@@ -164,6 +171,11 @@ public class SalesManager {
     }
     
     public void ViewSales(){
+        SalesEntry se = new SalesEntry();
+        se.readAllSales();
+    }
+    
+    public void AddSales(){
         
     }
 }
