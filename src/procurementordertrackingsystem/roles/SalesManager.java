@@ -27,19 +27,15 @@ public class SalesManager {
     private class SMitemfunctions extends Item {
         
         //Create a method to find an item record with a specific ID
-        private List<Item> readFileById(List<String> ID, File filename) throws IOException{
+        private List<Item> readItemsIntoObject(File filename) throws IOException{
             //Read the records into a List
             List<String> rawdata = crudOntoFile.readFromAFile(dfp.getItemFile());
             List<Item> itemlist = new ArrayList<>();
             //Iterate through the records to find the matched ID
             for (String lines : rawdata){
-                for (String eachid : ID){
-                    if (lines.contains(eachid)){
-                        //Instantiate a new item object for every item record matched
-                        String[] linesitem = lines.split(",");
-                        itemlist.add(new Item(linesitem[0], linesitem[1], Integer.parseInt(linesitem[2]), Double.parseDouble(linesitem[3]), linesitem[4]));
-                    }
-                }
+                //Instantiate a new item object for every item record matched
+                String[] linesitem = lines.split(",");
+                itemlist.add(new Item(linesitem[0], linesitem[1], Integer.parseInt(linesitem[2]), Double.parseDouble(linesitem[3]), linesitem[4]));
             }
             //Return the list of item in the sales update
             return itemlist;
@@ -51,15 +47,15 @@ public class SalesManager {
             List<Item> itemlist = new ArrayList<>();
             //Create a list of item ID which will be updated
             List<String> idlist = new ArrayList<>();
-            for (int i = 0; i <= salesdetail.size(); i++){
-                idlist.add(salesdetail.get(i).get(1));
-            }
-            
-            //Read only the records that needs to be updated
+//            for (int i = 0; i < salesdetail.size(); i++){
+//                idlist.add(salesdetail.get(i).get(0));
+//            }
+//            
+            //Read all the item file
             try {
-                itemlist = readFileById(idlist, dfp.getItemFile());
+                itemlist = readItemsIntoObject(dfp.getItemFile());
             } catch (Exception e) {
-                //System.out.println("Error Reading Item File!");
+                System.out.println("Error Reading Item File!");
             }
             
             //Update the stock level of the item from the sales report
@@ -73,7 +69,7 @@ public class SalesManager {
             }
             
             //Append all the items object into a string list
-            List<String> updatedItems = null;
+            List<String> updatedItems = new ArrayList<>();
             for (Item item : itemlist){
                 updatedItems.add(item.toString());
             }
@@ -142,6 +138,7 @@ public class SalesManager {
         
         //Loop the menu until the user choose to exit
         while (true) {
+            System.out.println("------------------------------");
             System.out.println(menu);
             System.out.print("Please Select a Menu (1-8): ");
             //Take in input from user
@@ -185,7 +182,7 @@ public class SalesManager {
                                 DisplayMenu();
                                 break Sales_Entry_Menu;
                             default:
-                                System.out.println("Invalid menu. Please input a number from 1-8");
+                                System.out.println("Invalid menu. Please select a number from 1-5");
                         }
                         System.out.println("------------------------------");
                     }
@@ -197,7 +194,7 @@ public class SalesManager {
                 case 8:
                     System.exit(0);
                 default:
-                    System.out.println("Invalid menu. Please input a number from 1-8");
+                    System.out.println("Invalid menu. Please select a number from 1-8");
             }
             System.out.println("------------------------------");
         }
@@ -250,7 +247,6 @@ public class SalesManager {
                               3. Return to Sales Menu
                               """;
         int choice;
-        int count = 1;
         Add_Sales_Entry: while (true) {
             System.out.println(addSalesMenu);
             choice = sc.nextInt();
@@ -270,18 +266,20 @@ public class SalesManager {
                         System.out.println("Error reading quantity!");
                         DisplayMenu();
                     }
-                    onesale.clear();
-                    onesale.add(sif.FindItemIDFromName(item));
-                    onesale.add(String.valueOf(salequantity));
-                    salesentry.add(onesale);
+                    List<String> anothersale = new ArrayList<>();
+                    anothersale.add(sif.FindItemIDFromName(item));
+                    anothersale.add(String.valueOf(salequantity));
+                    salesentry.add(anothersale);
                     System.out.println(salesentry);
-                    count++;
                     break;
                 case 2:
                     ssf.EnterSales(salesentry);
                     sif.ApplySales(salesentry);
+                    System.out.println("Sales Updated Sucessfully!");
                 case 3:
                     break Add_Sales_Entry;
+                default:
+                    System.out.println("Invalid Input! Please Select a number from 1-3");
             }
         }
     }
