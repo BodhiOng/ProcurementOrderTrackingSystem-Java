@@ -25,7 +25,9 @@ public class InventoryManager {
             "2. 📦 Supplier Registration\n" +  
             "3. 📊 View Stock Levels\n" +  
             "4. 🛠️ Manage Stock Details\n" +  
-            "5. ❌ Exit\n" +  
+            "5. ❌ Logout\n" +  
+            "6. ❌ Exit\n" +  
+            
             "****************************************\n";  
 
     // Static method to display the menu  
@@ -66,7 +68,9 @@ public class InventoryManager {
                         System.out.println("\n❌ Logged Out Inventory Management System... See you next time!\n");  
                         loginPage.login();
                         running = false;
-                        break;  
+                        break;
+                    case 6:
+                        System.exit(0);
                     default:  
                         System.out.println("⚠ Invalid option. Please choose a valid menu option.\n");  
                 }  

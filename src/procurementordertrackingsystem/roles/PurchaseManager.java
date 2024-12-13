@@ -3,7 +3,7 @@ package procurementordertrackingsystem.roles;
 import procurementordertrackingsystem.entities.Item;
 import procurementordertrackingsystem.entities.PurchaseOrder;
 import procurementordertrackingsystem.entities.PurchaseRequisition;
-import procurementordertrackingsystem.entities.Supplier;  
+import procurementordertrackingsystem.entities.Supplier;
 import procurementordertrackingsystem.utilities.CRUDOntoFile;
 import procurementordertrackingsystem.utilities.DataFilePaths;
 import procurementordertrackingsystem.utilities.LoginPage;
@@ -17,16 +17,16 @@ public class PurchaseManager {
 
     private final DataFilePaths filePaths;
     private final CRUDOntoFile crudOntoFile;
-    private final PurchaseOrder purchaseOrder;  
-    private final PurchaseRequisition purchaseRequisition; 
-    private final Supplier supplier;  
+    private final PurchaseOrder purchaseOrder;
+    private final PurchaseRequisition purchaseRequisition;
+    private final Supplier supplier;
 
     public PurchaseManager() {
         this.filePaths = new DataFilePaths("src/procurementordertrackingsystem/data");
         this.crudOntoFile = new CRUDOntoFile();
-        this.purchaseOrder = new PurchaseOrder();  
-        this.purchaseRequisition = new PurchaseRequisition();  
-        this.supplier = new Supplier(); 
+        this.purchaseOrder = new PurchaseOrder();
+        this.purchaseRequisition = new PurchaseRequisition();
+        this.supplier = new Supplier();
     }
 
     // Main method to start the PurchaseManager system
@@ -37,7 +37,7 @@ public class PurchaseManager {
     }
 
     // Method to display the menu and handle user selection
-    private void displayMenu() throws IOException {
+    public void displayMenu() throws IOException {
         Scanner scanner = new Scanner(System.in);
         int choice;
 
@@ -51,9 +51,10 @@ public class PurchaseManager {
             System.out.println("6. View Purchase Orders");
             System.out.println("7. Edit Purchase Order");
             System.out.println("8. Delete Purchase Order");
-            System.out.println("9. Exit");
+            System.out.println("9. Logout");
+            System.out.println("10. Exit");
             System.out.print("Enter your choice: ");
-            
+
             choice = scanner.nextInt();
             scanner.nextLine();  // Consume the newline character left by nextInt()
 
@@ -83,8 +84,12 @@ public class PurchaseManager {
                     deletePurchaseOrder();
                     break;
                 case 9:
-                    System.out.println("Exiting the system...");
+                    System.out.println("\n❌ Logged Out Inventory Management System... See you next time!\n");
+                    LoginPage loginPage = new LoginPage();
+                    loginPage.login();
                     break;
+                case 10:
+                    System.exit(0);
                 default:
                     System.out.println("Invalid choice. Please try again.");
             }
