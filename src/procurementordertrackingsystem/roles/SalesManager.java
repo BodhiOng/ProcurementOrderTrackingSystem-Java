@@ -88,6 +88,7 @@ public class SalesManager {
         }
     }
     
+    //Method to display menu in CLI
     public void DisplayMenu() throws IOException{
         Scanner sc = new Scanner(System.in);
         String menu = """
@@ -100,21 +101,49 @@ public class SalesManager {
                       7. Logout
                       8. Exit
                       """;
+        int choice;
         
+        //Loop the menu until the user choose to exit
         while (true) {
             System.out.println(menu);
-            System.out.print("Please Select a menu (1-8): ");
-            int choice;
+            System.out.print("Please Select a Menu (1-8): ");
+            //Take in input from user
             try {
                 choice = sc.nextInt();
             } catch (NumberFormatException e) {
                 System.out.println("Invalid menu. Please input a number from 1-8");
                 continue;
             }
+            //Evaluate the user input to match the preset menu numbers
             switch(choice){
                 case 1:
                     ViewItems();
                     break;
+                case 2:
+                    String salesEntryMenu = """
+                                            1. View Sales
+                                            2. Add Sales
+                                            3. Edit Sales
+                                            4. Delete Sales
+                                            5. Main Menu
+                                            """;
+                    while (true){
+                        System.out.println(salesEntryMenu);
+                        System.out.println("Please Select a Menu (1-5): ");
+                        try {
+                            choice = sc.nextInt();
+                        } catch (Exception e) {
+                            System.out.println("Invalid menu. Please input a number from 1-8");
+                            continue;
+                        }
+                        switch (choice) {
+                            case 1:
+                                
+                                break;
+                            default:
+                                System.out.println("Invalid menu. Please input a number from 1-8");
+                        }
+                    }
                 case 7:
                     System.out.println("Logging out...");
                     LoginPage loginPage = new LoginPage();
@@ -128,8 +157,13 @@ public class SalesManager {
         }
     }
     
+    //SM 1st Functionality (View list of items)
     public void ViewItems(){
         SMitemfunctions smif = new SMitemfunctions();
         smif.readItemsFromFile(dfp.getItemFile());
+    }
+    
+    public void ViewSales(){
+        
     }
 }
