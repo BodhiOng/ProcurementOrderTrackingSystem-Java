@@ -33,7 +33,7 @@ public class SalesEntry implements IDGenerator{
     //Override the generateID method from IDGenerator to generate a sequential ID
     public String generateID() {
         List<String> rawdata = getAllSales();
-        return String.format("%04d", rawdata.size());
+        return String.format("SE%04d", rawdata.size()+1);
     }
     
     //Method to read one sales record given its ID
@@ -104,12 +104,9 @@ public class SalesEntry implements IDGenerator{
         for (String lines : rawdata){
             line = lines.split(",");
             //find the one that has matching ID
-            if (ri.checkAttributeInArray(itemid, line)){
+            if (line[0].equals(id)){
                 itemname = line[1];
                 break;
-            }
-            else{
-                itemname = null;
             }
         }
         //return the item name that has a matching ID
