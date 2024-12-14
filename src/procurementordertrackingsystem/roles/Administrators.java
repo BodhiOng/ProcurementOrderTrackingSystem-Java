@@ -414,15 +414,20 @@ public class Administrators implements IDGenerator {
         FinanceManager fm = new FinanceManager();
         fm.displayMenu("Administrators");
     }
-    private void loginAsPurchaseManager() {
-        /* Implementation */ }
+    private void loginAsPurchaseManager() throws IOException {
+        PurchaseManager pm = new PurchaseManager();
+        pm.displayMenu("Administrators");
+    }
 
     private void loginAsInventoryManager() throws IOException {
         InventoryManager im = new InventoryManager();
         im.menu("Administrators");
     }
-    private void loginAsSalesManager() {
-        /* Implementation */ }
+    private void loginAsSalesManager() throws IOException {
+        SalesManager sm = new SalesManager();
+        sm.DisplayMenu("Administrators");
+    }
+
 
     private void displayUserInfo(String[] userDetails) {
         // Display the user's details (Name, Username, Email, etc.)
