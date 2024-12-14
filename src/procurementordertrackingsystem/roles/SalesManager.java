@@ -6,15 +6,21 @@ package procurementordertrackingsystem.roles;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.ObjectStreamException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 import procurementordertrackingsystem.entities.Item;
+import procurementordertrackingsystem.entities.ItemEntry;
+import procurementordertrackingsystem.entities.PurchaseOrder;
+import procurementordertrackingsystem.entities.PurchaseRequisition;
 import procurementordertrackingsystem.entities.SalesEntry;
+import procurementordertrackingsystem.entities.User;
 import procurementordertrackingsystem.utilities.DataFilePaths;
 import procurementordertrackingsystem.utilities.LoginPage;
 import procurementordertrackingsystem.utilities.ReferentialIntegrity;
@@ -85,7 +91,8 @@ public class SalesManager {
                 }
             }
         }
-
+        
+        //Fetch Item ID from Item Name
         private String FindItemIDFromName(String name) {
             String id = null;
             List<String> itemdata = new ArrayList<>();
@@ -103,6 +110,26 @@ public class SalesManager {
                 }
             }
             return id;
+        }
+        
+        //Fetch Supplier ID from Item ID
+        private String FindSupplierIDFromItemID(String id){
+            String supid = null;
+            List<String> itemdata = new ArrayList<>();
+            String[] line = null;
+            try {
+                itemdata = crudOntoFile.readFromAFile(dfp.getItemFile());
+            } catch (Exception e) {
+                System.out.println("Error Reading Item File!");
+            }
+            for (String lines : itemdata) {
+                line = lines.split(",");
+                if (line[0].toLowerCase().equals(id.toLowerCase())) {
+                    supid = line[4];
+                    break;
+                }
+            }
+            return supid;
         }
     }
 
@@ -169,12 +196,14 @@ public class SalesManager {
         }
         //method to edit sales entry from file
         private List<List<String>> PreviewUpdateSales(String id, String item, int qty){
-            SMitemfunctions sif = new SMitemfunctions();
-            String itemid = sif.FindItemIDFromName(item);
             List<List<String>> updatedsales = new ArrayList<>();
-            List<String> updateitem = new ArrayList<>();
-            List<String> updatesale = new ArrayList<>();
+            List<String> updateitem = new ArrayList<>(), updatesale = new ArrayList<>();
+            SMitemfunctions sif = new SMitemfunctions();
+            
+            String itemid = sif.FindItemIDFromName(item);
+            
             String[] onesale = readSalesbyid(id);
+            
             int qtydiff = Integer.parseInt(onesale[2]) - qty;
             onesale[1] = itemid;
             onesale[2] = String.valueOf(qty);
@@ -212,25 +241,37 @@ public class SalesManager {
             }
         }
     }
-
+    
+    //
+    private class SMprfunctions extends PurchaseRequisition{
+        private void AddPR(List<String> prlist){
+            try {
+                crudOntoFile.createToFile(dfp.getPurchaseRequisitionFile(), prlist);
+            } catch (Exception e) {
+                System.out.println("Error updating Purchase Requisition file!");
+                return;
+            }
+            System.out.println("Purchase Requisition Submitted Successfully!");
+        }
+    }
+    
     //Method to display menu in CLI
     public void DisplayMenu(String role) throws IOException {
         Scanner sc = new Scanner(System.in);
         String menu = """
                   1. View List of Items
-                  2. Sales Entry
-                  3. Sales Report
-                  4. View Stock Level
-                  5. Create Purchase Requisition
-                  6. List of Purchase Orders
+                  2. Sales Menu
+                  3. View Stock Level
+                  4. Create Purchase Requisition
+                  5. List of Purchase Orders
                   """;
 
         // Append options based on role
         if ("Administrators".equalsIgnoreCase(role)) {
-            menu += "7. Go Back\n"; // Admin role gets "Go Back"
+            menu += "6. Go Back\n"; // Admin role gets "Go Back"
         } else {
-            menu += "7. Logout\n";   // Non-admin role gets "Logout"
-            menu += "8. Exit\n";     // Non-admin role gets "Exit"
+            menu += "6. Logout\n";   // Non-admin role gets "Logout"
+            menu += "7. Exit\n";     // Non-admin role gets "Exit"
         }
 
         int choice;
@@ -239,13 +280,13 @@ public class SalesManager {
         while (true) {
             System.out.println("------------------------------");
             System.out.println(menu);
-            System.out.print("Please Select a Menu (1-8): ");
+            System.out.print("Please Select a Menu (1-7): ");
 
             // Take input from user
             try {
                 choice = sc.nextInt();
             } catch (NumberFormatException e) {
-                System.out.println("Invalid menu. Please input a number from 1-8");
+                System.out.println("Invalid menu. Please input a number from 1-7");
                 continue;
             }
 
@@ -293,7 +334,16 @@ public class SalesManager {
                         System.out.println("------------------------------");
                     }
                     break;
-                case 7:
+                case 3:
+                    ViewStocks();
+                    break;
+                case 4:
+                    CreatePR();
+                    break;
+                case 5:
+                    ViewPR();
+                    break;
+                case 6:
                     if ("Administrators".equalsIgnoreCase(role)) {
                         System.out.println("Going Back...");
                         // Implement logic for going back, like returning to the previous menu
@@ -305,7 +355,7 @@ public class SalesManager {
                         loginPage.login();
                     }
                     break;
-                case 8:
+                case 7:
                     if (!"Administrators".equalsIgnoreCase(role)) {
                         System.out.println(" Exiting the system...");
                         System.exit(0); // Exit for non-admins
@@ -508,6 +558,126 @@ public class SalesManager {
                     System.out.println("Invalid Input! Please select a number from 1-3");
                     ;
             }
+        }
+    }
+    
+    //SM 3rd Functionality (View Stock Level)
+    private void ViewStocks(){
+        ItemEntry ie = new ItemEntry();
+        ie.viewStockLevels();
+    }
+    
+    //SM 4th Functionality (Creat PR)
+    private void CreatePR(){
+        SMitemfunctions sif = new SMitemfunctions();
+        SMprfunctions spf = new SMprfunctions();
+        User user = new User();
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        Scanner sc = new Scanner(System.in);
+        String itemname = null, username = null, dateinput = null;
+        List<String> prlist = new ArrayList<>();
+        int qty = 0;
+        Date date = new Date();
+        
+        try {
+            System.out.println("Enter your username: ");
+            username = sc.next();
+        } catch (Exception e) {
+            System.out.println("Please Enter a Correct Username!");
+            return;
+        }
+        
+        String userid = user.getUserIDfromUsername(username);
+        if (Objects.isNull(userid)) {
+            System.out.println("username is not found!");
+            return;
+        }
+        
+        int choice = 0, count = 0, id = 0;
+        String strid;
+        
+        Create_PR_Menu:
+        while (true) {
+            try {
+                System.out.println("Enter item name: ");
+                itemname = sc.next();
+            } catch (Exception e) {
+                System.out.println("Invalid Item Name!");
+                continue Create_PR_Menu;
+            }
+            try {
+                System.out.println("Enter quantity to order: ");
+                qty = sc.nextInt();
+            } catch (Exception e) {
+                System.out.println("Please enter Quantity in numbers!");
+                continue Create_PR_Menu;
+            }
+            try {
+                System.out.println("Enter the expected resupply date (yyyy-mm-dd): ");
+                dateinput = sc.next();
+            } catch (Exception e) {
+                System.out.println("Please input a correct date in (yyyy-mm-dd)!");
+                continue Create_PR_Menu;
+            }
+            try {
+                date = df.parse(dateinput);
+            } catch (Exception e) {
+                System.out.println("Please input a correct date in (yyyy-mm-dd)!");
+                continue Create_PR_Menu;
+            }
+            String itemid = sif.FindItemIDFromName(itemname);
+            if (Objects.isNull(itemid)) {
+                System.out.println("Could not find an item with that name!");
+                continue Create_PR_Menu;
+            }
+            String supplyid = sif.FindSupplierIDFromItemID(itemid);
+            if (Objects.isNull(supplyid)) {
+                System.out.println("Could not find a supplier for that item!");
+                continue Create_PR_Menu;
+            }
+            
+            id = Integer.parseInt(spf.generateID().substring(2));
+            strid = String.format("PR%04d", id+count);
+            prlist.add(String.format("%s,%s,%s,%s,%s,%s", strid, itemid, qty, df.format(date), supplyid, userid));
+            count++;
+            System.out.println("Purchase Requisition preview:");
+            System.out.println(String.format(
+                                "PR ID: %s, Itemname: %s, Quantity: %s, Date: %s, Supplier ID: %s, Raised by: %s",
+                                prlist.getLast().split(",")[0], itemid, qty, df.format(date), supplyid, userid));
+            
+            System.out.println("""
+                               1. Add Purchase Requisition
+                               2. Submit Purchase Requisition
+                               3. Return to Main Menu
+                               """);
+            System.out.println("Please Select a menu 1-3: ");
+            try {
+                choice = sc.nextInt();
+            } catch (Exception e) {
+                System.out.println("Invalid input! Please select a number 1-3");
+            }
+            switch (choice) {
+                case 1:
+                    continue;
+                case 2:
+                    spf.AddPR(prlist);
+                    break Create_PR_Menu;
+                case 3:
+                    break Create_PR_Menu;
+                default:
+                    System.out.println("Invalid input! Please select a number 1-3");
+            }
+        }
+    }
+    
+    //SM 5th Functionality (View Purchase Orders)
+    private void ViewPR(){
+        PurchaseOrder po = new PurchaseOrder();
+        try {
+            po.readPurchaseOrdersFromFile(dfp.getPurchaseOrderFile());
+        } catch (Exception e) {
+            System.out.println("Error reading Purchase Order file!");
+            return;
         }
     }
 }
