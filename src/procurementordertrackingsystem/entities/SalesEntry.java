@@ -7,6 +7,8 @@ package procurementordertrackingsystem.entities;
 import com.sun.source.tree.BreakTree;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -34,8 +36,16 @@ public class SalesEntry implements IDGenerator{
     //Override the generateID method from IDGenerator to generate a sequential ID
     public String generateID() {
         List<String> rawdata = getAllSales();
-        String[] onesale = rawdata.getLast().split(",");
-        int lastid = Integer.parseInt(onesale[0].substring(2));
+        List<Integer> idlist = new ArrayList<>();
+        for (String eachdata : rawdata){
+            try {
+                idlist.add(Integer.parseInt(eachdata.split(",")[0].substring(2)));
+            } catch (Exception e) {
+                System.out.println("Error reading id!");
+            }
+        }
+        Collections.sort(idlist);
+        int lastid = idlist.getLast();
         return String.format("SE%04d", lastid+1);
     }
     
