@@ -85,7 +85,6 @@ public class SalesManager {
             if (updatedItems != null) {
                 try {
                     crudOntoFile.writeUpdatedLinesToFile(dfp.getItemFile(), updatedItems);
-                    System.out.println("Sales Updated Successfuly!");
                 } catch (Exception e) {
                     System.out.println("Error Updating Item File!");
                 }
@@ -211,10 +210,11 @@ public class SalesManager {
             String itemname = fetchItemNameFromId(itemid);
             if (Objects.isNull(itemname)) {
                 System.out.println("Invalid item name!");
+                return null;
             }
             System.out.println(String.format("SalesID: %s, Item Name: %s, Quantity: %s, Sale Date: %s", onesale[0], itemname, onesale[2], onesale[3]));
             updateitem.add(onesale[1]);
-            updateitem.add(String.valueOf(qtydiff));
+            updateitem.add(String.valueOf(qtydiff*-1));
             updatedsales.add(updateitem);
             updatesale.addAll(Arrays.asList(onesale));
             updatedsales.add(updatesale);
@@ -238,7 +238,9 @@ public class SalesManager {
                 cof.writeUpdatedLinesToFile(dfp.getSalesEntryFile(), allsales);
             } catch (Exception e) {
                 System.out.println("Error Updating Sales Entry File!");
+                return;
             }
+            System.out.println("Sales Edited Successfully!");
         }
     }
     
@@ -274,19 +276,19 @@ public class SalesManager {
             menu += "7. Exit\n";     // Non-admin role gets "Exit"
         }
 
-        int choice;
-
         // Loop the menu until the user chooses to exit or log out
         while (true) {
-            System.out.println("------------------------------");
+            int choice;
+            System.out.println("\n------------------------------");
             System.out.println(menu);
             System.out.print("Please Select a Menu (1-7): ");
 
             // Take input from user
             try {
                 choice = sc.nextInt();
-            } catch (NumberFormatException e) {
+            } catch (Exception e) {
                 System.out.println("Invalid menu. Please input a number from 1-7");
+                sc.nextLine(); 
                 continue;
             }
 
@@ -311,6 +313,7 @@ public class SalesManager {
                             choice = sc.nextInt();
                         } catch (Exception e) {
                             System.out.println("Invalid menu. Please input a number from 1-5");
+                            sc.nextLine(); 
                             continue;
                         }
                         switch (choice) {
@@ -364,7 +367,8 @@ public class SalesManager {
                     }
                     break;
                 default:
-                    System.out.println("Invalid menu. Please select a number from 1-8");
+                    System.out.println("Invalid menu. Please select a number from 1-7");
+                    break;
             }
             System.out.println("------------------------------");
         }
@@ -391,18 +395,20 @@ public class SalesManager {
         SMitemfunctions sif = new SMitemfunctions();
         SMsalesfunctions ssf = new SMsalesfunctions();
 
+        System.out.println("Enter the item name: ");
         try {
-            System.out.println("Enter the item name: ");
             item = sc.next();
         } catch (Exception e) {
             System.out.println("Error reading item name!");
+            sc.nextLine(); 
             return;
         }
+        System.out.println("Enter quantity sold: ");
         try {
-            System.out.println("Enter quantity sold: ");
             salequantity = sc.nextInt();
         } catch (Exception e) {
             System.out.println("Error reading quantity!");
+            sc.nextLine(); 
             return;
         }
         List<String> onesale = new ArrayList<>();
@@ -423,11 +429,18 @@ public class SalesManager {
                               2. Apply Sale(s)
                               3. Return to Sales Menu
                               """;
-        int choice;
+        int choice = 0;
         Add_Sales_Entry:
         while (true) {
+            System.out.println("------------------------------");
             System.out.println(addSalesMenu);
-            choice = sc.nextInt();
+            try {
+                choice = sc.nextInt();
+            } catch (Exception e) {
+                System.out.println("Invalid Input! Please Select a number from 1-3");
+                sc.nextLine();
+                continue;
+            }
             switch (choice) {
                 case 1:
                     try {
@@ -435,6 +448,7 @@ public class SalesManager {
                         item = sc.next();
                     } catch (Exception e) {
                         System.out.println("Error reading item name!");
+                        sc.nextLine(); 
                         return;
                     }
                     try {
@@ -442,6 +456,7 @@ public class SalesManager {
                         salequantity = sc.nextInt();
                     } catch (Exception e) {
                         System.out.println("Error reading quantity!");
+                        sc.nextLine(); 
                         return;
                     }
                     List<String> anothersale = new ArrayList<>();
@@ -453,7 +468,7 @@ public class SalesManager {
                 case 2:
                     ssf.EnterSales(salesentry);
                     sif.ApplySales(salesentry);
-                    System.out.println("Sales Updated Sucessfully!");
+                    System.out.println("Sales Updated Successfuly!");
                 case 3:
                     break Add_Sales_Entry;
                 default:
@@ -470,10 +485,17 @@ public class SalesManager {
         List<List<String>> updatedsale = new ArrayList<>();
         int choice = 0;
         
-        String itemname = null;
+        String itemname = null, id = null;
+        
         int qty = 0;
         System.out.println("Enter the Sales ID you want to edit: ");
-        String id = sc.next();
+        try {
+            id = sc.next();
+        } catch (Exception e) {
+            System.out.println("Please enter a correct ID!");
+            sc.nextLine(); 
+            return;
+        }
         
         if (Objects.isNull(ssf.displayOneSaleById(id))) {
             return;
@@ -481,21 +503,29 @@ public class SalesManager {
         else{
             System.out.println(ssf.displayOneSaleById(id));
         }
-
+        
+        System.out.println("Enter the new item name: ");
         try {
-            System.out.println("Enter the new item name: ");
             itemname = sc.next();
         } catch (Exception e) {
             System.out.println("Error reading item name!");
+            sc.nextLine();
+            return;
         }
+        System.out.println("Enter the new sale quantity: ");
         try {
-            System.out.println("Enter the new sale quantity: ");
             qty = sc.nextInt();
         } catch (Exception e) {
             System.out.println("Error reading quantity!");
+            sc.nextLine();
+            return;
         }
         List<List<String>> onesale = ssf.PreviewUpdateSales(id, itemname, qty);
-
+        if (Objects.isNull(onesale)){
+            return;
+        }
+        
+        System.out.println("------------------------------");
         System.out.println("""
                            1. Confirm Update
                            2. Return to Sales Menu
@@ -504,6 +534,8 @@ public class SalesManager {
             choice = sc.nextInt();
         } catch (Exception e) {
             System.out.println("Please input a number between 1-2");
+            sc.nextLine(); 
+            return;
         }
         switch (choice) {
             case 1:
@@ -524,23 +556,40 @@ public class SalesManager {
         String checkid = null;
         Delete_Sales_Menu:
         while (true){
-            int choice;
+            int choice = 0;
             System.out.println("Enter the Sales ID to be removed: ");
-            checkid = sc.next();
+            try {
+                checkid = sc.next();
+            } catch (Exception e) {
+                System.out.println("Invalid Sales ID!");
+                sc.nextLine(); 
+                return;
+            }
             if (Objects.isNull(ssf.displayOneSaleById(checkid))) {
                 System.out.println("Invalid Sales ID!");
+                sc.nextLine();
+                return;
             }
             else{
                 id.add(checkid);
+                System.out.println("Confirm remove the following sale:");
+                System.out.println(ssf.displayOneSaleById(checkid));
             }
+            System.out.println("------------------------------");
             System.out.println("""
-                               1. Add another sales
-                               2. Delete from record
+                               1. Add sale to be removed
+                               2. Confirm delete from record
                                3. Return to Sales Menu
                                
                                Please Select a Menu 1-3: 
                                """);
-            choice = sc.nextInt();
+            try {
+                choice = sc.nextInt();
+            } catch (Exception e) {
+                System.out.println("Invalid Input! Please Select a number from 1-3");
+                sc.nextLine(); 
+                return;
+            }
             switch (choice) {
                 case 1:
                     continue;
@@ -579,11 +628,12 @@ public class SalesManager {
         int qty = 0;
         Date date = new Date();
         
+        System.out.println("Enter your username: ");
         try {
-            System.out.println("Enter your username: ");
             username = sc.next();
         } catch (Exception e) {
             System.out.println("Please Enter a Correct Username!");
+            sc.nextLine(); 
             return;
         }
         
@@ -598,42 +648,48 @@ public class SalesManager {
         
         Create_PR_Menu:
         while (true) {
+            System.out.println("Enter item name: ");
             try {
-                System.out.println("Enter item name: ");
                 itemname = sc.next();
             } catch (Exception e) {
                 System.out.println("Invalid Item Name!");
-                continue Create_PR_Menu;
+                sc.nextLine(); 
+                continue;
             }
+            System.out.println("Enter quantity to order: ");
             try {
-                System.out.println("Enter quantity to order: ");
                 qty = sc.nextInt();
             } catch (Exception e) {
                 System.out.println("Please enter Quantity in numbers!");
-                continue Create_PR_Menu;
+                sc.nextLine(); 
+                continue;
             }
+            System.out.println("Enter the expected resupply date (yyyy-mm-dd): ");
             try {
-                System.out.println("Enter the expected resupply date (yyyy-mm-dd): ");
                 dateinput = sc.next();
             } catch (Exception e) {
                 System.out.println("Please input a correct date in (yyyy-mm-dd)!");
-                continue Create_PR_Menu;
+                sc.nextLine(); 
+                continue;
             }
             try {
                 date = df.parse(dateinput);
             } catch (Exception e) {
                 System.out.println("Please input a correct date in (yyyy-mm-dd)!");
-                continue Create_PR_Menu;
+                sc.nextLine(); 
+                continue;
             }
             String itemid = sif.FindItemIDFromName(itemname);
             if (Objects.isNull(itemid)) {
                 System.out.println("Could not find an item with that name!");
-                continue Create_PR_Menu;
+                sc.nextLine(); 
+                continue;
             }
             String supplyid = sif.FindSupplierIDFromItemID(itemid);
             if (Objects.isNull(supplyid)) {
                 System.out.println("Could not find a supplier for that item!");
-                continue Create_PR_Menu;
+                sc.nextLine(); 
+                continue;
             }
             
             id = Integer.parseInt(spf.generateID().substring(2));
@@ -645,6 +701,7 @@ public class SalesManager {
                                 "PR ID: %s, Itemname: %s, Quantity: %s, Date: %s, Supplier ID: %s, Raised by: %s",
                                 prlist.getLast().split(",")[0], itemid, qty, df.format(date), supplyid, userid));
             
+            System.out.println("------------------------------");
             System.out.println("""
                                1. Add Purchase Requisition
                                2. Submit Purchase Requisition
@@ -655,6 +712,8 @@ public class SalesManager {
                 choice = sc.nextInt();
             } catch (Exception e) {
                 System.out.println("Invalid input! Please select a number 1-3");
+                sc.nextLine(); 
+                continue;
             }
             switch (choice) {
                 case 1:
