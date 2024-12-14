@@ -41,17 +41,21 @@ public class PurchaseRequisition implements IDGenerator {
     // CRUDOntoFile object instantiation
     public CRUDOntoFile crudOntoFile = new CRUDOntoFile();
     
+    //Method to generate ID for Purchase Requisition entry
     @Override
     public String generateID(){
         DataFilePaths dfp = new DataFilePaths("src/procurementordertrackingsystem/data");
         List<String> rawdata = new ArrayList<>();
         List<Integer> idlist = new ArrayList<>();
+        //Fetch all the PR entry
         try {
             rawdata = crudOntoFile.readFromAFile(dfp.getPurchaseRequisitionFile());
         } catch (Exception e) {
             System.out.println("Error reading Purchase Requisition file!");
         }
+        //Iterate through the entries
         for (String eachdata : rawdata){
+            //Add the ID number in each entry to a list
             try {
                 idlist.add(Integer.parseInt(eachdata.split(",")[0].substring(2)));
             } catch (Exception e) {
@@ -59,8 +63,11 @@ public class PurchaseRequisition implements IDGenerator {
                 break;
             }
         }
+        //Sort the list from lowest to highest
         Collections.sort(idlist);
+        //Get the highest ID number from the list
         int lastid = idlist.getLast();
+        //Create the ID after the highest ID
         return String.format("PR%04d", lastid+1);
     }
 
