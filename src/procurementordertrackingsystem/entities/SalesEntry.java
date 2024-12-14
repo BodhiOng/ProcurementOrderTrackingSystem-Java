@@ -37,6 +37,7 @@ public class SalesEntry implements IDGenerator{
     public String generateID() {
         List<String> rawdata = getAllSales();
         List<Integer> idlist = new ArrayList<>();
+        //Find the highest ID in the record
         for (String eachdata : rawdata){
             try {
                 idlist.add(Integer.parseInt(eachdata.split(",")[0].substring(2)));
@@ -46,6 +47,7 @@ public class SalesEntry implements IDGenerator{
         }
         Collections.sort(idlist);
         int lastid = idlist.getLast();
+        //Create an ID after the highest ID
         return String.format("SE%04d", lastid+1);
     }
     
@@ -65,6 +67,7 @@ public class SalesEntry implements IDGenerator{
         return toreturn;
     }
     
+    //Method to read one sale record given its ID
     public String displayOneSaleById(String id){
         String[] onesale = readSalesbyid(id);
         if (Objects.isNull(onesale)){
