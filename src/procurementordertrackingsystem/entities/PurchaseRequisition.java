@@ -3,10 +3,14 @@ package procurementordertrackingsystem.entities;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import procurementordertrackingsystem.utilities.CRUDOntoFile;
 import java.util.List;
+import procurementordertrackingsystem.utilities.DataFilePaths;
+import procurementordertrackingsystem.utilities.IDGenerator;
 
-public class PurchaseRequisition {
+public class PurchaseRequisition implements IDGenerator {
     private String prID; // Purchase Requisition ID
     private String itemID; // Item ID
     private int quantity; // Quantity (always  >= 1)
@@ -36,6 +40,29 @@ public class PurchaseRequisition {
     
     // CRUDOntoFile object instantiation
     public CRUDOntoFile crudOntoFile = new CRUDOntoFile();
+    
+    @Override
+    public String generateID(){
+        DataFilePaths dfp = new DataFilePaths("src/procurementordertrackingsystem/data");
+        List<String> rawdata = new ArrayList<>();
+        List<Integer> idlist = new ArrayList<>();
+        try {
+            rawdata = crudOntoFile.readFromAFile(dfp.getPurchaseRequisitionFile());
+        } catch (Exception e) {
+            System.out.println("Error reading Purchase Requisition file!");
+        }
+        for (String eachdata : rawdata){
+            try {
+                idlist.add(Integer.parseInt(eachdata.split(",")[0].substring(2)));
+            } catch (Exception e) {
+                System.out.println("Error reading id!");
+                break;
+            }
+        }
+        Collections.sort(idlist);
+        int lastid = idlist.getLast();
+        return String.format("PR%04d", lastid+1);
+    }
 
     // Method to read all PRs
     public void readPurchaseRequisitionFromFile(File filename) throws IOException {
