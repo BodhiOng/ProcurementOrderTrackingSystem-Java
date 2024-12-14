@@ -1,9 +1,15 @@
 package procurementordertrackingsystem.entities;
 
+import java.util.ArrayList;
+import java.util.List;
+import procurementordertrackingsystem.utilities.CRUDOntoFile;
+import procurementordertrackingsystem.utilities.DataFilePaths;
+
 
 public class User {
     private String userID, name, role, username, email, password;
-    
+    CRUDOntoFile cof = new CRUDOntoFile();
+    DataFilePaths dfp = new DataFilePaths("src/procurementordertrackingsystem/data");
 
     // Default constructor
     public User() {
@@ -64,5 +70,20 @@ public class User {
         return password;
     }
     
-    
+    public String getUserIDfromUsername(String un){
+        List<String> userdata = new ArrayList<>();
+        String id = null;
+        try {
+            userdata = cof.readFromAFile(dfp.getUserFile());
+        } catch (Exception e) {
+            System.out.println("Error reading user file!");
+        }
+        for (String eachuser : userdata){
+            if (eachuser.split(",")[3].toLowerCase().equals(un.toLowerCase())) {
+                id = eachuser.split(",")[0];
+                break;
+            }
+        }
+        return id;
+    }
 }
