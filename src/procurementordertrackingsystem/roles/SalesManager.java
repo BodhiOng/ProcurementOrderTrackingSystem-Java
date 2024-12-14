@@ -96,11 +96,13 @@ public class SalesManager {
             String id = null;
             List<String> itemdata = new ArrayList<>();
             String[] line = null;
+            //Read all the item data
             try {
                 itemdata = crudOntoFile.readFromAFile(dfp.getItemFile());
             } catch (Exception e) {
                 System.out.println("Error Reading Item File!");
             }
+            //Find the record with matching name
             for (String lines : itemdata) {
                 line = lines.split(",");
                 if (line[1].toLowerCase().equals(name.toLowerCase())) {
@@ -108,6 +110,7 @@ public class SalesManager {
                     break;
                 }
             }
+            //return the id of the record
             return id;
         }
         
@@ -116,11 +119,13 @@ public class SalesManager {
             String supid = null;
             List<String> itemdata = new ArrayList<>();
             String[] line = null;
+            //Read all the item data
             try {
                 itemdata = crudOntoFile.readFromAFile(dfp.getItemFile());
             } catch (Exception e) {
                 System.out.println("Error Reading Item File!");
             }
+            //Find the record with matching ID
             for (String lines : itemdata) {
                 line = lines.split(",");
                 if (line[0].toLowerCase().equals(id.toLowerCase())) {
@@ -128,6 +133,7 @@ public class SalesManager {
                     break;
                 }
             }
+            //Return the supplier ID from the matching record
             return supid;
         }
     }
@@ -138,9 +144,12 @@ public class SalesManager {
         //Method to add new sales entry into file
         private void EnterSales(List<List<String>> salesdata) throws IOException {
             String id = null;
+            //Iterate through each sales list
             for (int i = 0; i < salesdata.size(); i++) {
                 id = generateID();
+                //Format the record into the specified format
                 String newline = String.format("%s,%s,%s,%s", id, salesdata.get(i).get(0), salesdata.get(i).get(1), java.time.LocalDate.now());
+                //Write each line into the sales_entry file
                 try {
                     cof.createToFile(dfp.getSalesEntryFile(), newline);
                 } catch (Exception e) {
@@ -151,11 +160,13 @@ public class SalesManager {
         //Method to remove sales entry from file
         private void RemoveSales(List<String> id){
             List<String> allsales = getAllSales();
+            //Instantiate an Iterator for the sales record
             Iterator<String> iterator = allsales.iterator();
             SMitemfunctions sif = new SMitemfunctions();
+            //Record the length of the sales record
             int length = allsales.size();
 
-            //Create all the sales needed to revert into one list
+            //Create a list of all the sales that needed to be reverted
             List<List<String>> saletorevert = new ArrayList<>();
             List<String> updatedsale = new ArrayList<>();
             for (String oneid : id) {
@@ -172,7 +183,7 @@ public class SalesManager {
             //Revert all the sales from the item quantity
             sif.ApplySales(saletorevert);
 
-            //Remove the sales from sale record
+            //Remove the sale from sales record
             while (iterator.hasNext()) {
                 String[] sale = iterator.next().split(",");
                 for (String eachid : id) {
@@ -182,11 +193,14 @@ public class SalesManager {
                     }
                 }
             }
+            
+            //Write the updated records into sales_entry file
             try {
                 cof.writeUpdatedLinesToFile(dfp.getSalesEntryFile(), allsales);
             } catch (Exception e) {
                 System.out.println("Error Updating Sales Entry!");
             }
+            //Check if theres a change in the size
             if (allsales.size() == length) {
                 System.out.println("No ID matched the Sales ID!");
             } else {
@@ -244,8 +258,9 @@ public class SalesManager {
         }
     }
     
-    //
+    //Create a class for PurchaseRequisition functions that is used exclusively by SM
     private class SMprfunctions extends PurchaseRequisition{
+        //Method to create new Purchase Requisition
         private void AddPR(List<String> prlist){
             try {
                 crudOntoFile.createToFile(dfp.getPurchaseRequisitionFile(), prlist);
@@ -305,6 +320,7 @@ public class SalesManager {
                                         4. Delete Sales
                                         5. Main Menu
                                         """;
+                    //Loop the menu until the user chooses to return to main menu
                     Sales_Entry_Menu:
                     while (true) {
                         System.out.println(salesEntryMenu);
@@ -318,16 +334,16 @@ public class SalesManager {
                         }
                         switch (choice) {
                             case 1:
-                                ViewSales();
+                                ViewSales(); //Go into view sales function
                                 break;
                             case 2:
-                                AddSales();
+                                AddSales(); //Go into add sales function
                                 break;
                             case 3:
-                                EditSales();
+                                EditSales(); //Go into edit sales function
                                 break;
                             case 4:
-                                DeleteSales();
+                                DeleteSales(); //Go into delete sales function
                                 break;
                             case 5:
                                 break Sales_Entry_Menu; // Go back to main menu
@@ -338,13 +354,13 @@ public class SalesManager {
                     }
                     break;
                 case 3:
-                    ViewStocks();
+                    ViewStocks(); //Go into view stock function
                     break;
                 case 4:
-                    CreatePR();
+                    CreatePR(); //Go into create purchase requisition function
                     break;
                 case 5:
-                    ViewPR();
+                    ViewPO(); //Go into view purchase orders function
                     break;
                 case 6:
                     if ("Administrators".equalsIgnoreCase(role)) {
@@ -394,7 +410,8 @@ public class SalesManager {
         Scanner sc = new Scanner(System.in);
         SMitemfunctions sif = new SMitemfunctions();
         SMsalesfunctions ssf = new SMsalesfunctions();
-
+        
+        //Ask the user for item and quantity
         System.out.println("Enter the item name: ");
         try {
             item = sc.next();
@@ -411,6 +428,7 @@ public class SalesManager {
             sc.nextLine(); 
             return;
         }
+        //Find the item ID from the input item name
         List<String> onesale = new ArrayList<>();
         String itemid = sif.FindItemIDFromName(item);
         if (Objects.isNull(itemid)) {
@@ -421,6 +439,7 @@ public class SalesManager {
             onesale.add(itemid);        
         }
         onesale.add(String.valueOf(salequantity));
+        //Add all the input into one list
         salesentry.add(onesale);
 
         String addSalesMenu = """
@@ -430,6 +449,7 @@ public class SalesManager {
                               3. Return to Sales Menu
                               """;
         int choice = 0;
+        //Loop the menu until the user chooses to apply sales or return
         Add_Sales_Entry:
         while (true) {
             System.out.println("------------------------------");
@@ -443,6 +463,7 @@ public class SalesManager {
             }
             switch (choice) {
                 case 1:
+                    //Ask the user for another item and quantity
                     try {
                         System.out.println("Enter the item name: ");
                         item = sc.next();
@@ -459,6 +480,8 @@ public class SalesManager {
                         sc.nextLine(); 
                         return;
                     }
+                    
+                    //Add all the entry into the main list
                     List<String> anothersale = new ArrayList<>();
                     anothersale.add(sif.FindItemIDFromName(item));
                     anothersale.add(String.valueOf(salequantity));
@@ -466,10 +489,12 @@ public class SalesManager {
                     System.out.println(salesentry);
                     break;
                 case 2:
+                    //Add and apply all the sales entry
                     ssf.EnterSales(salesentry);
                     sif.ApplySales(salesentry);
                     System.out.println("Sales Updated Successfuly!");
                 case 3:
+                    //Go back to main menu
                     break Add_Sales_Entry;
                 default:
                     System.out.println("Invalid Input! Please Select a number from 1-3");
@@ -483,11 +508,10 @@ public class SalesManager {
         SMsalesfunctions ssf = new SMsalesfunctions();
         SMitemfunctions sif = new SMitemfunctions();
         List<List<String>> updatedsale = new ArrayList<>();
-        int choice = 0;
-        
+        int choice = 0, qty = 0;
         String itemname = null, id = null;
         
-        int qty = 0;
+        //Ask the user for the Sales ID they want to edit
         System.out.println("Enter the Sales ID you want to edit: ");
         try {
             id = sc.next();
@@ -497,6 +521,7 @@ public class SalesManager {
             return;
         }
         
+        //Check and Display the existence of the sales record
         if (Objects.isNull(ssf.displayOneSaleById(id))) {
             return;
         }
@@ -504,6 +529,7 @@ public class SalesManager {
             System.out.println(ssf.displayOneSaleById(id));
         }
         
+        //Ask user for the new details
         System.out.println("Enter the new item name: ");
         try {
             itemname = sc.next();
@@ -520,11 +546,14 @@ public class SalesManager {
             sc.nextLine();
             return;
         }
+        
+        //Check the integrity of the new details
         List<List<String>> onesale = ssf.PreviewUpdateSales(id, itemname, qty);
         if (Objects.isNull(onesale)){
             return;
         }
         
+        //Ask user for update confirmation
         System.out.println("------------------------------");
         System.out.println("""
                            1. Confirm Update
@@ -539,10 +568,10 @@ public class SalesManager {
         }
         switch (choice) {
             case 1:
-                ssf.UpdateSales(onesale);
+                ssf.UpdateSales(onesale); //Apply the updated record
                 break;
             case 2:
-                break;
+                break; //Return to the sales menu
             default:
                 System.out.println("Invalid Input! Please select a number from 1-2");
         }           
@@ -554,9 +583,13 @@ public class SalesManager {
         Scanner sc = new Scanner(System.in);
         List<String> id = new ArrayList<>();
         String checkid = null;
+        
+        //Loop the menu until the user chooses to return to main menu
         Delete_Sales_Menu:
         while (true){
             int choice = 0;
+            
+            //Ask the user to input the SalesID to be removed
             System.out.println("Enter the Sales ID to be removed: ");
             try {
                 checkid = sc.next();
@@ -565,16 +598,19 @@ public class SalesManager {
                 sc.nextLine(); 
                 return;
             }
+            //Check if the ID exists
             if (Objects.isNull(ssf.displayOneSaleById(checkid))) {
                 System.out.println("Invalid Sales ID!");
                 sc.nextLine();
                 return;
             }
             else{
+                //Show the preview of the record that will be deleted
                 id.add(checkid);
                 System.out.println("Confirm remove the following sale:");
                 System.out.println(ssf.displayOneSaleById(checkid));
             }
+            //Ask the user for confirmation and if they want to remove another record
             System.out.println("------------------------------");
             System.out.println("""
                                1. Add sale to be removed
@@ -594,15 +630,16 @@ public class SalesManager {
                 case 1:
                     continue;
                 case 2:
+                    //Check if they accidentally try to remove nothing
                     if (id.size() < 1) {
                         System.out.println("No Sale to be removed!");
                     }
                     else{
-                        ssf.RemoveSales(id);
+                        ssf.RemoveSales(id); //remove the records
                     }
                     break Delete_Sales_Menu;
                 case 3:
-                    break Delete_Sales_Menu;
+                    break Delete_Sales_Menu; //Go back to sales menu
                 default:
                     System.out.println("Invalid Input! Please select a number from 1-3");
                     ;
@@ -628,6 +665,7 @@ public class SalesManager {
         int qty = 0;
         Date date = new Date();
         
+        //Ask the user for their username
         System.out.println("Enter your username: ");
         try {
             username = sc.next();
@@ -637,6 +675,7 @@ public class SalesManager {
             return;
         }
         
+        //Check their username existence
         String userid = user.getUserIDfromUsername(username);
         if (Objects.isNull(userid)) {
             System.out.println("username is not found!");
@@ -645,9 +684,10 @@ public class SalesManager {
         
         int choice = 0, count = 0, id = 0;
         String strid;
-        
+        //Loop the menu until the user chooses to return to main menu
         Create_PR_Menu:
         while (true) {
+            //Ask the user for the PR details
             System.out.println("Enter item name: ");
             try {
                 itemname = sc.next();
@@ -672,6 +712,7 @@ public class SalesManager {
                 sc.nextLine(); 
                 continue;
             }
+            //Validate the date input
             try {
                 date = df.parse(dateinput);
             } catch (Exception e) {
@@ -679,12 +720,14 @@ public class SalesManager {
                 sc.nextLine(); 
                 continue;
             }
+            //Check the existence of the item
             String itemid = sif.FindItemIDFromName(itemname);
             if (Objects.isNull(itemid)) {
                 System.out.println("Could not find an item with that name!");
                 sc.nextLine(); 
                 continue;
             }
+            //Fetch the supplier ID of the item
             String supplyid = sif.FindSupplierIDFromItemID(itemid);
             if (Objects.isNull(supplyid)) {
                 System.out.println("Could not find a supplier for that item!");
@@ -692,6 +735,7 @@ public class SalesManager {
                 continue;
             }
             
+            //Preview the Purchase Requisition
             id = Integer.parseInt(spf.generateID().substring(2));
             strid = String.format("PR%04d", id+count);
             prlist.add(String.format("%s,%s,%s,%s,%s,%s", strid, itemid, qty, df.format(date), supplyid, userid));
@@ -700,7 +744,7 @@ public class SalesManager {
             System.out.println(String.format(
                                 "PR ID: %s, Itemname: %s, Quantity: %s, Date: %s, Supplier ID: %s, Raised by: %s",
                                 prlist.getLast().split(",")[0], itemid, qty, df.format(date), supplyid, userid));
-            
+            //Ask user for confirmation or if they want to add another Purchase Requisition
             System.out.println("------------------------------");
             System.out.println("""
                                1. Add Purchase Requisition
@@ -717,12 +761,12 @@ public class SalesManager {
             }
             switch (choice) {
                 case 1:
-                    continue;
+                    continue; //Add another Purchase Requisition
                 case 2:
-                    spf.AddPR(prlist);
+                    spf.AddPR(prlist); //Create the new Purchase Requisition(s)
                     break Create_PR_Menu;
                 case 3:
-                    break Create_PR_Menu;
+                    break Create_PR_Menu; //Go back to main menu
                 default:
                     System.out.println("Invalid input! Please select a number 1-3");
             }
@@ -730,7 +774,7 @@ public class SalesManager {
     }
     
     //SM 5th Functionality (View Purchase Orders)
-    private void ViewPR(){
+    private void ViewPO(){
         PurchaseOrder po = new PurchaseOrder();
         try {
             po.readPurchaseOrdersFromFile(dfp.getPurchaseOrderFile());
