@@ -53,10 +53,12 @@ public class SalesEntry implements IDGenerator{
     
     //Method to read one sales record given its ID
     public String[] readSalesbyid(String id){
+        //Get all the sales record
         List<String> rawdata = getAllSales();
         List<String> onerecord = new ArrayList<>();
         String[] line = null;
         String[] toreturn = null;
+        //Find the record that match the ID
         for (String lines : rawdata){
             line = lines.split(",");
             if (line[0].toLowerCase().equals(id.toLowerCase())){
@@ -64,17 +66,21 @@ public class SalesEntry implements IDGenerator{
                 break;
             }
         }
+        //Return all the record with matching ID
         return toreturn;
     }
     
     //Method to read one sale record given its ID
     public String displayOneSaleById(String id){
+        //Get the sale with the specified ID
         String[] onesale = readSalesbyid(id);
+        //Check if the record exists
         if (Objects.isNull(onesale)){
             System.out.println("No sale record is found with that ID!");
             return null;
         }
         else{
+            //Get and return the item name from the record
             String itemname = fetchItemNameFromId(onesale[1]);
             return String.format("SalesID: %s, Item Name: %s, Quantity: %s, Sale Date: %s", onesale[0], itemname, onesale[2], onesale[3]);
         }
@@ -82,11 +88,14 @@ public class SalesEntry implements IDGenerator{
     
     //Method to read all sales entry
     public void readAllSales(){
+        //Get all the sales record
         List<String> rawdata = getAllSales();
         String[] line = null;
         String itemname;
+        //Display all the value of the record
         for (String lines : rawdata){
             line = lines.split(",");
+            //Find the item name of the item ID
             itemname = fetchItemNameFromId(line[1]);
             System.out.println(String.format("SalesID: %s, Item Name: %s, Quantity: %s, Sale Date: %s", line[0], itemname, line[2], line[3]));
         }
