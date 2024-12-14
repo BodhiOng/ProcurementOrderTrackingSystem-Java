@@ -39,10 +39,11 @@ public class SalesEntry implements IDGenerator{
     //Method to read one sales record given its ID
     public String[] readSalesbyid(String id){
         List<String> rawdata = getAllSales();
+        List<String> onerecord = new ArrayList<>();
         String[] line = null;
         for (String lines : rawdata){
             line = lines.split(",");
-            if (line[0].equals(id)){
+            if (line[0].toLowerCase().equals(id.toLowerCase())){
                 break;
             }
         }
@@ -79,7 +80,7 @@ public class SalesEntry implements IDGenerator{
     public void setSalesdate(Date salesdate) {this.salesdate = salesdate;}
     
     //Private method to fetch all sales entry
-    private List<String> getAllSales(){
+    protected List<String> getAllSales(){
         List<String> rawdata = new ArrayList<>();
         try {
             rawdata = cof.readFromAFile(dfp.getSalesEntryFile());
