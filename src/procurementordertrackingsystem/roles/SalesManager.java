@@ -6,10 +6,12 @@ package procurementordertrackingsystem.roles;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectStreamException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 import procurementordertrackingsystem.entities.Item;
 import procurementordertrackingsystem.entities.SalesEntry;
@@ -43,6 +45,7 @@ public class SalesManager {
             return itemlist;
         }
         
+        //Add the new records to item file and sales_entry file
         private void ApplySales(List<List<String>> salesdetail){
             
             //Create a list for only the updated items
@@ -80,6 +83,7 @@ public class SalesManager {
             if (updatedItems != null) {
                 try {
                     crudOntoFile.writeUpdatedLinesToFile(dfp.getItemFile(), updatedItems);
+                    System.out.println("Sales Updated Successfuly!");
                 } catch (Exception e) {
                     System.out.println("Error Updating Item File!");
                 }
@@ -121,6 +125,7 @@ public class SalesManager {
                 }
             }
         }
+        //Method to remove sales entry from file
         private void RemoveSales(List<String> id){
             List<String> allsales = getAllSales();
             Iterator<String> iterator = allsales.iterator();
@@ -128,7 +133,7 @@ public class SalesManager {
             int length = allsales.size();
             
             //Create all the sales needed to revert into one list
-            List<List<String>> saletorevert = new ArrayList<List<String>>();
+            List<List<String>> saletorevert = new ArrayList<>();
             List<String> updatedsale = new ArrayList<>();
             for (String oneid : id){
                 String[] onesale = null;
@@ -164,6 +169,50 @@ public class SalesManager {
             }
             else{
                 System.out.println("Sales Removed Successfully!");
+            }
+        }
+        //method to edit sales entry from file
+        private List<List<String>> PreviewUpdateSales(String id, String item, int qty){
+            SMitemfunctions sif = new SMitemfunctions();
+            String itemid = sif.FindItemIDFromName(item);
+            List<List<String>> updatedsales = new ArrayList<>();
+            List<String> updateitem = new ArrayList<>();
+            List<String> updatesale = new ArrayList<>();
+            String[] onesale = readSalesbyid(id);
+            int qtydiff = Integer.parseInt(onesale[2]) - qty;
+            onesale[1] = itemid;
+            onesale[2] = String.valueOf(qty);
+            System.out.println("Preview of the updated sales:");
+            String itemname = fetchItemNameFromId(itemid);
+            if (Objects.isNull(itemname)) {
+                System.out.println("Invalid item name!");
+            }
+            System.out.println(String.format("SalesID: %s, Item Name: %s, Quantity: %s, Sale Date: %s", onesale[0], itemname, onesale[2], onesale[3]));
+            updateitem.add(onesale[1]);
+            updateitem.add(String.valueOf(qtydiff));
+            updatedsales.add(updateitem);
+            updatesale.addAll(Arrays.asList(onesale));
+            updatedsales.add(updatesale);
+            return updatedsales;
+        }
+        //method to apply the edited sales entry into the file
+        private void UpdateSales(List<List<String>> updatedsale){
+            SMitemfunctions sif = new SMitemfunctions();
+            List<List<String>> updateditem = new ArrayList<>();
+            updateditem.add(updatedsale.get(0));
+            String updatedsales = String.format("%s,%s,%s,%s", updatedsale.get(1).get(0), updatedsale.get(1).get(1), updatedsale.get(1).get(2), updatedsale.get(1).get(3));
+            sif.ApplySales(updateditem);
+            List<String> allsales = getAllSales();
+            for (int i = 0; i < allsales.size(); i++){
+                if (allsales.get(i).split(",")[0].toLowerCase().equals(updatedsale.get(1).get(0).toLowerCase())) {
+                    allsales.set(i, updatedsales);
+                    break;
+                }
+            }
+            try {
+                cof.writeUpdatedLinesToFile(dfp.getSalesEntryFile(), allsales);
+            } catch (Exception e) {
+                System.out.println("Error Updating Sales Entry File!");
             }
         }
     }
@@ -227,7 +276,7 @@ public class SalesManager {
                                 AddSales();
                                 break;
                             case 3:
-                                
+                                EditSales();
                                 break;
                             case 4:
                                 DeleteSales();
@@ -266,11 +315,11 @@ public class SalesManager {
         se.readAllSales();
     }
     
-    //SM 2nd Functionality 2nd sub-function (Add sales record)
+    //SM 2nd Functionality 2nd sub-function (Add Sales Record)
     private void AddSales() throws IOException{
         String item = null;
         int salequantity = 0;
-        List<List<String>> salesentry = new ArrayList<List<String>>();
+        List<List<String>> salesentry = new ArrayList<>();
         Scanner sc = new Scanner(System.in);
         SMitemfunctions sif = new SMitemfunctions();
         SMsalesfunctions ssf = new SMsalesfunctions();
@@ -290,7 +339,14 @@ public class SalesManager {
             DisplayMenu();
         }
         List<String> onesale = new ArrayList<>();
-        onesale.add(sif.FindItemIDFromName(item));
+        String itemid = sif.FindItemIDFromName(item);
+        if (Objects.isNull(itemid)) {
+            System.out.println("Invalid item name!");
+            return;
+        }
+        else{
+            onesale.add(itemid);        
+        }
         onesale.add(String.valueOf(salequantity));
         salesentry.add(onesale);
         
@@ -337,14 +393,77 @@ public class SalesManager {
             }
         }
     }
+    
+    //SM 2nd Functionality 3th sub-function (Edit Sales Record)
+    private void EditSales(){
+        Scanner sc = new Scanner(System.in);
+        SMsalesfunctions ssf = new SMsalesfunctions();
+        SMitemfunctions sif = new SMitemfunctions();
+        List<List<String>> updatedsale = new ArrayList<>();
+        int choice = 0;
+        
+        String itemname = null;
+        int qty = 0;
+        System.out.println("Enter the Sales ID you want to edit: ");
+        String id = sc.next();
+        
+        if (Objects.isNull(ssf.displayOneSaleById(id))) {
+            return;
+        }
+        else{
+            System.out.println(ssf.displayOneSaleById(id));
+        }
+
+        try {
+            System.out.println("Enter the new item name: ");
+            itemname = sc.next();
+        } catch (Exception e) {
+            System.out.println("Error reading item name!");
+        }
+        try {
+            System.out.println("Enter the new sale quantity: ");
+            qty = sc.nextInt();
+        } catch (Exception e) {
+            System.out.println("Error reading quantity!");
+        }
+        List<List<String>> onesale = ssf.PreviewUpdateSales(id, itemname, qty);
+
+        System.out.println("""
+                           1. Confirm Update
+                           2. Return to Sales Menu
+                           """);
+        try {
+            choice = sc.nextInt();
+        } catch (Exception e) {
+            System.out.println("Please input a number between 1-2");
+        }
+        switch (choice) {
+            case 1:
+                ssf.UpdateSales(onesale);
+                break;
+            case 2:
+                break;
+            default:
+                System.out.println("Invalid Input! Please select a number from 1-2");
+        }           
+    }
+    
+    //SM 2nd Functionality 4th sub-function (Delete Sales Record)
     private void DeleteSales(){
         SMsalesfunctions ssf = new SMsalesfunctions();
         Scanner sc = new Scanner(System.in);
         List<String> id = new ArrayList<>();
-        System.out.println("Enter the Sales ID to be removed: ");
-        id.add(sc.next());
+        String checkid = null;
         Delete_Sales_Menu: while (true){
             int choice;
+            System.out.println("Enter the Sales ID to be removed: ");
+            checkid = sc.next();
+            if (Objects.isNull(ssf.displayOneSaleById(checkid))) {
+                System.out.println("Invalid Sales ID!");
+            }
+            else{
+                id.add(checkid);
+            }
             System.out.println("""
                                1. Add another sales
                                2. Delete from record
@@ -355,11 +474,15 @@ public class SalesManager {
             choice = sc.nextInt();
             switch (choice) {
                 case 1:
-                    System.out.println("Enter the Sales ID to be removed: ");
-                    id.add(sc.next());
                     continue;
                 case 2:
-                    ssf.RemoveSales(id);
+                    if (id.size() < 1) {
+                        System.out.println("No Sale to be removed!");
+                    }
+                    else{
+                        ssf.RemoveSales(id);
+                    }
+                    break Delete_Sales_Menu;
                 case 3:
                     break Delete_Sales_Menu;
                 default:
