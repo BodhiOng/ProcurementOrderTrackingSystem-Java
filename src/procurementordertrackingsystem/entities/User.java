@@ -1,6 +1,5 @@
 package procurementordertrackingsystem.entities;
 
-import java.util.List;
 
 public class User {
     private String userID, name, role, username, email, password;

@@ -153,20 +153,12 @@ public class Administrators implements IDGenerator {
         System.out.print("Enter name: ");
         String name = scanner.nextLine();
 
-        System.out.println("Select role:");
-        System.out.println("1. Sales Manager");
-        System.out.println("2. Purchase Manager");
-        System.out.println("3. Finance Manager");
-        System.out.println("4. Inventory Manager");
-        System.out.println("5. Administrators");
-
         String role = getValidRole(scanner);
 
-        
         String username = getValidUsername(scanner);
 
         String email = getValidEmail(scanner);
-        
+
         System.out.print("Enter password: ");
         String password = scanner.nextLine();
 
@@ -187,6 +179,12 @@ public class Administrators implements IDGenerator {
         String role = "";
         boolean validRole = false;
         while (!validRole) {
+            System.out.println("Select role:");
+            System.out.println("1. Sales Manager");
+            System.out.println("2. Purchase Manager");
+            System.out.println("3. Finance Manager");
+            System.out.println("4. Inventory Manager");
+            System.out.println("5. Administrators");
             System.out.print("Enter the number corresponding to the role: ");
             String roleChoice = scanner.nextLine();
 
@@ -218,8 +216,8 @@ public class Administrators implements IDGenerator {
         }
         return role;
     }
-    
-        private String getValidEmail(Scanner scanner) {
+
+    private String getValidEmail(Scanner scanner) {
         String email;
         DataFilePaths userFilePaths = new DataFilePaths("src/procurementordertrackingsystem/data");
         File userFile = userFilePaths.getUserFile();
@@ -234,7 +232,7 @@ public class Administrators implements IDGenerator {
             }
 
             // Check if the email already exists
-            if (isEmailOrUsernameExists(userFile, email,null)) {
+            if (isEmailOrUsernameExists(userFile, email, null)) {
                 System.out.println("This email is already registered. Please use a different email.");
             } else {
                 break; // Exit loop if email is valid and does not exist
@@ -252,10 +250,10 @@ public class Administrators implements IDGenerator {
             username = scanner.nextLine().trim();
 
             // Check if the email already exists
-            if (isEmailOrUsernameExists(userFile, null ,username)) {
+            if (isEmailOrUsernameExists(userFile, null, username)) {
                 System.out.println("This username is already registered. Please use a different username.");
             } else {
-                break; 
+                break;
             }
         }
         return username;
@@ -312,8 +310,19 @@ public class Administrators implements IDGenerator {
                 System.out.println("3. Username");
                 System.out.println("4. Email");
                 System.out.println("5. Cancel");
-                System.out.print("Enter what you wish to edit: ");
-                int choice = Integer.parseInt(scanner.nextLine());
+
+                int choice = -1;
+                while (choice < 1 || choice > 5) {
+                    System.out.print("Enter what you wish to edit (1-5): ");
+                    try {
+                        choice = Integer.parseInt(scanner.nextLine().trim());
+                        if (choice < 1 || choice > 5) {
+                            System.out.println("Invalid input. Please enter a valid number between 1 and 5.");
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input. Please enter a valid number between 1 and 5.");
+                    }
+                }
 
                 switch (choice) {
                     case 1:
@@ -400,15 +409,18 @@ public class Administrators implements IDGenerator {
     }
 
     // Placeholder for login methods
-    private void loginAsFinanceManager() {
-        /* Implementation */ }
-
+    private void loginAsFinanceManager() throws IOException {
+        System.out.println("You have finance access.");
+        FinanceManager fm = new FinanceManager();
+        fm.displayMenu("Administrators");
+    }
     private void loginAsPurchaseManager() {
         /* Implementation */ }
 
-    private void loginAsInventoryManager() {
-        /* Implementation */ }
-
+    private void loginAsInventoryManager() throws IOException {
+        InventoryManager im = new InventoryManager();
+        im.menu("Administrators");
+    }
     private void loginAsSalesManager() {
         /* Implementation */ }
 

@@ -105,11 +105,11 @@ public class LoginPage extends User { // Extending User class
             case "Finance Manager":
                 System.out.println("You have finance access.");
                 FinanceManager fm = new FinanceManager();
-                fm.displayMenu();
+                fm.displayMenu(role);
                 break;
             case "Inventory Manager":
                 System.out.println("You have inventory management access.");
-                InventoryManager.menu();
+                InventoryManager.menu(role);
                 break;
             case "Sales Manager":
                 System.out.println("You have sales manager access.");

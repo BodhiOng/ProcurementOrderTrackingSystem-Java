@@ -222,7 +222,7 @@ public class SupplierRegistration {
         return String.format("%s%04d", prefix, nextId);
     }
 
-    public static void supplierMenu() throws IOException {
+    public static void supplierMenu(String role) throws IOException {
         Scanner scanner = new Scanner(System.in);
         SupplierRegistration supplierReg = new SupplierRegistration();
         boolean running = true;
@@ -252,7 +252,7 @@ public class SupplierRegistration {
                     break;
                 case 4:
                     System.out.println("❌ Exiting Supplier Management.");
-                    InventoryManager.menu();
+                    InventoryManager.menu(role);
                     running = false;
                     break;
                 default:
