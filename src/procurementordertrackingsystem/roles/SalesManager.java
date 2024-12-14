@@ -7,6 +7,8 @@ package procurementordertrackingsystem.roles;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 import procurementordertrackingsystem.entities.Item;
@@ -119,6 +121,51 @@ public class SalesManager {
                 }
             }
         }
+        private void RemoveSales(List<String> id){
+            List<String> allsales = getAllSales();
+            Iterator<String> iterator = allsales.iterator();
+            SMitemfunctions sif = new SMitemfunctions();
+            int length = allsales.size();
+            
+            //Create all the sales needed to revert into one list
+            List<List<String>> saletorevert = new ArrayList<List<String>>();
+            List<String> updatedsale = new ArrayList<>();
+            for (String oneid : id){
+                String[] onesale = null;
+                onesale = readSalesbyid(oneid);
+                int qty = Integer.parseInt(onesale[2]);
+                qty *= -1;
+                onesale[2] = String.valueOf(qty);
+                updatedsale.add(onesale[1]);
+                updatedsale.add(onesale[2]);
+                saletorevert.add(updatedsale);
+            }
+            
+            //Revert all the sales from the item quantity
+            sif.ApplySales(saletorevert);
+            
+            //Remove the sales from sale record
+            while (iterator.hasNext()){
+                String[] sale = iterator.next().split(",");
+                for (String eachid : id){
+                    if (sale[0].toLowerCase().equals(eachid.toLowerCase())){
+                        iterator.remove();
+                        break;
+                    }   
+                }
+            }
+            try {
+                cof.writeUpdatedLinesToFile(dfp.getSalesEntryFile(), allsales);
+            } catch (Exception e) {
+                System.out.println("Error Updating Sales Entry!");
+            }
+            if (allsales.size() == length) {
+                System.out.println("No ID matched the Sales ID!");
+            }
+            else{
+                System.out.println("Sales Removed Successfully!");
+            }
+        }
     }
     
     //Method to display menu in CLI
@@ -178,6 +225,13 @@ public class SalesManager {
                                 break;
                             case 2:
                                 AddSales();
+                                break;
+                            case 3:
+                                
+                                break;
+                            case 4:
+                                DeleteSales();
+                                break;
                             case 5:
                                 DisplayMenu();
                                 break Sales_Entry_Menu;
@@ -280,6 +334,36 @@ public class SalesManager {
                     break Add_Sales_Entry;
                 default:
                     System.out.println("Invalid Input! Please Select a number from 1-3");
+            }
+        }
+    }
+    private void DeleteSales(){
+        SMsalesfunctions ssf = new SMsalesfunctions();
+        Scanner sc = new Scanner(System.in);
+        List<String> id = new ArrayList<>();
+        System.out.println("Enter the Sales ID to be removed: ");
+        id.add(sc.next());
+        Delete_Sales_Menu: while (true){
+            int choice;
+            System.out.println("""
+                               1. Add another sales
+                               2. Delete from record
+                               3. Return to Sales Menu
+                               
+                               Please Select a Menu 1-3: 
+                               """);
+            choice = sc.nextInt();
+            switch (choice) {
+                case 1:
+                    System.out.println("Enter the Sales ID to be removed: ");
+                    id.add(sc.next());
+                    continue;
+                case 2:
+                    ssf.RemoveSales(id);
+                case 3:
+                    break Delete_Sales_Menu;
+                default:
+                    System.out.println("Invalid Input! Please select a number from 1-3");;
             }
         }
     }
