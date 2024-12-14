@@ -162,11 +162,11 @@ public class Administrators implements IDGenerator {
 
         String role = getValidRole(scanner);
 
-        System.out.print("Enter username: ");
-        String username = scanner.nextLine();
+        
+        String username = getValidUsername(scanner);
 
         String email = getValidEmail(scanner);
-
+        
         System.out.print("Enter password: ");
         String password = scanner.nextLine();
 
@@ -218,25 +218,70 @@ public class Administrators implements IDGenerator {
         }
         return role;
     }
-
-    private String getValidEmail(Scanner scanner) {
-        String email = "";
-        boolean validEmail = false;
-        while (!validEmail) {
+    
+        private String getValidEmail(Scanner scanner) {
+        String email;
+        DataFilePaths userFilePaths = new DataFilePaths("src/procurementordertrackingsystem/data");
+        File userFile = userFilePaths.getUserFile();
+        while (true) {
             System.out.print("Enter email: ");
-            email = scanner.nextLine();
+            email = scanner.nextLine().trim();
 
-            String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-            Pattern pattern = Pattern.compile(emailRegex);
-            Matcher matcher = pattern.matcher(email);
-
-            if (matcher.matches()) {
-                validEmail = true;
-            } else {
+            // Validate email format
+            if (!email.matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$")) {
                 System.out.println("Invalid email format. Please try again.");
+                continue;
+            }
+
+            // Check if the email already exists
+            if (isEmailOrUsernameExists(userFile, email,null)) {
+                System.out.println("This email is already registered. Please use a different email.");
+            } else {
+                break; // Exit loop if email is valid and does not exist
             }
         }
         return email;
+    }
+
+    private String getValidUsername(Scanner scanner) {
+        String username;
+        DataFilePaths userFilePaths = new DataFilePaths("src/procurementordertrackingsystem/data");
+        File userFile = userFilePaths.getUserFile();
+        while (true) {
+            System.out.print("Enter username: ");
+            username = scanner.nextLine().trim();
+
+            // Check if the email already exists
+            if (isEmailOrUsernameExists(userFile, null ,username)) {
+                System.out.println("This username is already registered. Please use a different username.");
+            } else {
+                break; 
+            }
+        }
+        return username;
+    }
+
+    private boolean isEmailOrUsernameExists(File userFile, String email, String username) {
+        CRUDOntoFile fileHandler = new CRUDOntoFile(); // Instantiate the CRUDOntoFile class
+        try {
+            List<String> lines = fileHandler.readFromAFile(userFile); // Reuse the method from CRUDOntoFile
+            for (String line : lines) {
+                String[] userDetails = line.split(",");
+                // Ensure the line has sufficient details to avoid ArrayIndexOutOfBoundsException
+                if (userDetails.length > 4) {
+                    String fileEmail = userDetails[4].trim();
+                    String fileUsername = userDetails[3].trim(); // Assuming username is stored in the first column
+
+                    // Check if either email or username matches
+                    if (fileEmail.equalsIgnoreCase(email) || fileUsername.equalsIgnoreCase(username)) {
+                        return true; // Email or username found
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading user file: " + e.getMessage());
+        }
+        return false; // Neither email nor username found
     }
 
     private void editUser(Scanner scanner) throws IOException {
@@ -284,14 +329,14 @@ public class Administrators implements IDGenerator {
                         break;
                     case 3:
                         System.out.print("Enter new username: ");
-                        String newUsername = scanner.nextLine();
+                        String newUsername = getValidUsername(scanner);
                         if (!newUsername.isEmpty()) {
                             userDetails[3] = newUsername;
                         }
                         break;
                     case 4:
                         System.out.print("Enter new email: ");
-                        String newEmail = scanner.nextLine();
+                        String newEmail = getValidEmail(scanner);
                         if (!newEmail.isEmpty()) {
                             userDetails[4] = newEmail;
                         }
