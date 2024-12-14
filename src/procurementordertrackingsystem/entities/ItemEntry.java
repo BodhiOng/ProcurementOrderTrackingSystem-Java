@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Scanner;
 import java.util.List;
 import procurementordertrackingsystem.roles.InventoryManager;
+import procurementordertrackingsystem.utilities.LoginPage;
 
 public class ItemEntry extends Item {
     private CRUDOntoFile crudUtil;
@@ -83,7 +84,7 @@ public class ItemEntry extends Item {
             "6. Exit\n" +
             "************************************\n";
 
-    public static void itemMenu() throws IOException {
+    public static void itemMenu(String role) throws IOException {
         try (Scanner userOption2 = new Scanner(System.in)) {
             boolean running = true;
             while (running) {
@@ -118,7 +119,7 @@ public class ItemEntry extends Item {
                             break;
                         case 6:
                             System.out.println("\n❌ Exiting Item Entry Menu...\n");
-                            InventoryManager.menu();
+                            InventoryManager.menu(role);  
                             running = false;
                             break;
                         default:

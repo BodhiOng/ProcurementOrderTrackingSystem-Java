@@ -1,4 +1,5 @@
 package procurementordertrackingsystem.roles;
+
 import procurementordertrackingsystem.entities.Supplier;
 import procurementordertrackingsystem.entities.Payment;
 import procurementordertrackingsystem.entities.Item;
@@ -19,18 +20,24 @@ public class FinanceManager {
     DataFilePaths filePaths = new DataFilePaths("src/procurementordertrackingsystem/data");
     ReferentialIntegrity referentialIntegrity = new ReferentialIntegrity();
 
-    public void displayMenu() throws IOException {
+    public void displayMenu(String role) throws IOException {
         Scanner scanner = new Scanner(System.in);
 
-        // Menu display
+        // Menu display for common options
         String menu = """
-        1. Verify Purchase Orders for Payment
-        2. Check Stock Status
-        3. Make Payment
-        4. View Supplier Payment Status
-        5. Logout              
-        6. Exit
-    """;
+            1. Verify Purchase Orders for Payment
+            2. Check Stock Status
+            3. Make Payment
+            4. View Supplier Payment Status
+            """;
+
+        // Add "Go Back" instead of "Logout" for admin users
+        if ("Administrators".equalsIgnoreCase(role)) {
+            menu += "5. Go Back\n";  // For admins, option 5 will be Go Back
+        } else {
+            menu += "5. Logout\n";  // For non-admins, option 5 will be Logout
+            menu += "6. Exit\n";    // Option 6 will only appear for non-admins
+        }
 
         while (true) {
             System.out.println(menu);
@@ -58,16 +65,31 @@ public class FinanceManager {
                     viewSupplierPaymentStatus();
                     break;
                 case 5:
-                    System.out.println("Logging out...");
-                    LoginPage loginPage = new LoginPage();
-                    loginPage.login();
+                    if ("Administrators".equalsIgnoreCase(role)) {
+                        System.out.println("Going back to Administrators access");
+                        return;
+                    } else {
+                        System.out.println("Logging out...");
+                        // Implement logout functionality here (e.g., redirecting to login page)
+                        LoginPage loginPage = new LoginPage();
+                        loginPage.login(); // Assuming this method handles logout
+                    }
                     break;
                 case 6:
-                    System.out.println("Exiting the system.");
-                    System.exit(0);
-                    break; // Exit the method
+                    if (!"Administrators".equalsIgnoreCase(role)) {
+                        System.out.println("Exiting the system.");
+                        System.exit(0);
+                    } else {
+                        System.out.println("Invalid option.");
+                    }
+                    break; // Exit the method for non-admin users
                 default:
-                    System.out.println("Invalid option. Please select between 1 and 6.");
+                    if (!"Administrators".equalsIgnoreCase(role)) {
+                        System.out.println("Invalid option. Please select between 1 and 5.");
+                    } else {
+                        System.out.println("Invalid option. Please select between 1 and 6.");
+                    }
+
             }
         }
     }

@@ -25,10 +25,11 @@ public class LoginPage extends User { // Extending User class
 
         Scanner scanner = new Scanner(System.in);
         while (attemptCount < maxAttempts) {
-            // Prompt the user for username and password
+            // Prompt the user for username
             System.out.print("Enter username: ");
             String username = scanner.nextLine();
 
+            // Prompt the user for password
             System.out.print("Enter password: ");
             String password = scanner.nextLine();
 
@@ -105,21 +106,21 @@ public class LoginPage extends User { // Extending User class
             case "Finance Manager":
                 System.out.println("You have finance access.");
                 FinanceManager fm = new FinanceManager();
-                fm.displayMenu();
+                fm.displayMenu(role);
                 break;
             case "Inventory Manager":
                 System.out.println("You have inventory management access.");
-                InventoryManager.menu();
+                InventoryManager.menu(role);
                 break;
             case "Sales Manager":
                 System.out.println("You have sales manager access.");
                 SalesManager sm = new SalesManager();
-                sm.DisplayMenu();
+                sm.DisplayMenu(role);
                 break;
             case "Purchase Manager":
                 System.out.println("You have purchase manager access.");
                 PurchaseManager pm = new PurchaseManager();
-                pm.displayMenu();
+                pm.displayMenu(role);
                 break;
             default:
                 System.out.println("Unknown role: " + role);

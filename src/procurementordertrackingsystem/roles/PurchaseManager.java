@@ -29,15 +29,8 @@ public class PurchaseManager {
         this.supplier = new Supplier();
     }
 
-    // Main method to start the PurchaseManager system
-    public void start() throws IOException {
-        LoginPage loginPage = new LoginPage();
-        loginPage.login(); // Authenticate the user
-        displayMenu(); // Show the menu after login
-    }
-
     // Method to display the menu and handle user selection
-    public void displayMenu() throws IOException {
+    public void displayMenu(String role) throws IOException {
         Scanner scanner = new Scanner(System.in);
         int choice;
 
@@ -51,10 +44,16 @@ public class PurchaseManager {
             System.out.println("6. View Purchase Orders");
             System.out.println("7. Edit Purchase Order");
             System.out.println("8. Delete Purchase Order");
-            System.out.println("9. Logout");
-            System.out.println("10. Exit");
-            System.out.print("Enter your choice: ");
 
+            // Append options based on the role
+            if ("Administrators".equalsIgnoreCase(role)) {
+                System.out.println("9. Go Back");  // Admins get "Go Back" instead of logout
+            } else {
+                System.out.println("9. Logout");  // Non-admins get "Logout"
+                System.out.println("10. Exit");   // Non-admins get "Exit"
+            }
+
+            System.out.print("Enter your choice: ");
             choice = scanner.nextInt();
             scanner.nextLine();  // Consume the newline character left by nextInt()
 
@@ -84,16 +83,29 @@ public class PurchaseManager {
                     deletePurchaseOrder();
                     break;
                 case 9:
-                    System.out.println("\n❌ Logged Out Inventory Management System... See you next time!\n");
-                    LoginPage loginPage = new LoginPage();
-                    loginPage.login();
+                    if ("Administrators".equalsIgnoreCase(role)) {
+                        System.out.println("\n Going Back...");
+                        // Implement your logic for "Go Back" for admins (e.g., navigate to the previous menu)
+                        // For example, calling the main menu again:
+                        // PurchaseManager.displayMenu(role); // if you need to go back to the menu with role
+                    } else {
+                        System.out.println("\n Logged Out Inventory Management System... See you next time!\n");
+                        LoginPage loginPage = new LoginPage();
+                        loginPage.login();
+                    }
                     break;
                 case 10:
-                    System.exit(0);
+                    if (!"Administrators".equalsIgnoreCase(role)) {
+                        System.out.println("\n Exiting the system.");
+                        System.exit(0); // Exit the system for non-admins
+                    } else {
+                        System.out.println(" Invalid option. Admin users cannot exit.");
+                    }
+                    break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
             }
-        } while (choice != 9); // Keep showing the menu until the user chooses to exit
+        } while (choice != 9); // Keep showing the menu until the user chooses to exit or log out
     }
 
     // View inventory
