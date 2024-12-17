@@ -51,7 +51,7 @@ public class SalesManager {
         }
         
         //Add the new records to item file and sales_entry file
-        private void ApplySales(List<List<String>> salesdetail){
+        private boolean ApplySales(List<List<String>> salesdetail){
             //Create a list for only the updated items
             List<Item> itemlist = new ArrayList<>();
             //Create a list of item ID which will be updated
@@ -67,8 +67,16 @@ public class SalesManager {
             for (List<String> onesale : salesdetail) {
                 for (Item item : itemlist) {
                     if (onesale.get(0).equals(item.getItemID())) {
-                        item.setStockLevel(item.getStockLevel() - Integer.parseInt(onesale.get(1)));
-                        break;
+                        //Apply the sales if the stock is sufficient
+                        if (item.getStockLevel() - Integer.parseInt(onesale.get(1)) >= 0) {
+                            item.setStockLevel(item.getStockLevel() - Integer.parseInt(onesale.get(1)));
+                            break;
+                        }
+                        //Reject the sales if the stock is not enough
+                        else{
+                            System.out.println("Not enough " + item.getItemName() + " to apply the sales!");
+                            return false;
+                        }
                     }
                 }
             }
@@ -85,7 +93,11 @@ public class SalesManager {
                     crudOntoFile.writeUpdatedLinesToFile(dfp.getItemFile(), updatedItems);
                 } catch (Exception e) {
                     System.out.println("Error Updating Item File!");
+                    return false;
                 }
+                return true;
+            }else{
+                return false;
             }
         }
         
@@ -152,8 +164,9 @@ public class SalesManager {
                     cof.createToFile(dfp.getSalesEntryFile(), newline);
                 } catch (Exception e) {
                     System.out.println("Error Adding New Sales");
-                }
+                } 
             }
+            System.out.println("Sales Updated Successfuly!");
         }
         //Method to remove sales entry from file
         private void RemoveSales(List<String> id){
@@ -166,8 +179,8 @@ public class SalesManager {
 
             //Create a list of all the sales that needed to be reverted
             List<List<String>> saletorevert = new ArrayList<>();
-            List<String> updatedsale = new ArrayList<>();
             for (String oneid : id) {
+                List<String> updatedsale = new ArrayList<>();
                 String[] onesale = null;
                 onesale = readSalesbyid(oneid);
                 int qty = Integer.parseInt(onesale[2]);
@@ -506,10 +519,12 @@ public class SalesManager {
                     System.out.println(salesentry);
                     break;
                 case 2:
-                    //Add and apply all the sales entry
-                    ssf.EnterSales(salesentry);
-                    sif.ApplySales(salesentry);
-                    System.out.println("Sales Updated Successfuly!");
+                    //Add and apply the sales if the stock is sufficient
+                    if (sif.ApplySales(salesentry)) {
+                        ssf.EnterSales(salesentry);
+                    }else{
+                        System.out.println("Sales entry(s) was not added!");
+                    }
                 case 3:
                     //Go back to main menu
                     break Add_Sales_Entry;
@@ -612,6 +627,7 @@ public class SalesManager {
             System.out.println("Enter the Sales ID to be removed: ");
             try {
                 checkid = sc.next();
+                sc.nextLine();
             } catch (Exception e) {
                 System.out.println("Invalid Sales ID!");
                 sc.nextLine(); 
