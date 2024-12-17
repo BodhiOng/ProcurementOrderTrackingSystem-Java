@@ -22,7 +22,6 @@ public class SalesEntry implements IDGenerator{
     private String salesid, itemid;
     private int quantity;
     private Date salesdate;
-    private ReferentialIntegrity ri = new ReferentialIntegrity();
     
     public CRUDOntoFile cof = new CRUDOntoFile();
     public DataFilePaths dfp = new DataFilePaths("src/procurementordertrackingsystem/data");
