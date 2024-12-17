@@ -692,7 +692,7 @@ public class SalesManager {
             } catch (Exception e) {
                 System.out.println("Invalid Item Name!");
                 sc.nextLine(); 
-                continue;
+                break;
             }
             System.out.println("Enter quantity to order: ");
             try {
@@ -700,7 +700,7 @@ public class SalesManager {
             } catch (Exception e) {
                 System.out.println("Please enter Quantity in numbers!");
                 sc.nextLine(); 
-                continue;
+                break;
             }
             System.out.println("Enter the expected resupply date (yyyy-mm-dd): ");
             try {
@@ -708,7 +708,7 @@ public class SalesManager {
             } catch (Exception e) {
                 System.out.println("Please input a correct date in (yyyy-mm-dd)!");
                 sc.nextLine(); 
-                continue;
+                break;
             }
             //Validate the date input
             try {
@@ -716,21 +716,21 @@ public class SalesManager {
             } catch (Exception e) {
                 System.out.println("Please input a correct date in (yyyy-mm-dd)!");
                 sc.nextLine(); 
-                continue;
+                break;
             }
             //Check the existence of the item
             String itemid = sif.FindItemIDFromName(itemname);
             if (Objects.isNull(itemid)) {
                 System.out.println("Could not find an item with that name!");
                 sc.nextLine(); 
-                continue;
+                break;
             }
             //Fetch the supplier ID of the item
             String supplyid = sif.FindSupplierIDFromItemID(itemid);
             if (Objects.isNull(supplyid)) {
                 System.out.println("Could not find a supplier for that item!");
                 sc.nextLine(); 
-                continue;
+                break;
             }
             
             //Preview the Purchase Requisition
