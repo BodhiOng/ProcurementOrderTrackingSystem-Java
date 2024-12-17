@@ -32,7 +32,6 @@ import procurementordertrackingsystem.utilities.ReferentialIntegrity;
 public class SalesManager {
 
     DataFilePaths dfp = new DataFilePaths("src/procurementordertrackingsystem/data");
-    ReferentialIntegrity ri = new ReferentialIntegrity();
 
     //Create a class for Item functions that is used exclusively by SM
     private class SMitemfunctions extends Item {
