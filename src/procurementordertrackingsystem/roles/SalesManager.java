@@ -181,8 +181,7 @@ public class SalesManager {
             List<List<String>> saletorevert = new ArrayList<>();
             for (String oneid : id) {
                 List<String> updatedsale = new ArrayList<>();
-                String[] onesale = null;
-                onesale = readSalesbyid(oneid);
+                String[] onesale = readSalesbyid(oneid);
                 int qty = Integer.parseInt(onesale[2]);
                 qty *= -1;
                 onesale[2] = String.valueOf(qty);
