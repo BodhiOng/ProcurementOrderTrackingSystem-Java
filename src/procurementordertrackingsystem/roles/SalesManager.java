@@ -211,14 +211,17 @@ public class SalesManager {
             List<String> updateitem1 = new ArrayList<>(), updatesale = new ArrayList<>(), updateitem2 = new ArrayList<>();
             SMitemfunctions sif = new SMitemfunctions();
             
+            //Find the new item name to display
             String itemid = sif.FindItemIDFromName(item);
             
+            //Read the current sale entry
             String[] onesale = readSalesbyid(id);
             String olditemid = onesale[1];
             
-            int qtydiff = Integer.parseInt(onesale[2]) - qty;
+            //Replace the item id and quantity
             onesale[1] = itemid;
             onesale[2] = String.valueOf(qty);
+            //Show the preview of the updates sales
             System.out.println("Preview of the updated sales:");
             String itemname = fetchItemNameFromId(itemid);
             if (Objects.isNull(itemname)) {
@@ -226,12 +229,15 @@ public class SalesManager {
                 return null;
             }
             System.out.println(String.format("SalesID: %s, Item Name: %s, Quantity: %s, Sale Date: %s", onesale[0], itemname, onesale[2], onesale[3]));
+            //Remove the old sales from item file
             updateitem1.add(olditemid);
             updateitem1.add(String.valueOf(qty*-1));
+            updatedsales.add(updateitem1);
+            //Apply the new sales to item file
             updateitem2.add(itemid);
             updateitem2.add(String.valueOf(qty));
-            updatedsales.add(updateitem1);
             updatedsales.add(updateitem2);
+            //Apply the new sales to sales_entry file
             updatesale.addAll(Arrays.asList(onesale));
             updatedsales.add(updatesale);
             return updatedsales;
@@ -240,10 +246,14 @@ public class SalesManager {
         private void UpdateSales(List<List<String>> updatedsale){
             SMitemfunctions sif = new SMitemfunctions();
             List<List<String>> updateditem = new ArrayList<>();
+            //Get the items to be updated
             updateditem.add(updatedsale.get(0));
             updateditem.add(updatedsale.get(1));
+            //Format the sales entry into the file format
             String updatedsales = String.format("%s,%s,%s,%s", updatedsale.get(2).get(0), updatedsale.get(2).get(1), updatedsale.get(2).get(2), updatedsale.get(2).get(3));
+            //Write the updated items into the file
             sif.ApplySales(updateditem);
+            //Update the old sales entry to replace the editted sale
             List<String> allsales = getAllSales();
             for (int i = 0; i < allsales.size(); i++){
                 if (allsales.get(i).split(",")[0].toLowerCase().equals(updatedsale.get(2).get(0).toLowerCase())) {
@@ -251,6 +261,7 @@ public class SalesManager {
                     break;
                 }
             }
+            //Write the updated sales entry into the file
             try {
                 cof.writeUpdatedLinesToFile(dfp.getSalesEntryFile(), allsales);
             } catch (Exception e) {
