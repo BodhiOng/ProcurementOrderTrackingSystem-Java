@@ -209,12 +209,13 @@ public class SalesManager {
         //method to edit sales entry from file
         private List<List<String>> PreviewUpdateSales(String id, String item, int qty){
             List<List<String>> updatedsales = new ArrayList<>();
-            List<String> updateitem = new ArrayList<>(), updatesale = new ArrayList<>();
+            List<String> updateitem1 = new ArrayList<>(), updatesale = new ArrayList<>(), updateitem2 = new ArrayList<>();
             SMitemfunctions sif = new SMitemfunctions();
             
             String itemid = sif.FindItemIDFromName(item);
             
             String[] onesale = readSalesbyid(id);
+            String olditemid = onesale[1];
             
             int qtydiff = Integer.parseInt(onesale[2]) - qty;
             onesale[1] = itemid;
@@ -226,9 +227,12 @@ public class SalesManager {
                 return null;
             }
             System.out.println(String.format("SalesID: %s, Item Name: %s, Quantity: %s, Sale Date: %s", onesale[0], itemname, onesale[2], onesale[3]));
-            updateitem.add(onesale[1]);
-            updateitem.add(String.valueOf(qtydiff*-1));
-            updatedsales.add(updateitem);
+            updateitem1.add(olditemid);
+            updateitem1.add(String.valueOf(qty*-1));
+            updateitem2.add(itemid);
+            updateitem2.add(String.valueOf(qty));
+            updatedsales.add(updateitem1);
+            updatedsales.add(updateitem2);
             updatesale.addAll(Arrays.asList(onesale));
             updatedsales.add(updatesale);
             return updatedsales;
@@ -238,11 +242,12 @@ public class SalesManager {
             SMitemfunctions sif = new SMitemfunctions();
             List<List<String>> updateditem = new ArrayList<>();
             updateditem.add(updatedsale.get(0));
-            String updatedsales = String.format("%s,%s,%s,%s", updatedsale.get(1).get(0), updatedsale.get(1).get(1), updatedsale.get(1).get(2), updatedsale.get(1).get(3));
+            updateditem.add(updatedsale.get(1));
+            String updatedsales = String.format("%s,%s,%s,%s", updatedsale.get(2).get(0), updatedsale.get(2).get(1), updatedsale.get(2).get(2), updatedsale.get(2).get(3));
             sif.ApplySales(updateditem);
             List<String> allsales = getAllSales();
             for (int i = 0; i < allsales.size(); i++){
-                if (allsales.get(i).split(",")[0].toLowerCase().equals(updatedsale.get(1).get(0).toLowerCase())) {
+                if (allsales.get(i).split(",")[0].toLowerCase().equals(updatedsale.get(2).get(0).toLowerCase())) {
                     allsales.set(i, updatedsales);
                     break;
                 }
@@ -291,6 +296,7 @@ public class SalesManager {
         }
 
         // Loop the menu until the user chooses to exit or log out
+        Main_Menu:
         while (true) {
             int choice;
             System.out.println("\n------------------------------");
@@ -362,18 +368,20 @@ public class SalesManager {
                     ViewPO(); //Go into view purchase orders function
                     break;
                 case 6:
+                    //Go back into administrator menu if the user is admin
                     if ("Administrators".equalsIgnoreCase(role)) {
                         System.out.println("Going Back...");
-                        // Implement logic for going back, like returning to the previous menu
-                        // For example, call the main menu again or navigate back:
-                        // DisplayMenu(role); // if you want to return to the main menu
+                        Administrators admin = new Administrators();
+                        admin.displayMenu();
+                        break Main_Menu;
+                    //Logout from the system if the user is not admin
                     } else {
                         System.out.println("Logging out...");
                         LoginPage loginPage = new LoginPage();
                         loginPage.login();
                     }
                     break;
-                case 7:
+                case 7: //Option for non-admin to exit the system
                     if (!"Administrators".equalsIgnoreCase(role)) {
                         System.out.println(" Exiting the system...");
                         System.exit(0); // Exit for non-admins
@@ -527,6 +535,8 @@ public class SalesManager {
         else{
             System.out.println(ssf.displayOneSaleById(id));
         }
+        
+        
         
         //Ask user for the new details
         System.out.println("Enter the new item name: ");
