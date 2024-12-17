@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.Scanner;
 import java.util.List;
 import procurementordertrackingsystem.roles.InventoryManager;
-import procurementordertrackingsystem.utilities.LoginPage;
 
 public class ItemEntry extends Item {
     private CRUDOntoFile crudUtil;

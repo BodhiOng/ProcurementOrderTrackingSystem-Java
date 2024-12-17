@@ -4,16 +4,11 @@
  */
 package procurementordertrackingsystem.entities;
 
-import com.sun.source.tree.BreakTree;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import procurementordertrackingsystem.utilities.CRUDOntoFile;
 import procurementordertrackingsystem.utilities.DataFilePaths;
 import procurementordertrackingsystem.utilities.IDGenerator;

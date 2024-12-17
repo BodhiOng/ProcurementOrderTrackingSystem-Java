@@ -23,7 +23,6 @@ import procurementordertrackingsystem.entities.SalesEntry;
 import procurementordertrackingsystem.entities.User;
 import procurementordertrackingsystem.utilities.DataFilePaths;
 import procurementordertrackingsystem.utilities.LoginPage;
-import procurementordertrackingsystem.utilities.ReferentialIntegrity;
 
 /**
  *
