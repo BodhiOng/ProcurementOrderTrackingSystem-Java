@@ -12,7 +12,6 @@ import java.util.Objects;
 import procurementordertrackingsystem.utilities.CRUDOntoFile;
 import procurementordertrackingsystem.utilities.DataFilePaths;
 import procurementordertrackingsystem.utilities.IDGenerator;
-import procurementordertrackingsystem.utilities.ReferentialIntegrity;
 
 /**
  *
@@ -34,7 +33,7 @@ public class SalesEntry implements IDGenerator{
         //Find the highest ID in the record
         for (String eachdata : rawdata){
             try {
-                idlist.add(Integer.parseInt(eachdata.split(",")[0].substring(2)));
+                idlist.add(Integer.valueOf(eachdata.split(",")[0].substring(2)));
             } catch (Exception e) {
                 System.out.println("Error reading id!");
             }
@@ -49,7 +48,6 @@ public class SalesEntry implements IDGenerator{
     public String[] readSalesbyid(String id){
         //Get all the sales record
         List<String> rawdata = getAllSales();
-        List<String> onerecord = new ArrayList<>();
         String[] line = null;
         String[] toreturn = null;
         //Find the record that match the ID
