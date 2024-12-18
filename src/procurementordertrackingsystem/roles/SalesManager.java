@@ -683,8 +683,8 @@ public class SalesManager {
     
     //SM 3rd Functionality (View Stock Level)
     private void ViewStocks(){
-        ItemEntry ie = new ItemEntry();
-        ie.viewStockLevels();
+        SMitemfunctions smif = new SMitemfunctions();
+        smif.viewStockLevels(dfp.getItemFile());
     }
     
     //SM 4th Functionality (Creat PR)
