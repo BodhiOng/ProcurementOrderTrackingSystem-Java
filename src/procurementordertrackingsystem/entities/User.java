@@ -86,4 +86,10 @@ public class User {
         }
         return id;
     }
+    
+        //Override toString method to return all attributes of the class
+    @Override
+    public String toString(){
+        return String.format("%s,%s,%s,%s,%s", getUserID(), getName(), getRole(), getUsername(), getEmail());
+    }
 }

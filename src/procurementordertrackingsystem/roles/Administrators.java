@@ -10,12 +10,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import procurementordertrackingsystem.entities.User;
 import procurementordertrackingsystem.utilities.LoginPage;
 import procurementordertrackingsystem.utilities.CRUDOntoFile;
 import procurementordertrackingsystem.utilities.DataFilePaths;
 import procurementordertrackingsystem.utilities.IDGenerator;
 
-public class Administrators implements IDGenerator {
+public class Administrators extends User implements IDGenerator {
 
     DataFilePaths filePaths = new DataFilePaths("src/procurementordertrackingsystem/data");
     CRUDOntoFile crudOntoFile = new CRUDOntoFile();
@@ -24,10 +25,10 @@ public class Administrators implements IDGenerator {
         Scanner scanner = new Scanner(System.in);
         String menu = """
                 1. Manage Users
-                2. Login as Finance Manager
-                3. Login as Purchase Manager
-                4. Login as Inventory Manager
-                5. Login as Sales Manager
+                2. Acess Finance Manager Functions
+                3. Acess Purchase Manager Functions
+                4. Acess Inventory Manager Functions
+                5. Acess Sales Manager Functions
                 6. Logout
                 7. Exit
             """;
@@ -147,26 +148,44 @@ public class Administrators implements IDGenerator {
     }
 
     private void addNewUser(Scanner scanner) throws IOException {
+        User newUser = new User();
+
+        // Set the user information from input
         System.out.print("Enter name: ");
-        String name = scanner.nextLine();
+        newUser.setName(scanner.nextLine());
 
         String role = getValidRole(scanner);
+        newUser.setRole(role);
 
         String username = getValidUsername(scanner);
+        newUser.setUsername(username);
 
         String email = getValidEmail(scanner);
+        newUser.setEmail(email);
 
         System.out.print("Enter password: ");
-        String password = scanner.nextLine();
+        newUser.setPassword(scanner.nextLine());
 
+        // Generate a unique userID
         String userID = generateID();
+        newUser.setUserID(userID);
 
-        String newUserLine = String.format("%s,%s,%s,%s,%s,%s", userID, name, role, username, email, password);
-        File userfile = filePaths.getUserFile();
+        // Prepare the user data line to save to file
+        String newUserLine = String.format("%s,%s,%s,%s,%s,%s",
+                newUser.getUserID(),
+                newUser.getName(),
+                newUser.getRole(),
+                newUser.getUsername(),
+                newUser.getEmail(),
+                newUser.getPassword());
+
+        // Get the file path for user data
+        File userFile = filePaths.getUserFile();
 
         try {
-            crudOntoFile.createToFile(userfile, newUserLine);
-            System.out.println("New user added successfully.");
+            // Save the new user data to file
+            crudOntoFile.createToFile(userFile, newUserLine);
+            System.out.println("\n You have added new user successfully :" + newUser);
         } catch (IOException e) {
             System.out.println("Error adding new user: " + e.getMessage());
         }
@@ -301,6 +320,15 @@ public class Administrators implements IDGenerator {
             if (userDetails[0].equals(userID)) {
                 found = true;
 
+                // Create a User object and set its properties
+                User userToEdit = new User();
+                userToEdit.setUserID(userDetails[0]);
+                userToEdit.setName(userDetails[1]);
+                userToEdit.setRole(userDetails[2]);
+                userToEdit.setUsername(userDetails[3]);
+                userToEdit.setEmail(userDetails[4]);
+                userToEdit.setPassword(userDetails[5]);
+
                 System.out.println("Which field would you like to edit?");
                 System.out.println("1. Name");
                 System.out.println("2. Role");
@@ -321,30 +349,31 @@ public class Administrators implements IDGenerator {
                     }
                 }
 
+                // Modify the selected user's field based on the choice
                 switch (choice) {
                     case 1:
                         System.out.print("Enter new name: ");
                         String newName = scanner.nextLine();
                         if (!newName.isEmpty()) {
-                            userDetails[1] = newName;
+                            userToEdit.setName(newName);
                         }
                         break;
                     case 2:
                         String newRole = getValidRole(scanner);
-                        userDetails[2] = newRole;
+                        userToEdit.setRole(newRole);
                         break;
                     case 3:
                         System.out.print("Enter new username: ");
                         String newUsername = getValidUsername(scanner);
                         if (!newUsername.isEmpty()) {
-                            userDetails[3] = newUsername;
+                            userToEdit.setUsername(newUsername);
                         }
                         break;
                     case 4:
                         System.out.print("Enter new email: ");
                         String newEmail = getValidEmail(scanner);
                         if (!newEmail.isEmpty()) {
-                            userDetails[4] = newEmail;
+                            userToEdit.setEmail(newEmail);
                         }
                         break;
                     case 5:
@@ -355,12 +384,21 @@ public class Administrators implements IDGenerator {
                         return;
                 }
 
-                String updatedUser = String.join(",", userDetails);
+                // Save the updated user data back into the users list
+                String updatedUser = String.format("%s,%s,%s,%s,%s,%s",
+                        userToEdit.getUserID(),
+                        userToEdit.getName(),
+                        userToEdit.getRole(),
+                        userToEdit.getUsername(),
+                        userToEdit.getEmail(),
+                        userToEdit.getPassword());
+
                 users.set(i, updatedUser);
 
+                // Write the updated list of users back to the file
                 Files.write(file.toPath(), users);
 
-                System.out.println("User updated successfully.");
+                System.out.println("\nYou have updated user information successfully.: " + userToEdit +"\n");
                 return;
             }
         }
@@ -391,6 +429,7 @@ public class Administrators implements IDGenerator {
             String[] userDetails = users.get(i).split(",");
             if (userDetails[0].equals(userID)) {
                 found = true;
+                
                 users.remove(i);
 
                 Files.write(file.toPath(), users);
@@ -411,6 +450,7 @@ public class Administrators implements IDGenerator {
         FinanceManager fm = new FinanceManager();
         fm.displayMenu("Administrators");
     }
+
     private void loginAsPurchaseManager() throws IOException {
         PurchaseManager pm = new PurchaseManager();
         pm.displayMenu("Administrators");
@@ -420,11 +460,11 @@ public class Administrators implements IDGenerator {
         InventoryManager im = new InventoryManager();
         im.menu("Administrators");
     }
+
     private void loginAsSalesManager() throws IOException {
         SalesManager sm = new SalesManager();
         sm.DisplayMenu("Administrators");
     }
-
 
     private void displayUserInfo(String[] userDetails) {
         // Display the user's details (Name, Username, Email, etc.)

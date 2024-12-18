@@ -97,26 +97,21 @@ public class LoginPage extends User { // Extending User class
 
         switch (role) {
             case "Administrators":
-                System.out.println("You have administrative access.");
                 Administrators admin = new Administrators();
                 admin.displayMenu();
                 break;
             case "Finance Manager":
-                System.out.println("You have finance access.");
                 FinanceManager fm = new FinanceManager();
                 fm.displayMenu(role);
                 break;
             case "Inventory Manager":
-                System.out.println("You have inventory management access.");
                 InventoryManager.menu(role);
                 break;
             case "Sales Manager":
-                System.out.println("You have sales manager access.");
                 SalesManager sm = new SalesManager();
                 sm.DisplayMenu(role);
                 break;
             case "Purchase Manager":
-                System.out.println("You have purchase manager access.");
                 PurchaseManager pm = new PurchaseManager();
                 pm.displayMenu(role);
                 break;
