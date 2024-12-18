@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 import procurementordertrackingsystem.entities.Item;
-import procurementordertrackingsystem.entities.ItemEntry;
 import procurementordertrackingsystem.entities.PurchaseOrder;
 import procurementordertrackingsystem.entities.PurchaseRequisition;
 import procurementordertrackingsystem.entities.SalesEntry;
