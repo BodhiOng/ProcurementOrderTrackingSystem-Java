@@ -7,9 +7,13 @@ import java.util.Scanner;
 import procurementordertrackingsystem.entities.Item;
 import procurementordertrackingsystem.entities.Supplier;
 import procurementordertrackingsystem.utilities.CRUDOntoFile;
+import procurementordertrackingsystem.utilities.DataFilePaths;
 import procurementordertrackingsystem.utilities.LoginPage;
 
 public class InventoryManager {
+
+    // Create an instance of DataFilePaths with the appropriate base path
+    private static final DataFilePaths filePaths = new DataFilePaths("src/procurementordertrackingsystem/data");
 
     // Static method to display the menu  
     public static void menu(String role) throws IOException {
@@ -95,24 +99,23 @@ public class InventoryManager {
         System.out.println("💤 Shutting down Inventory Manager... Goodbye!\n");
     }
 
-    // Nested class SupplierRegistration (private and exclusive to InventoryManager)
     private class SupplierRegistration extends Supplier {
 
         private CRUDOntoFile crudUtil;
         private File supplierFile;
-
+        
         public SupplierRegistration() {
             super(); // Initialize parent class variables
             crudUtil = new CRUDOntoFile();
-            supplierFile = new File("src/procurementordertrackingsystem/data/supplier.txt");
+            supplierFile = filePaths.getSupplierFile(); // Use DataFilePaths to get the supplier file
             checkOrCreateFile();
         }
 
         private void checkOrCreateFile() {
             try {
                 if (!supplierFile.exists()) {
-                    supplierFile.getParentFile().mkdirs(); // Create directories if they don't exist
-                    supplierFile.createNewFile(); // Create the file
+                    supplierFile.getParentFile().mkdirs();
+                    supplierFile.createNewFile();
                 }
             } catch (IOException e) {
                 System.err.println("⚠ Error ensuring the existence of supplier.txt: " + e.getMessage());
@@ -142,12 +145,17 @@ public class InventoryManager {
             }
         }
 
-        private boolean isDuplicateSupplier(String supplierName, String itemID) {
+        // Phone number validation method
+        private boolean isValidPhoneNumber(String phoneNumber) {
+            return phoneNumber.matches("\\+\\d{10,15}"); // Adjust this regex based on your required format
+        }
+
+        private boolean isDuplicateSupplier(String supplierName) {
             try (Scanner fileScanner = new Scanner(supplierFile)) {
                 while (fileScanner.hasNextLine()) {
                     String line = fileScanner.nextLine();
                     String[] parts = line.split(",");
-                    if (parts[1].equalsIgnoreCase(supplierName) && parts[2].equalsIgnoreCase(itemID)) {
+                    if (parts[1].equalsIgnoreCase(supplierName)) {
                         return true;
                     }
                 }
@@ -156,24 +164,70 @@ public class InventoryManager {
             }
             return false;
         }
+        
+        public void supplierMenu(String role) throws IOException {
+            Scanner scanner = new Scanner(System.in);
+            boolean running = true;
+
+            while (running) {
+                System.out.println("""
+                                   *******************************
+                                   \u2728 SUPPLIER MANAGEMENT MENU \u2728
+                                   *******************************
+                                   1. Add New Supplier
+                                   2. Edit Supplier
+                                   3. Delete Supplier
+                                   4. Exit
+                                   *******************************
+                                   """);
+                System.out.print("💡 Enter your choice: ");
+
+                int choice = getValidIntegerInput(scanner, "");
+
+                switch (choice) {
+                    case 1 -> addNewSupplier();
+                    case 2 -> editSupplier();
+                    case 3 -> deleteSupplier();
+                    case 4 -> {
+                        System.out.println("❌ Exiting Supplier Management.");
+                        InventoryManager.menu(role);
+                        running = false;
+                    }
+                    default -> System.out.println("⚠ Invalid choice. Please try again.\n");
+                }
+            }
+        }
 
         public void addNewSupplier() {
             Scanner scanner = new Scanner(System.in);
 
-            setSupplierID(generateSupplierCode()); // Party of the Supplier parent
             do {
-                setSupplierName(getValidStringInput(scanner, "📋 Enter Supplier Name: "));
-                setItemID(getValidStringInput(scanner, "📦 Enter Item ID: "));
-
-                if (isDuplicateSupplier(getSupplierName(), getItemID())) {
-                    System.out.println("⚠ Error: Supplier with the same name and item ID already exists. Please try again.");
-                } else {
-                    break;
+                String supplierName = getValidStringInput(scanner, "📋 Enter Supplier Name: ");
+                if (isDuplicateSupplier(supplierName)) {
+                    System.out.println("⚠ Error: Supplier with this name already exists. Please try again with a different name.");
+                    continue;
                 }
+                setSupplierName(supplierName);
+                break;
+
             } while (true);
 
-            setPhoneNumber(getValidStringInput(scanner, "📞 Enter Phone Number: "));
+            setItemID(getValidStringInput(scanner, "📦 Enter Item ID: "));
+
+            // Ensure a valid phone number is entered
+            String phoneNumber;
+            while (true) {
+                phoneNumber = getValidStringInput(scanner, "📞 Enter Phone Number (10 digits): ");
+                if (isValidPhoneNumber(phoneNumber)) {
+                    setPhoneNumber(phoneNumber);
+                    break;
+                } else {
+                    System.out.println("⚠ Invalid phone number. Please enter a 10-digit number (should start with (+) symbol)...");
+                }
+            }
+
             setAddress(getValidStringInput(scanner, "🏠 Enter Address: "));
+            setSupplierID(generateSupplierCode());
 
             String lineToSave = String.format("%s,%s,%s,%s,%s",
                     getSupplierID(), getSupplierName(), getItemID(), getPhoneNumber(), getAddress());
@@ -208,16 +262,32 @@ public class InventoryManager {
                             int attribute = getValidIntegerInput(scanner, "Which attribute would you like to edit?\n1: Supplier Name\n2: Item ID\n3: Phone Number\n4: Address\nEnter the number corresponding to the attribute: ");
 
                             switch (attribute) {
-                                case 1:
-                                    parts[1] = getValidStringInput(scanner, "✏️ Enter new Supplier Name: ");
+                                case 1: // Supplier Name
+                                    String newName;
+                                    do {
+                                        newName = getValidStringInput(scanner, "✏️ Enter new Supplier Name: ");
+                                        if (isDuplicateSupplier(newName)) {
+                                            System.out.println("⚠ Error: Supplier with this name already exists. Please try again with a different name.");
+                                        }
+                                    } while (isDuplicateSupplier(newName));
+                                    parts[1] = newName;
                                     break;
-                                case 2:
+                                case 2: // Item ID
                                     parts[2] = getValidStringInput(scanner, "✏️ Enter new Item ID: ");
                                     break;
-                                case 3:
-                                    parts[3] = getValidStringInput(scanner, "✏️ Enter new Phone Number: ");
+                                case 3: // Phone Number
+                                    String newPhoneNumber;
+                                    while (true) {
+                                        newPhoneNumber = getValidStringInput(scanner, "✏️ Enter new Phone Number (10 digits): ");
+                                        if (isValidPhoneNumber(newPhoneNumber)) {
+                                            parts[3] = newPhoneNumber;
+                                            break;
+                                        } else {
+                                            System.out.println("⚠ Invalid phone number. Please enter a 10-digit number (should start with (+) symbol)...");
+                                        }
+                                    }
                                     break;
-                                case 4:
+                                case 4: // Address
                                     parts[4] = getValidStringInput(scanner, "✏️ Enter new Address: ");
                                     break;
                                 default:
@@ -305,40 +375,7 @@ public class InventoryManager {
             return String.format("%s%04d", prefix, nextId);
         }
 
-        public void supplierMenu(String role) throws IOException {
-            Scanner scanner = new Scanner(System.in);
-            boolean running = true;
-
-            while (running) {
-                System.out.println("""
-                                   *******************************
-                                   \u2728 SUPPLIER MANAGEMENT MENU \u2728
-                                   *******************************
-                                   1. Add New Supplier
-                                   2. Edit Supplier
-                                   3. Delete Supplier
-                                   4. Exit
-                                   *******************************
-                                   """);
-                System.out.print("💡 Enter your choice: ");
-
-                int choice = getValidIntegerInput(scanner, "");
-
-                switch (choice) {
-                    case 1 -> addNewSupplier();
-                    case 2 -> editSupplier();
-                    case 3 -> deleteSupplier();
-                    case 4 -> {
-                        System.out.println("❌ Exiting Supplier Management.");
-                        InventoryManager.menu(role);
-                        running = false;
-                    }
-                    default -> System.out.println("⚠ Invalid choice. Please try again.\n");
-                }
-            }
-        }
     }
-    
     
     private class ItemEntry extends Item {
         private CRUDOntoFile crudUtil;
@@ -356,7 +393,7 @@ public class InventoryManager {
 
         private void init() {
             crudUtil = new CRUDOntoFile();
-            itemFile = new File("src/procurementordertrackingsystem/data/item.txt"); 
+            itemFile = filePaths.getItemFile(); // Use DataFilePaths to get the item file
             checkOrCreateFile();
         }
 
@@ -630,7 +667,6 @@ public class InventoryManager {
             }
         }
 
-
         // Update stock levels after receiving stock from suppliers
         public void updateStockLevels() {
             Scanner scanner = new Scanner(System.in);
@@ -678,7 +714,4 @@ public class InventoryManager {
             }
         }
     }
-
-    
-        
 }
