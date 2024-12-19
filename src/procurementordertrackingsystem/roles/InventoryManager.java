@@ -442,17 +442,20 @@ public class InventoryManager {
             }
         }
 
-        static String deMenu = "\n************************************\n" +
-                "✨ ITEM ENTRY MENU ✨\n" +
-                "************************************\n" +
-                "Choose an option below:\n" +
-                "1. Register Item\n" +
-                "2. Update Item Information\n" +
-                "3. Delete Item Data\n" +
-                "4. View Stock Levels\n" +
-                "5. Update Stock Levels\n" +
-                "6. Exit\n" +
-                "************************************\n";
+        static String deMenu = """
+                               
+                               ************************************
+                               \u2728 ITEM ENTRY MENU \u2728
+                               ************************************
+                               Choose an option below:
+                               1. Register Item
+                               2. Update Item Information
+                               3. Delete Item Data
+                               4. View Stock Levels
+                               5. Update Stock Levels
+                               6. Exit
+                               ************************************
+                               """;
 
         public void itemMenu(String role) throws IOException {
             try (Scanner userOption2 = new Scanner(System.in)) {
@@ -466,34 +469,33 @@ public class InventoryManager {
                         userOption2.nextLine(); // Consume newline
 
                         switch (menuOption1) {
-                            case 1:
+                            case 1 -> {
                                 System.out.println("\n✅ You selected: Register Item\n");
                                 addNewItem();
-                                break;
-                            case 2:
+                            }
+                            case 2 -> {
                                 System.out.println("\n✅ You selected: Update Item Information\n");
                                 editItem();
-                                break;
-                            case 3:
+                            }
+                            case 3 -> {
                                 System.out.println("\n✅ You selected: Delete Item Data\n");
                                 deleteItem();
-                                break;
-                            case 4:
+                            }
+                            case 4 -> {
                                 System.out.println("\n✅ You selected: View Stock Levels\n");
-                                ItemEntry itemEntry3 = new ItemEntry(); 
+                                ItemEntry itemEntry3 = new ItemEntry();
                                 itemEntry3.viewStockLevels(itemEntry3.itemFile);
-                                break;
-                            case 5:
+                            }
+                            case 5 -> {
                                 System.out.println("\n✅ You selected: Update Stock Levels\n");
                                 updateStockLevels();
-                                break;
-                            case 6:
+                            }
+                            case 6 -> {
                                 System.out.println("\n❌ Exiting Item Entry Menu...\n");
-                                InventoryManager.menu(role);  
+                                InventoryManager.menu(role);
                                 running = false;
-                                break;
-                            default:
-                                System.out.println("⚠ Invalid option. Please choose a valid menu option.\n");
+                            }
+                            default -> System.out.println("⚠ Invalid option. Please choose a valid menu option.\n");
                         }
                     } else {
                         System.out.println("⚠ Error: Please enter a valid number.\n");
@@ -510,7 +512,17 @@ public class InventoryManager {
 
             String itemID = generateItemCode();
 
-            String itemName = getValidStringInput(scanner, "📋 Enter Item Name: ");
+            // Loop until a valid item name is provided
+            String itemName;
+            while (true) {
+                itemName = getValidStringInput(scanner, "📋 Enter Item Name: ");
+                if (isDuplicateItemName(itemName)) {
+                    System.out.println("⚠ Item name '" + itemName + "' already exists. Please try again.");
+                } else {
+                    break; // Break the loop if no duplicate found
+                }
+            }
+
             int stockLevel = getValidIntegerInput(scanner, "🔢 Enter Stock Level: ");
             double price = getValidDoubleInput(scanner, "💸 Enter Price: ");
             String supplierID = getValidStringInput(scanner, "📅 Enter Supplier ID: ");
@@ -552,6 +564,23 @@ public class InventoryManager {
             return String.format("%s%04d", prefix, nextId);
         }
 
+        // Check for duplicate item names
+        private boolean isDuplicateItemName(String itemName) {
+            try (Scanner fileScanner = new Scanner(itemFile)) {
+                while (fileScanner.hasNextLine()) {
+                    String line = fileScanner.nextLine();
+                    String[] parts = line.split(",");
+                    String existingItemName = parts[1].trim(); // Assuming item name is the second column
+                    if (existingItemName.equalsIgnoreCase(itemName)) {
+                        return true; // Duplicate found
+                    }
+                }
+            } catch (IOException e) {
+                System.err.println("⚠ Error reading item file: " + e.getMessage());
+            }
+            return false; // No duplicates found
+        }
+
         // Edit an existing item in the inventory
         public void editItem() {
             Scanner scanner = new Scanner(System.in);
@@ -585,21 +614,30 @@ public class InventoryManager {
                         int attribute = getValidIntegerInput(scanner, "Which attribute would you like to edit?\n1: Item Name\n2: Stock Level\n3: Price\n4: Supplier ID\nEnter the number corresponding to the attribute: ");
 
                         switch (attribute) {
-                            case 1:
-                                parts[1] = getValidStringInput(scanner, "Enter new Item Name: ");
-                                break;
-                            case 2:
+                            case 1 -> {
+                                // Item Name
+                                String newItemName;
+                                while (true) {
+                                    newItemName = getValidStringInput(scanner, "Enter new Item Name: ");
+                                    // Validate new item name for duplication
+                                    if (isDuplicateItemName(newItemName)) {
+                                        System.out.println("⚠ Item name '" + newItemName + "' already exists. Please try again.");
+                                    } else {
+                                        parts[1] = newItemName; // Update item name
+                                        break; // Break if the name is unique
+                                    }
+                                }
+                            }
+                            case 2 -> // Stock Level
                                 parts[2] = String.valueOf(getValidIntegerInput(scanner, "Enter new Stock Level: "));
-                                break;
-                            case 3:
+                            case 3 -> // Price
                                 parts[3] = String.valueOf(getValidDoubleInput(scanner, "Enter new Price: "));
-                                break;
-                            case 4:
+                            case 4 -> // Supplier ID
                                 parts[4] = getValidStringInput(scanner, "Enter new Supplier ID: ");
-                                break;
-                            default:
+                            default -> {
                                 System.out.println("Invalid choice.");
                                 return;
+                            }
                         }
 
                         // Rebuild the line with updated fields
