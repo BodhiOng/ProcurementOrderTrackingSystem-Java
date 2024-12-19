@@ -72,7 +72,7 @@ public class InventoryManager {
                     }
                     case 5 -> {
                         if ("Administrators".equalsIgnoreCase(role)) {
-                            System.out.println("\n🔙 Going Back...");
+                            System.out.println("\nGoing Back...");
                             return;
                         } else {
                             System.out.println("\n❌ Logged Out Inventory Management System... See you next time!\n");

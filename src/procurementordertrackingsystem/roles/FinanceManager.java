@@ -74,7 +74,7 @@ public class FinanceManager {
                     break;
                 case 5:
                     if ("Administrators".equalsIgnoreCase(role)) {
-                        System.out.println("Going back to Administrators access");
+                        System.out.println("Going Back...");
                         return;
                     } else {
                         System.out.println("Logging out...");

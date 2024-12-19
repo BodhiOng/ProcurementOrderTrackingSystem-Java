@@ -81,7 +81,7 @@ public class PurchaseManager {
                     break;
                 case 9:
                     if ("Administrators".equalsIgnoreCase(role)) {
-                        System.out.println("Going back to Administrators access");
+                        System.out.println("Going Back...");
                         return;
                     } else {
                         System.out.println("\nLogged out. Returning to login page...");
