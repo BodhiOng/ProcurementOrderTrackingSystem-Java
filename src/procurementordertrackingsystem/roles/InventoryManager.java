@@ -28,74 +28,75 @@ public class InventoryManager {
                         2. \ud83d\udce6 Supplier Registration
                         3. \ud83d\udcca View Stock Levels
                         4. \ud83d\udee0\ufe0f Manage Stock Details
-                        """; 
+                        """;
 
-        try (Scanner userOption = new Scanner(System.in)) { 
-            boolean running = true;
-            if ("Administrators".equalsIgnoreCase(role)) {
-                deMenu += "5. 🔙 Go Back\n";  // Admin role: option 5 is "Go Back"
-            } else {
-                deMenu += "5. ❌ Logout\n";  // Non-admin: option 5 is "Logout"
-                deMenu += "6. ❌ Exit\n";    // Non-admin: option 6 is "Exit"
-            }
+        Scanner userOption = new Scanner(System.in);
+        boolean running = true;
+        if ("Administrators".equalsIgnoreCase(role)) {
+            deMenu += "5. 🔙 Go Back\n";  // Admin role: option 5 is "Go Back"
+        } else {
+            deMenu += "5. ❌ Logout\n";  // Non-admin: option 5 is "Logout"
+            deMenu += "6. ❌ Exit\n";    // Non-admin: option 6 is "Exit"
+        }
 
-            InventoryManager inventoryManager = new InventoryManager(); // Create instance
-            while (running) {
-                System.out.println(deMenu); 
-                System.out.print("💡 Enter your choice: ");
-                
-                if (userOption.hasNextInt()) {
-                    menuOption = userOption.nextInt();
-                    userOption.nextLine(); // Consume newline character
-                    LoginPage loginPage = new LoginPage();
-                    
-                    switch (menuOption) {
-                        case 1 -> {
-                            System.out.println("\n✅ You selected: 📥 Item Entry");
-                            ItemEntry itemEntry = inventoryManager.new ItemEntry();
-                            itemEntry.itemMenu(role); 
-                        }
-                        case 2 -> {
-                            System.out.println("\n✅ You selected: 📦 Supplier Registration");
-                            SupplierRegistration supplierRegistration = inventoryManager.new SupplierRegistration();
-                            supplierRegistration.supplierMenu(role); // Use the nested SupplierRegistration class
-                        }
-                        case 3 -> {
-                            System.out.println("\n✅ You selected: 📊 View Stock Levels");
-                            ItemEntry itemEntry3 = inventoryManager.new ItemEntry(); 
-                            itemEntry3.viewStockLevels(itemEntry3.itemFile);
-                        }
-                        case 4 -> {
-                            System.out.println("\n✅ You selected: 🛠️ Manage Stock Details");
-                            ItemEntry itemEntry4 = inventoryManager.new ItemEntry();
-                            itemEntry4.updateStockLevels();
-                        }
-                        case 5 -> {
-                            if ("Administrators".equalsIgnoreCase(role)) {
-                                System.out.println("\n🔙 Going Back...");
-                                return;
-                            } else {
-                                System.out.println("\n❌ Logged Out Inventory Management System... See you next time!\n");
-                                loginPage.login();
-                                running = false;
-                            }
-                        }
-                        case 6 -> {
-                            if ("Administrators".equalsIgnoreCase(role)) {
-                                System.out.println("⚠ Invalid option.");
-                            } else {
-                                System.out.println("\n❌ Exiting the system.");
-                                System.exit(0); 
-                            }
-                        }
-                        default -> System.out.println("⚠ Invalid option. Please choose a valid menu option.\n");
+        InventoryManager inventoryManager = new InventoryManager(); // Create instance
+        while (running) {
+            System.out.println(deMenu);
+            System.out.print("💡 Enter your choice: ");
+
+            if (userOption.hasNextInt()) {
+                menuOption = userOption.nextInt();
+                userOption.nextLine(); // Consume newline character
+                LoginPage loginPage = new LoginPage();
+
+                switch (menuOption) {
+                    case 1 -> {
+                        System.out.println("\n✅ You selected: 📥 Item Entry");
+                        ItemEntry itemEntry = inventoryManager.new ItemEntry();
+                        itemEntry.itemMenu(role);
                     }
-                } else {
-                    System.out.println("⚠ Error: Please enter a valid number.\n");
-                    userOption.next(); 
+                    case 2 -> {
+                        System.out.println("\n✅ You selected: 📦 Supplier Registration");
+                        SupplierRegistration supplierRegistration = inventoryManager.new SupplierRegistration();
+                        supplierRegistration.supplierMenu(role); // Use the nested SupplierRegistration class
+                    }
+                    case 3 -> {
+                        System.out.println("\n✅ You selected: 📊 View Stock Levels");
+                        ItemEntry itemEntry3 = inventoryManager.new ItemEntry();
+                        itemEntry3.viewStockLevels(itemEntry3.itemFile);
+                    }
+                    case 4 -> {
+                        System.out.println("\n✅ You selected: 🛠️ Manage Stock Details");
+                        ItemEntry itemEntry4 = inventoryManager.new ItemEntry();
+                        itemEntry4.updateStockLevels();
+                    }
+                    case 5 -> {
+                        if ("Administrators".equalsIgnoreCase(role)) {
+                            System.out.println("\nGoing Back...");
+                            return;
+                        } else {
+                            System.out.println("\n❌ Logged Out Inventory Management System... See you next time!\n");
+                            loginPage.login();
+                            running = false;
+                        }
+                    }
+                    case 6 -> {
+                        if ("Administrators".equalsIgnoreCase(role)) {
+                            System.out.println("⚠ Invalid option.");
+                        } else {
+                            System.out.println("\n❌ Exiting the system.");
+                            System.exit(0);
+                        }
+                    }
+                    default ->
+                        System.out.println("⚠ Invalid option. Please choose a valid menu option.\n");
                 }
+            } else {
+                System.out.println("⚠ Error: Please enter a valid number.\n");
+                userOption.next();
             }
         }
+        userOption.close();
         System.out.println("💤 Shutting down Inventory Manager... Goodbye!\n");
     }
 
@@ -103,7 +104,7 @@ public class InventoryManager {
 
         private CRUDOntoFile crudUtil;
         private File supplierFile;
-        
+
         public SupplierRegistration() {
             super(); // Initialize parent class variables
             crudUtil = new CRUDOntoFile();
@@ -164,7 +165,7 @@ public class InventoryManager {
             }
             return false;
         }
-        
+
         public void supplierMenu(String role) throws IOException {
             Scanner scanner = new Scanner(System.in);
             boolean running = true;
@@ -185,15 +186,19 @@ public class InventoryManager {
                 int choice = getValidIntegerInput(scanner, "");
 
                 switch (choice) {
-                    case 1 -> addNewSupplier();
-                    case 2 -> editSupplier();
-                    case 3 -> deleteSupplier();
+                    case 1 ->
+                        addNewSupplier();
+                    case 2 ->
+                        editSupplier();
+                    case 3 ->
+                        deleteSupplier();
                     case 4 -> {
                         System.out.println("❌ Exiting Supplier Management.");
                         InventoryManager.menu(role);
                         running = false;
                     }
-                    default -> System.out.println("⚠ Invalid choice. Please try again.\n");
+                    default ->
+                        System.out.println("⚠ Invalid choice. Please try again.\n");
                 }
             }
         }
@@ -376,8 +381,9 @@ public class InventoryManager {
         }
 
     }
-    
+
     private class ItemEntry extends Item {
+
         private CRUDOntoFile crudUtil;
         private File itemFile;
 
@@ -495,7 +501,8 @@ public class InventoryManager {
                                 InventoryManager.menu(role);
                                 running = false;
                             }
-                            default -> System.out.println("⚠ Invalid option. Please choose a valid menu option.\n");
+                            default ->
+                                System.out.println("⚠ Invalid option. Please choose a valid menu option.\n");
                         }
                     } else {
                         System.out.println("⚠ Error: Please enter a valid number.\n");
