@@ -323,13 +323,21 @@ public class SalesManager {
             int choice;
             System.out.println("\n------------------------------");
             System.out.println(menu);
-            System.out.print("Please Select a Menu (1-7): ");
+            if ("Administrators".equalsIgnoreCase(role)) {
+                System.out.println("Please select an option (1-6): ");
+            } else {
+                System.out.print("Please select an option (1-7): ");
+            }
 
             // Take input from user
             try {
                 choice = sc.nextInt();
             } catch (Exception e) {
-                System.out.println("Invalid menu. Please input a number from 1-7");
+                if ("Administrators".equalsIgnoreCase(role)) {
+                    System.out.println("Invalid option. Please select between 1 and 6.");
+                } else {
+                    System.out.println("Invalid option. Please select between 1 and 7.");
+                }
                 sc.nextLine(); 
                 continue;
             }

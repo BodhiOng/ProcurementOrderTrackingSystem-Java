@@ -5,4 +5,3 @@ U0004,Emad Ebrahim,Inventory Manager,emad123,alice@example.com,000
 U0005,bodhi,Finance Manager,bodhi123,alice@example.com,000
 U0006,ff,Purchase Manager,s,ta@c.com,00
 U0007,fs,Inventory Manager,ts,kf@c.com,90
-U0008,testing,Sales Manager,testing555,testing@gmail.com,123

@@ -30,61 +30,78 @@ public class PurchaseManager {
     }
 
 // Method to display the menu and handle user selection
-public void displayMenu(String role) throws IOException {
-    Scanner scanner = new Scanner(System.in);
-    int choice;
+    public void displayMenu(String role) throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        int choice;
 
-    do {
-        System.out.println("\n--- Purchase Manager Menu ---");
-        System.out.println("1. View Inventory");
-        System.out.println("2. Update Stock Level");
-        System.out.println("3. View Suppliers");
-        System.out.println("4. View Purchase Requisitions");
-        System.out.println("5. Generate Purchase Order");
-        System.out.println("6. View Purchase Orders");
-        System.out.println("7. Edit Purchase Order");
-        System.out.println("8. Delete Purchase Order");
-        System.out.println("9. Logout");
+        do {
+            System.out.println("\n--- Purchase Manager Menu ---");
+            System.out.println("1. View Inventory");
+            System.out.println("2. Update Stock Level");
+            System.out.println("3. View Suppliers");
+            System.out.println("4. View Purchase Requisitions");
+            System.out.println("5. Generate Purchase Order");
+            System.out.println("6. View Purchase Orders");
+            System.out.println("7. Edit Purchase Order");
+            System.out.println("8. Delete Purchase Order");
+            if ("Administrators".equalsIgnoreCase(role)) {
+                System.out.println("9. Go Back");
+            } else {
+                System.out.println("9. Logout");
+                System.out.println("10. Exit");
+            }
+            System.out.print("Enter your choice: ");
+            choice = scanner.nextInt();
+            scanner.nextLine();  // Consume the newline character left by nextInt()
 
-        System.out.print("Enter your choice: ");
-        choice = scanner.nextInt();
-        scanner.nextLine();  // Consume the newline character left by nextInt()
-
-        switch (choice) {
-            case 1:
-                viewInventory();
-                break;
-            case 2:
-                updateStockLevel();
-                break;
-            case 3:
-                viewSuppliers();
-                break;
-            case 4:
-                viewPurchaseRequisitions();
-                break;
-            case 5:
-                generatePurchaseOrder();
-                break;
-            case 6:
-                viewPurchaseOrders();
-                break;
-            case 7:
-                editPurchaseOrder();
-                break;
-            case 8:
-                deletePurchaseOrder();
-                break;
-            case 9:
-                System.out.println("\nLogged out. Returning to login page...");
-                LoginPage loginPage = new LoginPage();
-                loginPage.login();  // Calls the login method again
-                break;
-            default:
-                System.out.println("Invalid choice. Please try again.");
-        }
-    } while (choice != 9);
-}
+            switch (choice) {
+                case 1:
+                    viewInventory();
+                    break;
+                case 2:
+                    updateStockLevel();
+                    break;
+                case 3:
+                    viewSuppliers();
+                    break;
+                case 4:
+                    viewPurchaseRequisitions();
+                    break;
+                case 5:
+                    generatePurchaseOrder();
+                    break;
+                case 6:
+                    viewPurchaseOrders();
+                    break;
+                case 7:
+                    editPurchaseOrder();
+                    break;
+                case 8:
+                    deletePurchaseOrder();
+                    break;
+                case 9:
+                    if ("Administrators".equalsIgnoreCase(role)) {
+                        System.out.println("Going back to Administrators access");
+                        return;
+                    } else {
+                        System.out.println("\nLogged out. Returning to login page...");
+                        LoginPage loginPage = new LoginPage();
+                        loginPage.login(); // Calls the login method again
+                    }
+                    break;
+                case 10:
+                    if (!"Administrators".equalsIgnoreCase(role)) {
+                        System.out.println("Exiting the system. Goodbye!");
+                        System.exit(0);
+                    } else {
+                        System.out.println("Invalid option. Please try again.");
+                    }
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        } while (choice != 10 || "Administrators".equalsIgnoreCase(role));
+    }
 
     // View inventory
     public void viewInventory() {
@@ -101,74 +118,71 @@ public void displayMenu(String role) throws IOException {
             System.err.println("Error reading item file: " + e.getMessage());
         }
     }
+
     //Update Stock Level
     public void updateStockLevel() {
-    Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);
 
-    File itemFile = new File("src/procurementordertrackingsystem/data/item.txt");
+        File itemFile = new File("src/procurementordertrackingsystem/data/item.txt");
 
-    try {
-        // Read and display the current file content
-        List<String> itemData = crudOntoFile.readFromAFile(itemFile);
-        System.out.println("\n--- Current Content of Item File ---");
-        if (itemData.isEmpty()) {
-            System.out.println("The file is empty.");
-            return;
-        }
-        itemData.forEach(System.out::println);
-
-        // Prompt user for Item ID
-        System.out.print("\nEnter Item ID to update stock: ");
-        String itemID = scanner.nextLine();
-
-        // Check if the Item ID exists
-        boolean itemFound = false;
-
-        for (String line : itemData) {
-            String[] parts = line.split(",");
-            if (parts[0].equals(itemID)) {
-                itemFound = true;
-                break;
+        try {
+            // Read and display the current file content
+            List<String> itemData = crudOntoFile.readFromAFile(itemFile);
+            System.out.println("\n--- Current Content of Item File ---");
+            if (itemData.isEmpty()) {
+                System.out.println("The file is empty.");
+                return;
             }
-        }
+            itemData.forEach(System.out::println);
 
-        if (!itemFound) {
-            System.out.println("\nItem ID not found! Please try again with a valid Item ID.");
-            return;
-        }
+            // Prompt user for Item ID
+            System.out.print("\nEnter Item ID to update stock: ");
+            String itemID = scanner.nextLine();
 
-        // If Item ID exists, prompt for stock level
-        System.out.print("Enter new Stock Level: ");
-        int stockLevel = Integer.parseInt(scanner.nextLine());
+            // Check if the Item ID exists
+            boolean itemFound = false;
 
-        // Update the stock level
-        StringBuilder updatedItems = new StringBuilder();
-        for (String line : itemData) {
-            String[] parts = line.split(",");
-            if (parts[0].equals(itemID)) {
-                parts[2] = String.valueOf(stockLevel); // Update stock level
+            for (String line : itemData) {
+                String[] parts = line.split(",");
+                if (parts[0].equals(itemID)) {
+                    itemFound = true;
+                    break;
+                }
             }
-            updatedItems.append(String.join(",", parts)).append("\n");
+
+            if (!itemFound) {
+                System.out.println("\nItem ID not found! Please try again with a valid Item ID.");
+                return;
+            }
+
+            // If Item ID exists, prompt for stock level
+            System.out.print("Enter new Stock Level: ");
+            int stockLevel = Integer.parseInt(scanner.nextLine());
+
+            // Update the stock level
+            StringBuilder updatedItems = new StringBuilder();
+            for (String line : itemData) {
+                String[] parts = line.split(",");
+                if (parts[0].equals(itemID)) {
+                    parts[2] = String.valueOf(stockLevel); // Update stock level
+                }
+                updatedItems.append(String.join(",", parts)).append("\n");
+            }
+
+            // Write updated data back to the file
+            crudOntoFile.writeUpdatedLinesToFile(itemFile, List.of(updatedItems.toString().trim().split("\n")));
+            System.out.println("\nStock level updated successfully!");
+
+            // Display updated content
+            System.out.println("\n--- Updated Content of Item File ---");
+            crudOntoFile.readFromAFile(itemFile).forEach(System.out::println);
+
+        } catch (IOException e) {
+            System.err.println("Error updating item stock: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid input for stock level. Please enter a numeric value.");
         }
-
-        // Write updated data back to the file
-        crudOntoFile.writeUpdatedLinesToFile(itemFile, List.of(updatedItems.toString().trim().split("\n")));
-        System.out.println("\nStock level updated successfully!");
-
-        // Display updated content
-        System.out.println("\n--- Updated Content of Item File ---");
-        crudOntoFile.readFromAFile(itemFile).forEach(System.out::println);
-
-    } catch (IOException e) {
-        System.err.println("Error updating item stock: " + e.getMessage());
-    } catch (NumberFormatException e) {
-        System.err.println("Invalid input for stock level. Please enter a numeric value.");
     }
-}
-
-
-
-
 
     // View suppliers using the Supplier class
     public void viewSuppliers() {
@@ -293,53 +307,50 @@ public void displayMenu(String role) throws IOException {
         }
     }
 
-  
-
     // Delete purchase order
     public void deletePurchaseOrder() {
-    Scanner scanner = new Scanner(System.in);
-    File purchaseOrderFile = new File("src/procurementordertrackingsystem/data/purchase_order.txt");
+        Scanner scanner = new Scanner(System.in);
+        File purchaseOrderFile = new File("src/procurementordertrackingsystem/data/purchase_order.txt");
 
-    try {
-        // Read and display the current content of the file
-        System.out.println("\n--- Current Content of Purchase Order File ---");
-        List<String> purchaseOrders = crudOntoFile.readFromAFile(purchaseOrderFile);
-        if (purchaseOrders.isEmpty()) {
-            System.out.println("The file is empty.");
-            return;
-        }
-        purchaseOrders.forEach(System.out::println);
-
-        // Prompt user for Purchase Order ID to delete
-        System.out.print("\nEnter Purchase Order ID to delete: ");
-        String poID = scanner.nextLine();
-
-        boolean poFound = false;
-        StringBuilder updatedPOs = new StringBuilder();
-
-        for (String line : purchaseOrders) {
-            String[] parts = line.split(",");
-            if (!parts[0].equals(poID)) {
-                updatedPOs.append(String.join(",", parts)).append("\n");
-            } else {
-                poFound = true;
+        try {
+            // Read and display the current content of the file
+            System.out.println("\n--- Current Content of Purchase Order File ---");
+            List<String> purchaseOrders = crudOntoFile.readFromAFile(purchaseOrderFile);
+            if (purchaseOrders.isEmpty()) {
+                System.out.println("The file is empty.");
+                return;
             }
-        }
+            purchaseOrders.forEach(System.out::println);
 
-        // Save updates to file
-        if (poFound) {
-            crudOntoFile.writeUpdatedLinesToFile(purchaseOrderFile, List.of(updatedPOs.toString().trim().split("\n")));
-            System.out.println("\nPurchase Order deleted successfully!");
+            // Prompt user for Purchase Order ID to delete
+            System.out.print("\nEnter Purchase Order ID to delete: ");
+            String poID = scanner.nextLine();
 
-            // Display updated content
-            System.out.println("\n--- Updated Content of Purchase Order File ---");
-            crudOntoFile.readFromAFile(purchaseOrderFile).forEach(System.out::println);
-        } else {
-            System.out.println("Purchase Order ID not found!");
+            boolean poFound = false;
+            StringBuilder updatedPOs = new StringBuilder();
+
+            for (String line : purchaseOrders) {
+                String[] parts = line.split(",");
+                if (!parts[0].equals(poID)) {
+                    updatedPOs.append(String.join(",", parts)).append("\n");
+                } else {
+                    poFound = true;
+                }
+            }
+
+            // Save updates to file
+            if (poFound) {
+                crudOntoFile.writeUpdatedLinesToFile(purchaseOrderFile, List.of(updatedPOs.toString().trim().split("\n")));
+                System.out.println("\nPurchase Order deleted successfully!");
+
+                // Display updated content
+                System.out.println("\n--- Updated Content of Purchase Order File ---");
+                crudOntoFile.readFromAFile(purchaseOrderFile).forEach(System.out::println);
+            } else {
+                System.out.println("Purchase Order ID not found!");
+            }
+        } catch (IOException e) {
+            System.err.println("Error deleting purchase order: " + e.getMessage());
         }
-    } catch (IOException e) {
-        System.err.println("Error deleting purchase order: " + e.getMessage());
-    }
     }
 }
-

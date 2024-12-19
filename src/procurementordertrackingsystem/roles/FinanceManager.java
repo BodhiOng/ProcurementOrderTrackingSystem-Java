@@ -1,4 +1,4 @@
-package procurementordertrackingsystem.roles;
+    package procurementordertrackingsystem.roles;
 
 import procurementordertrackingsystem.entities.Supplier;
 import procurementordertrackingsystem.entities.Payment;
@@ -41,13 +41,21 @@ public class FinanceManager {
 
         while (true) {
             System.out.println(menu);
-            System.out.print("Please select an option (1-6): ");
+            if ("Administrators".equalsIgnoreCase(role)) {
+                System.out.println("Please select an option (1-5): ");
+            } else {
+                System.out.print("Please select an option (1-6): ");
+            }
 
             int choice;
             try {
                 choice = Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a number between 1 and 6.");
+                if ("Administrators".equalsIgnoreCase(role)) {
+                    System.out.println("Invalid option. Please select between 1 and 5.");
+                } else {
+                    System.out.println("Invalid option. Please select between 1 and 6.");
+                }
                 continue;
             }
 
@@ -84,7 +92,7 @@ public class FinanceManager {
                     }
                     break; // Exit the method for non-admin users
                 default:
-                    if (!"Administrators".equalsIgnoreCase(role)) {
+                    if ("Administrators".equalsIgnoreCase(role)) {
                         System.out.println("Invalid option. Please select between 1 and 5.");
                     } else {
                         System.out.println("Invalid option. Please select between 1 and 6.");
