@@ -363,14 +363,12 @@ public class Administrators extends User implements IDGenerator {
                         userToEdit.setRole(newRole);
                         break;
                     case 3:
-                        System.out.print("Enter new username: ");
                         String newUsername = getValidUsername(scanner);
                         if (!newUsername.isEmpty()) {
                             userToEdit.setUsername(newUsername);
                         }
                         break;
                     case 4:
-                        System.out.print("Enter new email: ");
                         String newEmail = getValidEmail(scanner);
                         if (!newEmail.isEmpty()) {
                             userToEdit.setEmail(newEmail);
