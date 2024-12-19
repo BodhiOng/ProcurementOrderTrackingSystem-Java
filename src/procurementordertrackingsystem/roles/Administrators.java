@@ -468,7 +468,7 @@ public class Administrators extends User implements IDGenerator {
 
     private void displayUserInfo(String[] userDetails) {
         // Display the user's details (Name, Username, Email, etc.)
-        System.out.println("Username: " + userDetails[0]); // Name is at index 1
+        System.out.println("UserId: " + userDetails[0]); // Name is at index 1
         System.out.println("Name: " + userDetails[1]); // Name is at index 1
         System.out.println("Username: " + userDetails[3]); // Username is at index 3
         System.out.println("Email: " + userDetails[4]); // Email is at index 4
