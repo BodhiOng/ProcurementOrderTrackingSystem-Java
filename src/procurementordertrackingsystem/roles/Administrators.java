@@ -52,16 +52,16 @@ public class Administrators extends User implements IDGenerator {
                     manageUserMenu(scanner);
                     break;
                 case 2:
-                    loginAsFinanceManager();
+                    accessFinanceManagerFucntion();
                     break;
                 case 3:
-                    loginAsPurchaseManager();
+                    accessPurchaseManagerFunction();
                     break;
                 case 4:
-                    loginAsInventoryManager();
+                    accessInventoryManagerFunction();
                     break;
                 case 5:
-                    loginAsSalesManager();
+                    accessSalesManagerFunction();
                     break;
                 case 6:
                     System.out.println("Logging out...");
@@ -445,23 +445,23 @@ public class Administrators extends User implements IDGenerator {
     }
 
     // Placeholder for login methods
-    private void loginAsFinanceManager() throws IOException {
+    private void accessFinanceManagerFucntion() throws IOException {
         System.out.println("You have finance access.");
         FinanceManager fm = new FinanceManager();
         fm.displayMenu("Administrators");
     }
 
-    private void loginAsPurchaseManager() throws IOException {
+    private void accessPurchaseManagerFunction() throws IOException {
         PurchaseManager pm = new PurchaseManager();
         pm.displayMenu("Administrators");
     }
 
-    private void loginAsInventoryManager() throws IOException {
+    private void accessInventoryManagerFunction() throws IOException {
         InventoryManager im = new InventoryManager();
         im.menu("Administrators");
     }
 
-    private void loginAsSalesManager() throws IOException {
+    private void accessSalesManagerFunction() throws IOException {
         SalesManager sm = new SalesManager();
         sm.DisplayMenu("Administrators");
     }
