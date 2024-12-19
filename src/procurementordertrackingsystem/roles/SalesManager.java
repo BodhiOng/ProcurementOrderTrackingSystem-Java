@@ -228,6 +228,7 @@ public class SalesManager {
             //Read the current sale entry
             String[] onesale = readSalesbyid(id);
             String olditemid = onesale[1];
+            int oldqty = Integer.parseInt(onesale[2]);
             
             //Replace the item id and quantity
             onesale[1] = itemid;
@@ -242,7 +243,7 @@ public class SalesManager {
             System.out.println(String.format("SalesID: %s, Item Name: %s, Quantity: %s, Sale Date: %s", onesale[0], itemname, onesale[2], onesale[3]));
             //Remove the old sales from item file
             updateitem1.add(olditemid);
-            updateitem1.add(String.valueOf(qty*-1));
+            updateitem1.add(String.valueOf(oldqty*-1));
             updatedsales.add(updateitem1);
             //Apply the new sales to item file
             updateitem2.add(itemid);
