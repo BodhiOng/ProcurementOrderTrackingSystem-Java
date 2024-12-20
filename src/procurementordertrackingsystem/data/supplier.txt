@@ -1,8 +1,9 @@
-S0001,Tech Supplier Ltd,I0001,123-456-7890,123 Tech Street
+S0001,Tech2 Supplier Ltd,I0001,123-456-7890,123 Tech Street
 S0002,Office Supplies Inc.,I0002,987-654-3210,456 Office Park
 S0003,Accessories Wholesale,I0003,555-123-4567,789 Accessories Road
 S0004,Mohammed,I0003,+3455234,Putra Permai
 S0007,James,I2304,+231412,Putra Permai
-S0008,Abdullah,I0232,+23421,Mom's House
 S0009,Malike,I2012,+2314234,Putra Permai
 S0010,Tarek,I2301,+1234567890,Bukit Jalil
+S0011,Emad,I9110,+1234567890,Putra Permai
+S0012,Kamel,I0231,+1234145141,Putra Heights

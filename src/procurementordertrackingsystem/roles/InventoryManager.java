@@ -122,7 +122,6 @@ public class InventoryManager {
                 System.err.println("⚠ Error ensuring the existence of supplier.txt: " + e.getMessage());
             }
         }
-
         private int getValidIntegerInput(Scanner scanner, String prompt) {
             while (true) {
                 try {
@@ -133,7 +132,6 @@ public class InventoryManager {
                 }
             }
         }
-
         private String getValidStringInput(Scanner scanner, String prompt) {
             while (true) {
                 System.out.print(prompt);
@@ -145,12 +143,10 @@ public class InventoryManager {
                 }
             }
         }
-
         // Phone number validation method
         private boolean isValidPhoneNumber(String phoneNumber) {
             return phoneNumber.matches("\\+\\d{10,15}"); // Adjust this regex based on your required format
         }
-
         private boolean isDuplicateSupplier(String supplierName) {
             try (Scanner fileScanner = new Scanner(supplierFile)) {
                 while (fileScanner.hasNextLine()) {
@@ -219,7 +215,7 @@ public class InventoryManager {
 
             setItemID(getValidStringInput(scanner, "📦 Enter Item ID: "));
 
-            // Ensure a valid phone number is entered
+            
             String phoneNumber;
             while (true) {
                 phoneNumber = getValidStringInput(scanner, "📞 Enter Phone Number (10 digits): ");
