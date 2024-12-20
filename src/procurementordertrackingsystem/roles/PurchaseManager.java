@@ -197,51 +197,72 @@ public class PurchaseManager {
 
     // View purchase requisitions
     public void viewPurchaseRequisitions() {
-        File requisitionFile = new File("src/procurementordertrackingsystem/data/purchase_requisition.txt");
-        try {
-            System.out.println("----- Purchase Requisitions -----");
-            List<String> requisitions = crudOntoFile.readFromAFile(requisitionFile);
-            for (String line : requisitions) {
-                String[] parts = line.split(",");
-                System.out.printf("Requisition ID: %s, Item ID: %s, Quantity: %s, Date: %s, Supplier ID: %s, User ID: %s%n",
-                        parts[0], parts[1], parts[2], parts[3], parts[4], parts[5]);
-            }
-        } catch (IOException e) {
-            System.err.println("Error reading purchase requisitions: " + e.getMessage());
+    File requisitionFile = filePaths.getPurchaseRequisitionFile(); 
+    try {
+        System.out.println("----- Purchase Requisitions -----");
+        List<String> requisitions = crudOntoFile.readFromAFile(requisitionFile);
+        for (String line : requisitions) {
+            String[] parts = line.split(",");
+            if (parts.length < 6) continue;
+            System.out.printf("Requisition ID: %s, Item ID: %s, Quantity: %s, Date: %s, Supplier ID: %s, User ID: %s%n",
+                    parts[0], parts[1], parts[2], parts[3], parts[4], parts[5]);
         }
+    } catch (IOException e) {
+        System.err.println("Error reading purchase requisitions: " + e.getMessage());
     }
+}
 
     // Generate purchase order
-    public void generatePurchaseOrder() {
-        Scanner scanner = new Scanner(System.in);
+   public void generatePurchaseOrder() {
+    Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Enter Purchase Order ID: ");
-        String poID = scanner.nextLine();
+    System.out.print("Enter Purchase Order ID: ");
+    String poID = scanner.nextLine();
 
-        System.out.print("Enter Purchase Requisition ID: ");
-        String reqID = scanner.nextLine();
+    System.out.print("Enter Purchase Requisition ID: ");
+    String reqID = scanner.nextLine();
 
-        System.out.print("Enter Purchase Manager ID: ");
-        String purchaseManagerID = scanner.nextLine();
+    System.out.print("Enter Purchase Manager ID: ");
+    String purchaseManagerID = scanner.nextLine();
 
-        System.out.print("Enter Approval Status (Approved/Pending/Rejected): ");
-        String approvalStatus = scanner.nextLine();
+    System.out.print("Enter Approval Status (Approved/Pending/Rejected): ");
+    String approvalStatus = scanner.nextLine();
 
-        System.out.print("Enter Payment Status (Paid/Unpaid): ");
-        String paymentStatus = scanner.nextLine();
+    System.out.print("Enter Payment Status (Paid/Unpaid): ");
+    String paymentStatus = scanner.nextLine();
 
-        String lineToSave = String.format("%s,%s,%s,%s,%s,%s", poID, reqID, purchaseManagerID, approvalStatus, "2024-12-13", paymentStatus);
+    String lineToSave = String.format("%s,%s,%s,%s,%s,%s", poID, reqID, purchaseManagerID, approvalStatus, "2024-12-13", paymentStatus);
 
-        File purchaseOrderFile = new File("src/procurementordertrackingsystem/data/purchase_order.txt");
+    File purchaseOrderFile = filePaths.getPurchaseOrderFile();
 
-        try {
-            // Use the createToFile method to append the new purchase order to the file
-            crudOntoFile.createToFile(purchaseOrderFile, lineToSave);
-            System.out.println("Purchase Order generated successfully!");
-        } catch (IOException e) {
-            System.err.println("Error writing to purchase order file: " + e.getMessage());
+    try {
+        List<String> existingOrders = crudOntoFile.readFromAFile(purchaseOrderFile);
+
+        for (String order : existingOrders) {
+            String[] parts = order.split(",");
+            if (parts.length > 0 && parts[0].equals(poID)) {
+                System.err.println("Duplicate Purchase Order ID found: " + poID);
+                return;
+            }
+            if (parts.length > 1 && parts[1].equals(reqID)) {
+                System.err.println("Duplicate Purchase Requisition ID found: " + reqID);
+                return;
+            }
         }
+
+        // Ensure newline after each entry
+        crudOntoFile.createToFile(purchaseOrderFile, lineToSave + System.lineSeparator());
+
+        System.out.println("Purchase Order generated successfully!");
+
+    } catch (IOException e) {
+        System.err.println("Error reading/writing to purchase order file: " + e.getMessage());
     }
+}
+
+
+
+
 
     // View purchase orders
     public void viewPurchaseOrders() {
